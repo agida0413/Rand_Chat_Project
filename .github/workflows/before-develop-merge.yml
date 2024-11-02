@@ -20,6 +20,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'  # JDK 분포 설정
 
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Install Docker Compose
+        run: |
+         sudo apt-get update
+         sudo apt-get install -y docker-compose
+
       - name: Run Unit Tests
         run: |
           docker-compose -f ./docker-compose-dev.yml up --build --abort-on-container-exit  # 컨테이너 빌드 및 실행
