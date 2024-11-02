@@ -13,7 +13,8 @@ COPY settings.gradle .
 
 # 소스 코드 복사
 COPY src ./src
-
+# gradlew 실행 권한 설정
+RUN chmod +x gradlew
 # 필요한 종속성을 다운로드 (캐시 활용)
 RUN ./gradlew build --no-daemon
 
