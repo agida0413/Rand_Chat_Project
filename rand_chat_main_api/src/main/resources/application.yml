@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev
   datasource:
     url: jdbc:mysql://localhost:3307/rand
     username: root
