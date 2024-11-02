@@ -22,5 +22,5 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          docker-compose -f docker-compose-dev.yml up --build --abort-on-container-exit  # 컨테이너 빌드 및 실행
+          docker-compose -f ./docker-compose-dev.yml up --build --abort-on-container-exit  # 컨테이너 빌드 및 실행
           
