@@ -4,6 +4,7 @@ FROM gradle:7.6.0-jdk17 AS builder
 # 작업 디렉토리 설정
 WORKDIR /backend
 
+
 # Gradle Wrapper 파일을 먼저 복사하여 캐시 활용
 COPY gradle/wrapper/gradle-wrapper.jar ./gradle/wrapper/
 COPY gradle/wrapper/gradle-wrapper.properties ./gradle/wrapper/
