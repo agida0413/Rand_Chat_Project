@@ -7,6 +7,11 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 @Getter
 public enum ErrorCode {
+    //타입에러
+
+    PARAMETER_TYPE_MISMATCH(400, "ERR-CMN-01", "PARAMETER TYPE MISMATCH"),
+    JSON_PARSE_ERROR  (400, "ERR-CMN-02", "JSON PARSE ERROR"),
+
     //회원 관련 에러코드
     VALIDATAION_FAIL_JOIN_ID(400, "ERR-MEM-01", "JOIN ID VALIDATION FAIL"),
     VALIDATAION_FAIL_JOIN_NM(400, "ERR-MEM-02", "JOIN NAME VALIDATION FAIL"),
