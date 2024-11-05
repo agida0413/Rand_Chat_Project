@@ -8,7 +8,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   mybatis:
     mapper-locations: classpath:mapper/*.xml    # XML ?? ??? ??
-#    type-aliases-package: com.example.demo.model
+    type-aliases-package: rand.api.*
     configuration:
       map-underscore-to-camel-case: true
 
@@ -20,10 +20,17 @@ spring:
     redis-chat:
       host: redis-chat
       port: 6382
+    redis-chat-replica:
+      host: redis-chat-replica
+      port: 6383
 
     redis-token:
       host: redis-token
       port: 6384
+
+    redis-token-replica:
+      host: redis-token-replica
+      port: 6385
 
     redis-persistent:
       host: redis-persistent
@@ -32,4 +39,12 @@ spring:
     redis-persistent-replica:
       host: redis-persistent-replica
       port: 6381
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: gimyongjun414@gmail.com
+    password: olix wufv ehek kiyb   # 환경 변수로 비밀번호 설정
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 

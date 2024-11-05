@@ -62,7 +62,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/v1/member",
+                        .requestMatchers("/api/v1/member/**",
                                 "/index.html","/css/**","/js/**","/images/**","/favicon.ico","/fonts/**","/img/**").permitAll() //로그인 ,회원가입 , 토큰 재발급,이메일인증 api는 권한 필요없음
                         .anyRequest().authenticated());//나머지는 인증이 필요함
 
