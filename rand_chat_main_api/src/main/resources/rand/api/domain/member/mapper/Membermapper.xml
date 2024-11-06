@@ -4,10 +4,12 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="rand.api.domain.member.mapper.MemberMapper">
-<select id="emailDuplicateCheck" parameterType="rand.api.domain.member.EmailAuth" resultType="int">
+<select id="emailDuplicateCheck" parameterType="EmailAuth" resultType="int">
     SELECT  COUNT(usr_id)
             FROM MEMBERS
     WHERE email = #{email}
 </select>
+
+
 
 </mapper>

@@ -16,7 +16,7 @@ COPY src ./src
 # gradlew 실행 권한 설정
 RUN chmod +x gradlew
 # 필요한 종속성을 다운로드 (캐시 활용)
-RUN ./gradlew build --no-daemon
+RUN ./gradlew clean build --no-daemon
 
 RUN ./gradlew test --no-daemon  # 테스트를 실행하는 단계 추가
 
