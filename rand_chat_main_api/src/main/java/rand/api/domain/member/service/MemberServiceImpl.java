@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import rand.api.domain.member.entity.EmailAuth;
+import rand.api.domain.member.mapper.MemberMapper;
 import rand.api.domain.member.repository.MemberRepository;
 import rand.api.domain.utilservice.MailService;
 import rand.api.web.dto.common.ResponseDTO;
@@ -17,6 +18,7 @@ import rand.api.web.exception.custom.BadRequestException;
 public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final MailService mailService;
+
     @Override
     public ResponseEntity<ResponseDTO<Void>> emailDuplicateCheck(EmailAuthDTO emailAuthDTO) {
         //dto - > entity
@@ -29,7 +31,6 @@ public class MemberServiceImpl implements MemberService{
             // 이메일 중복 에러
             throw new BadRequestException("ERR-MEM-CUS-01");
         }
-
 
 
         //인증번호 전송

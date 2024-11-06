@@ -1,7 +1,10 @@
 package rand.api.domain.utilservice;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,6 +15,7 @@ import rand.api.domain.common.util.mail.MailUtil;
 import rand.api.domain.common.util.mail.RandomGenerator;
 import rand.api.domain.member.entity.EmailAuth;
 import rand.api.domain.member.repository.MemberRepository;
+import rand.api.web.config.RedisRoutingConfig;
 import rand.api.web.dto.common.ResponseDTO;
 import rand.api.web.exception.custom.BadRequestException;
 import jakarta.mail.MessagingException;
@@ -50,9 +54,12 @@ public class JavaMailService implements MailService{
             mimeMessageHelper.setText(htmlContent,true);
 
             javaMailSender.send(message);//전송
-
             String redisKey = "cache:"+email+":auth";
-            redisTemplate.opsForValue().set(redisKey,certificationNumber);
+            RedisConnection connection = ((RedisRoutingConfig.DynamicRedisConnectionFactory) redisTemplate.getConnectionFactory()).getConnection(redisKey);
+            // 이제 해당 연결로 Redis 작업 수행
+            connection.set(new StringRedisSerializer().serialize(redisKey), new GenericJackson2JsonRedisSerializer().serialize(certificationNumber));
+
+
 
         } catch (MessagingException e) {
             // TODO Auto-generated catch block

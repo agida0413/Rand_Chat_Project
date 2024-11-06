@@ -34,6 +34,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      - mysql  
     container_name: backend_main
   backend_chat1:
     build:
@@ -41,6 +43,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8080"
+    depends_on:
+      - mysql    
     container_name: backend_chat1
   backend_chat2:
     build:
@@ -61,8 +65,6 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_USER: "user"
-      MYSQL_PASSWORD: "root"
       MYSQL_ROOT_PASSWORD: "1234"
     ports:
       - "3307:3306"

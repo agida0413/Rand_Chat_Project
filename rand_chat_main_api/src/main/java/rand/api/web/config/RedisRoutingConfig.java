@@ -4,6 +4,7 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,10 +14,14 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConnection;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Configuration
 public class RedisRoutingConfig {
 
@@ -34,13 +39,28 @@ public class RedisRoutingConfig {
     }
 
     private LettuceConnectionFactory createConnectionFactory(String host, int port) {
-        return new LettuceConnectionFactory(host, port);
-    }
 
+        LettuceConnectionFactory factory = new LettuceConnectionFactory(host,port);
+        factory.start();  // 연결을 시작합니다.
+        return factory;
+    }
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory); // 동적 라우팅을 위한 RedisConnectionFactory 설정
+        template.setKeySerializer(new StringRedisSerializer()); // key 직렬화 방식 설정
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer()); // value 직렬화 방식 설정
+        return template;
+    }
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new DynamicRedisConnectionFactory(connectionFactories);
     }
+
+
+
+
+
 
     public static class DynamicRedisConnectionFactory implements RedisConnectionFactory {
         private final Map<String, LettuceConnectionFactory> connectionFactories;
@@ -53,15 +73,19 @@ public class RedisRoutingConfig {
         public boolean getConvertPipelineAndTxResults() {
             return false;
         }
+
         @Override
         public RedisConnection getConnection() {
-            // 기본적인 getConnection() 구현 (필요시 다른 방식으로 구현 가능)
+            System.out.println("1111");
+
             throw new UnsupportedOperationException("Use getConnection(String key) instead.");
         }
 
         public RedisConnection getConnection(String key) {
             // 라우팅 로직을 구현
-            String routingKey = determineRoutingKey(key); // 이 메서드에서 키에 따라 연결할 Redis 서버를 결정
+            String routingKey = determineRoutingKey(key);
+            System.out.println("222222");
+            System.out.println(key);
             LettuceConnectionFactory factory = connectionFactories.get(routingKey);
             if (factory != null) {
                 return factory.getConnection();
@@ -81,14 +105,19 @@ public class RedisRoutingConfig {
         }
 
         private String determineRoutingKey(String key) {
-            String routingKey = null;
-            if(key.startsWith("cache")){
-                routingKey="redis-cache";
+            log.info("key = {}",key);
+            if (key.startsWith("cache")) {
+                return "redis-cache";
+            } else if (key.startsWith("chat")) {
+                return "redis-chat";
+            } else if (key.startsWith("token")) {
+                return "redis-token";
+            } else if (key.startsWith("persistent")) {
+                return "redis-persistent";
+            } else {
+                throw new IllegalArgumentException("Unknown key prefix: " + key);
             }
-          return routingKey;
-
         }
-
 
         @Override
         public DataAccessException translateExceptionIfPossible(RuntimeException ex) {
