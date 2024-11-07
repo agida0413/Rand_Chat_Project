@@ -34,6 +34,15 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      - mysql
+      - redis-cache
+      - redis-persistent
+      - redis-persistent-replica
+      - redis-chat
+      - redis-chat-replica
+      - redis-token
+      - redis-token-replica
     container_name: backend_main
   backend_chat1:
     build:
@@ -41,6 +50,15 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8080"
+    depends_on:
+        - mysql
+        - redis-cache
+        - redis-persistent
+        - redis-persistent-replica
+        - redis-chat
+        - redis-chat-replica
+        - redis-token
+        - redis-token-replica  
     container_name: backend_chat1
   backend_chat2:
     build:
@@ -49,6 +67,15 @@ services:
     ports:
       - "8082:8080"
     container_name: backend_chat2
+    depends_on:
+      - mysql
+      - redis-cache
+      - redis-persistent
+      - redis-persistent-replica
+      - redis-chat
+      - redis-chat-replica
+      - redis-token
+      - redis-token-replica
   backend_chat3:
     build:
       context: ./rand_chat_chatserver_api
@@ -56,13 +83,20 @@ services:
     ports:
       - "8083:8080"
     container_name: backend_chat3
+    depends_on:
+      - mysql
+      - redis-cache
+      - redis-persistent
+      - redis-persistent-replica
+      - redis-chat
+      - redis-chat-replica
+      - redis-token
+      - redis-token-replica
   mysql:
     image: mysql:8.0.17
     container_name: mysql
     restart: always
     environment:
-      MYSQL_USER: "user"
-      MYSQL_PASSWORD: "root"
       MYSQL_ROOT_PASSWORD: "1234"
     ports:
       - "3307:3306"
