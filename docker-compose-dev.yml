@@ -8,13 +8,14 @@ services:
     volumes:
       - /project/frontend/node_modules
       - ./frontend:/project/frontend
-
     stdin_open: true
     container_name: frontend
     ports:
       - "3000:3000"
     environment:
       - CHOKIDAR_USEPOLLING=true
+    networks: 
+     - app_network 
   nginx:
     build:
       context: ./nginx/dev
@@ -28,6 +29,9 @@ services:
       -  backend_chat2
       -  backend_chat3
     container_name: nginx
+    networks: 
+     - app_network
+
   backend_main:
     build:
       context: ./rand_chat_main_api
@@ -36,14 +40,10 @@ services:
       - "8080:8080"
     depends_on:
       - mysql
-      - redis-cache
-      - redis-persistent
-      - redis-persistent-replica
-      - redis-chat
-      - redis-chat-replica
-      - redis-token
-      - redis-token-replica
+      - redis-master-1
     container_name: backend_main
+    networks: 
+     - app_network
   backend_chat1:
     build:
       context: ./rand_chat_chatserver_api
@@ -51,15 +51,11 @@ services:
     ports:
       - "8081:8080"
     depends_on:
-        - mysql
-        - redis-cache
-        - redis-persistent
-        - redis-persistent-replica
-        - redis-chat
-        - redis-chat-replica
-        - redis-token
-        - redis-token-replica  
+      - mysql
+      - redis-master-1
     container_name: backend_chat1
+    networks: 
+     - app_network
   backend_chat2:
     build:
       context: ./rand_chat_chatserver_api
@@ -69,13 +65,9 @@ services:
     container_name: backend_chat2
     depends_on:
       - mysql
-      - redis-cache
-      - redis-persistent
-      - redis-persistent-replica
-      - redis-chat
-      - redis-chat-replica
-      - redis-token
-      - redis-token-replica
+      - redis-master-1
+    networks: 
+     - app_network 
   backend_chat3:
     build:
       context: ./rand_chat_chatserver_api
@@ -85,13 +77,9 @@ services:
     container_name: backend_chat3
     depends_on:
       - mysql
-      - redis-cache
-      - redis-persistent
-      - redis-persistent-replica
-      - redis-chat
-      - redis-chat-replica
-      - redis-token
-      - redis-token-replica
+      - redis-master-1
+    networks: 
+     - app_network
   mysql:
     image: mysql:8.0.17
     container_name: mysql
@@ -105,78 +93,20 @@ services:
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
-  redis-cache:
-    image: redis:latest
-    container_name: redis-cache
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    volumes:
-      - ./redisevn/redis-cache.conf:/usr/local/etc/redis/redis.conf
+    networks: 
+     - app_network  
+  redis-master-1:
+    image: redis:6.2
     ports:
       - "6379:6379"
+    container_name: redis-master-1  
+    networks: 
+     - app_network
 
-    # 2. 영구 저장용 메인 노드
-  redis-persistent:
-      image: redis:latest
-      container_name: redis-persistent
-      command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-      volumes:
-        - ./redisevn/redis-persistent.conf:/usr/local/etc/redis/redis.conf
-        - redis-persistent-data:/data
-      ports:
-        - "6380:6379"
+networks:
+  app_network:
+    driver: bridge    
+   
+  
 
-    # 3. 영구 저장용 레플리카 노드
-  redis-persistent-replica:
-      image: redis:latest
-      container_name: redis-persistent-replica
-      command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-      volumes:
-        - ./redisevn/redis-persistent-replica.conf:/usr/local/etc/redis/redis.conf
-      depends_on:
-        - redis-persistent
-      ports:
-        - "6381:6379"
-
-    # 4. 채팅 노드
-  redis-chat:
-      image: redis:latest
-      container_name: redis-chat
-      command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-      volumes:
-        - ./redisevn/redis-chat.conf:/usr/local/etc/redis/redis.conf
-      ports:
-        - "6382:6379"
-
-    # 5. 채팅 노드 레플리카
-  redis-chat-replica:
-      image: redis:latest
-      container_name: redis-chat-replica
-      command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-      volumes:
-        - ./redisevn/redis-chat-replica.conf:/usr/local/etc/redis/redis.conf
-      depends_on:
-        - redis-chat
-      ports:
-        - "6383:6379"
-  # 4. 토큰 저장 노드
-  redis-token:
-    image: redis:latest
-    container_name: redis-token
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    volumes:
-      - ./redisevn/redis-token.conf:/usr/local/etc/redis/redis.conf
-    ports:
-      - "6384:6379"
-  # 5. 채팅 노드 레플리카
-  redis-token-replica:
-    image: redis:latest
-    container_name: redis-token-replica
-    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-    volumes:
-      - ./redisevn/redis-token-replica.conf:/usr/local/etc/redis/redis.conf
-    depends_on:
-      - redis-token
-    ports:
-      - "6385:6379"
-volumes:
-  redis-persistent-data:
+  
