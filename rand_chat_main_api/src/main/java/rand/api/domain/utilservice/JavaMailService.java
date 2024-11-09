@@ -9,9 +9,8 @@ import org.springframework.stereotype.Service;
 import rand.api.domain.common.repository.InMemRepository;
 import rand.api.domain.common.util.mail.MailUtil;
 import rand.api.domain.common.util.mail.RandomGenerator;
-import rand.api.domain.member.model.EmailAuthSend;
+import rand.api.domain.member.model.Members;
 import rand.api.domain.member.repository.MemberRepository;
-import rand.api.web.exception.custom.BadRequestException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import rand.api.web.exception.custom.InternerServerException;
@@ -30,7 +29,7 @@ public class JavaMailService implements MailService{
 
     @Override
     @Async
-    public void emailSend(EmailAuthSend emailAuth) {
+    public void emailSend(Members members) {
 
         try {
 
@@ -39,7 +38,7 @@ public class JavaMailService implements MailService{
 
             String certificationNumber= RandomGenerator.generateRandomCode(); //랜덤 인증번호 생성
 
-            String email = emailAuth.getEmail();
+            String email = members.getEmail();
 
 
 
@@ -73,5 +72,30 @@ public class JavaMailService implements MailService{
 
     }
 
+    @Override
+    @Async
+    public void emailNewPwdSend(String email , String password) {
+        try {
 
+            MimeMessage message= javaMailSender.createMimeMessage(); //메일링 객체 생성
+            MimeMessageHelper mimeMessageHelper= new MimeMessageHelper(message,true);
+
+
+
+            String htmlContent=MailUtil.getPasswordResetMessage(password); // 이메일로 보낼 html
+
+            mimeMessageHelper.setTo(email);//보낼 상대
+            mimeMessageHelper.setSubject("[Rand_Chat] 임시패스워드 발급메일입니다."); //제목
+            mimeMessageHelper.setText(htmlContent,true);
+            javaMailSender.send(message);//전송
+
+
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            throw new InternerServerException("ERR-EAUTH-CS-01");//이메일 전송 실패
+            // 익셉션 발생 = > 글로벌 핸들러에서잡음
+        }
+
+    }
 }

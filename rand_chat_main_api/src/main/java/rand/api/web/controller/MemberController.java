@@ -8,10 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import rand.api.domain.member.service.MemberService;
 import rand.api.web.dto.common.ResponseDTO;
-import rand.api.web.dto.member.request.EmailAuthCheckDTO;
-import rand.api.web.dto.member.request.EmailAuthSendDTO;
-import rand.api.web.dto.member.request.FindIdDTO;
-import rand.api.web.dto.member.request.JoinDTO;
+import rand.api.web.dto.member.request.*;
 import rand.api.web.dto.member.response.ResFindIdDTO;
 import rand.api.web.exception.custom.BadRequestException;
 
@@ -58,4 +55,14 @@ public class MemberController {
 
         return  memberService.findId(findIdDTO);
     }
+
+    @PutMapping(consumes =  MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ResponseDTO<Void>> resetPwd(@Validated ResetPwdDTO resetPwdDTO){
+
+        return memberService.resetPwd(resetPwdDTO);
+    }
+
+
+
+
 }

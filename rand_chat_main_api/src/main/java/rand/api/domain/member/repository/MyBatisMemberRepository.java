@@ -2,8 +2,6 @@ package rand.api.domain.member.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import rand.api.domain.member.model.EmailAuthSend;
-import rand.api.domain.member.model.FindId;
 import rand.api.domain.member.model.Members;
 import rand.api.domain.member.mapper.MemberMapper;
 import rand.api.web.dto.member.response.ResFindIdDTO;
@@ -15,13 +13,23 @@ public class MyBatisMemberRepository implements MemberRepository{
 
 
     @Override
-    public int emailDuplicateCheckInJoinForm(Members members) {
-        return memberMapper.emailDuplicateCheckInJoinForm(members);
+    public int emailDuplicateCheck(Members members) {
+        return memberMapper.emailDuplicateCheck(members);
     }
 
     @Override
-    public ResFindIdDTO findId(FindId findId) {
-        return memberMapper.findId(findId);
+    public ResFindIdDTO findId(Members members) {
+        return memberMapper.findId(members);
+    }
+
+    @Override
+    public void resetNewPassword(Members members) {
+        memberMapper.resetNewPassword(members);
+    }
+
+    @Override
+    public int findByNnAndEmail(Members members) {
+        return memberMapper.findByNnAndEmail(members);
     }
 
     @Override
@@ -39,9 +47,5 @@ public class MyBatisMemberRepository implements MemberRepository{
         return memberMapper.userNameDuplicateCheck(members);
     }
 
-    //이메일 중복 체크
-    @Override
-    public int emailDuplicateCheck(EmailAuthSend emailAuth) {
-        return memberMapper.emailDuplicateCheck(emailAuth);
-    }
+
 }
