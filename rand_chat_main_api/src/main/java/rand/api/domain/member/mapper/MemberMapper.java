@@ -2,11 +2,16 @@ package rand.api.domain.member.mapper;
 
 
 import org.apache.ibatis.annotations.Mapper;
-import rand.api.domain.member.entity.EmailAuth;
+import rand.api.domain.member.entity.EmailAuthSend;
+import rand.api.domain.member.entity.Members;
 
 @Mapper
 public interface MemberMapper {
     //이메일 중복체크
-    public int emailDuplicateCheck(EmailAuth emailAuth);
+    public int emailDuplicateCheck(EmailAuthSend emailAuth);
+    public int emailDuplicateCheckInJoinForm(Members members);
+    public int userNameDuplicateCheck(Members members);
+    public int nickNameDuplicateCheck(Members members);
+    public void join(Members members);
 
 }

@@ -168,9 +168,9 @@ public class GlobalExceptionHandler {
                     errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_ID;
                 }
                 break;
-            case "name":
+            case "nickName":
                 if (fieldError.getObjectName().equals("joinDTO")) {
-                    errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_NM;
+                    errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_NNM;
                 }
                 break;
             case "password":
@@ -182,13 +182,23 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("joinDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_EMAIL;
                 }
-                if (fieldError.getObjectName().equals("emailAuthDTO")) {
+                if (fieldError.getObjectName().equals("emailAuthSendDTO") || fieldError.getObjectName().equals("emailAuthCheckDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_EMAIL_AUTH;
                 }
                 break;
-            case "phone":
+            case "sex":
                 if (fieldError.getObjectName().equals("joinDTO")) {
-                    errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_PHONE;
+                    errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_SEX;
+                }
+                break;
+            case "birth":
+                if (fieldError.getObjectName().equals("joinDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_BIRTH;
+                }
+                break;
+            case "authCode":
+                if (fieldError.getObjectName().equals("emailAuthCheckDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_EMAIL_AUTH_CODE;
                 }
                 break;
             default:

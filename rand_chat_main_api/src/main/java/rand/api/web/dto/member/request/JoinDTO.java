@@ -1,12 +1,12 @@
 package rand.api.web.dto.member.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
+import rand.api.domain.member.entity.MembersSex;
+
+import java.time.LocalDate;
 
 /*
 회원가입
@@ -45,18 +45,21 @@ public class JoinDTO {
     @Pattern(regexp = "^[^\s][^\s]*$", message = "JoinDTO.이메일은 공백으로 시작하거나 공백을 포함할 수 없음")
     private String email;
 
-    // 휴대폰 번호: 010, 011 등으로 시작해야 하고, 총 11자리 숫자만 허용
-    @NotNull(message = "JoinDTO.휴대폰 번호는 필수 입력 항목입니다.")
-    @Pattern(regexp = "^[^\s][^\s]*$", message = "JoinDTO.핸드폰번호는 공백으로 시작하거나 공백을 포함할 수 없음")
-    @Pattern(regexp = "^(010)\\d{8}$", message = "JoinDTO.휴대폰 번호는 010 시작하며 총 11자리 숫자여야 합니다.")
-    private String phone;
 
-    // 이름: 한국어만 허용, 공백 포함 불가
-    @NotNull(message = "JoinDTO.이름은 필수 입력 항목입니다.")
-    @NotBlank(message = "JoinDTO.이름은 공백일 수 없습니다.")
+
+    // 닉네임: 한국어만 허용, 공백 포함 불가 3~15
+    @NotNull(message = "JoinDTO.닉네임은 필수 입력 항목입니다.")
+    @NotBlank(message = "JoinDTO.닉네임은 공백일 수 없습니다.")
     @Pattern(regexp = "^[^\s][^\s]*$", message = "JoinDTO.이름은 공백으로 시작하거나 공백을 포함할 수 없음")
     @Pattern(regexp = "^[가-힣]+$", message = "JoinDTO.이름은 한글만 입력할 수 있습니다.")
-    private String name;
+    @Size(min = 3, max = 15)
+    private String nickName;
 
+
+    private MembersSex sex;
+
+    @Past(message = "JoinDTO.생일은 과거이여야 합니다")
+    @NotNull(message = "JoinDTO.생일은 필수 입력 항목입니다.")
+    private LocalDate birth;
 
 }
