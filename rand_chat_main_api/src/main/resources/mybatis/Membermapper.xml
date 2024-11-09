@@ -4,16 +4,9 @@
 <mapper namespace="rand.api.domain.member.mapper.MemberMapper">
 
 
-    <select id="emailDuplicateCheck" parameterType="EmailAuthSend" resultType="int">
-        /* Membermapper.xml.emailDuplicateCheck 이메일인증코드 발송 전 중복체크 */
-        SELECT  COUNT(usr_id)
-                FROM MEMBERS
-        WHERE email = #{email}
-    </select>
 
-
-    <select id="emailDuplicateCheckInJoinForm" parameterType="Members" resultType="int">
-        /* Membermapper.xml.emailDuplicateCheckInJoinForm 회원가입 전  이메일 중복체크 */
+    <select id="emailDuplicateCheck" parameterType="Members" resultType="int">
+        /* Membermapper.xml.emailDuplicateCheckInJoinForm  이메일 개수 리턴 By email */
         SELECT  COUNT(usr_id)
         FROM MEMBERS
         WHERE email = #{email}
@@ -21,14 +14,14 @@
 
 
     <select id="userNameDuplicateCheck" parameterType="Members" resultType="int">
-        /* Membermapper.xml.userNameDuplicateCheck 회원가입 전  아이디 중복체크 */
+        /* Membermapper.xml.userNameDuplicateCheck  아이디 개수 리턴 By username*/
         SELECT  COUNT(usr_id)
         FROM MEMBERS
         WHERE username = #{username}
     </select>
 
     <select id="nickNameDuplicateCheck" parameterType="Members" resultType="int">
-        /* Membermapper.xml.nickNameDuplicateCheck 회원가입 전  닉네임 중복체크 */
+        /* Membermapper.xml.nickNameDuplicateCheck 닉네임 개수 리턴 By nickName */
         SELECT  COUNT(usr_id)
         FROM MEMBERS
         WHERE nick_name = #{nickName}
@@ -48,7 +41,7 @@
     </insert>
 
 
-    <select id="findId" parameterType="FindId" resultType="ResFindIdDTO">
+    <select id="findId" parameterType="Members" resultType="ResFindIdDTO">
         /* Membermapper.xml.FindId 아이디 찾기 */
        SELECT CONCAT(SUBSTRING(username, 1, LENGTH(username) - 4), '****') AS username
          FROM MEMBERS
@@ -56,5 +49,21 @@
           AND email = #{email}
           AND nick_name = #{nickName}
     </select>
+
+    <select id="findByNnAndEmail" parameterType="Members" resultType="int">
+        /* Membermapper.xml.emailDuplicateCheckInJoinForm  회원정보개수 리턴 By email and Nickname  */
+         SELECT COUNT(usr_id)
+           FROM MEMBERS
+          WHERE 1=1
+            AND email = #{email}
+            AND nick_name = #{nickName}
+
+    </select>
+
+    <update id="resetNewPassword" parameterType="Members">
+        UPDATE MEMBERS SET
+               password = #{password}
+         WHERE email = #{email}
+    </update>
 
 </mapper>

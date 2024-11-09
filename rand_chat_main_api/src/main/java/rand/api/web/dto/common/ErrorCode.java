@@ -35,6 +35,11 @@ public enum ErrorCode {
     VALIDATAION_FAIL_FIND_ID_EMAIL(400, "ERR-VALID-MEM-09", "올바른 이메일 형식이 아닙니다."),
     VALIDATAION_FAIL_FIND_ID_NNM(400, "ERR-VALID-MEM-10", "닉네임은 4~14자 한글만 가능합니다."),
 
+
+    //비밀번호 초기화 관련 에러코드
+    VALIDATAION_FAIL_RESET_PWD_EMAIL(400, "ERR-VALID-MEM-11", "올바른 이메일 형식이 아닙니다."),
+    VALIDATAION_FAIL_RESET_PWD_NNM(400, "ERR-VALID-MEM-12", "닉네임은 4~14자 한글만 가능합니다."),
+
     //사용자 정의 에러코드
 
     //회원 관련 에러코드
@@ -43,7 +48,7 @@ public enum ErrorCode {
     NICK_NAME_DUPLICATE(400, "ERR-JOIN-CS-02", "중복된 닉네임 입니다."),
     USER_NAME_DUPLICATE(400, "ERR-JOIN-CS-03", "중복된 아이디 입니다."),
 
-    //이메일 인증 관련
+    //이메일 전송 관련
     EMAIL_SEND_FAIL(500, "ERR-EAUTH-CS-01", "이메일 전송에 실패하였습니다. 관리자에게 문의하세요."),
 
     NOT_SEND_OR_EXPIRED_EMAIL_AUTHCODE(400, "ERR-EAUTH-CS-02", "인증 이메일을 보내지 않았거나 만료된 인증코드입니다."),
@@ -54,8 +59,10 @@ public enum ErrorCode {
     CANT_ACCESS_JOIN(400, "ERR-EAUTH-CS-05", "인증이 만료되었습니다. 이메일 인증을 다시 해주세요."),
 
     //아이디 찾기 관련 에러코드
-    NO_DATA_FROM_FIND_ID(400,"ERR-EAUTH-CS-06","등록된 아이디가 없습니다.");
+    NO_DATA_FROM_FIND_ID(400,"ERR-EAUTH-CS-06","등록된 아이디가 없습니다."),
 
+    //비밀번호 초기화 관련 에러코드
+    NO_DATA_FROM_PWD_RESET(400,"ERR-EAUTH-CS-07","등록된 정보가 없습니다.");
     private final int status;
     private final String code;
     private final String message;

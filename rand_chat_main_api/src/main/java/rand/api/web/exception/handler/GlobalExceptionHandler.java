@@ -175,6 +175,9 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("findIdDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_FIND_ID_NNM;
                 }
+                if (fieldError.getObjectName().equals("resetPwdDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_RESET_PWD_NNM;
+                }
                 break;
             case "password":
                 if (fieldError.getObjectName().equals("joinDTO")) {
@@ -190,6 +193,9 @@ public class GlobalExceptionHandler {
                 }
                 if (fieldError.getObjectName().equals("findIdDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_FIND_ID_EMAIL;
+                }
+                if (fieldError.getObjectName().equals("resetPwdDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_RESET_PWD_EMAIL;
                 }
 
                 break;
