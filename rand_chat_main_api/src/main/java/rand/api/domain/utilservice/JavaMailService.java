@@ -6,14 +6,16 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import rand.api.domain.common.repository.InMemRepository;
 import rand.api.domain.common.util.mail.MailUtil;
 import rand.api.domain.common.util.mail.RandomGenerator;
-import rand.api.domain.member.entity.EmailAuth;
-import rand.api.domain.member.repository.MemberInMemRepository;
+import rand.api.domain.member.entity.EmailAuthSend;
 import rand.api.domain.member.repository.MemberRepository;
 import rand.api.web.exception.custom.BadRequestException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -23,11 +25,11 @@ public class JavaMailService implements MailService{
     private final JavaMailSender javaMailSender;
     private final MemberRepository memberRepository;//멤버관련 레파지토리
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final MemberInMemRepository memberInMemRepository;
+    private final InMemRepository inMemRepository;
 
     @Override
     @Async
-    public void emailSend(EmailAuth emailAuth) {
+    public void emailSend(EmailAuthSend emailAuth) {
 
         try {
 
@@ -44,21 +46,25 @@ public class JavaMailService implements MailService{
             String htmlContent= MailUtil.getCertificationMessage(certificationNumber); // 이메일로 보낼 html
 
             mimeMessageHelper.setTo(email);//보낼 상대
-            mimeMessageHelper.setSubject("[Shabby] 회원가입 인증코드입니다."); //제목
+            mimeMessageHelper.setSubject("[Rand_Chat] 회원가입 인증코드입니다."); //제목
             mimeMessageHelper.setText(htmlContent,true);
 
             javaMailSender.send(message);//전송
-            String redisKey = "cache:"+email+":auth";
+            String redisKey = email+":authCd"; //이메일인증코드 키
 //            RedisConnection connection = ((RedisRoutingConfig.DynamicRedisConnectionFactory) redisTemplate.getConnectionFactory()).getConnection(redisKey);
 //            // 이제 해당 연결로 Redis 작업 수행
 //            connection.set(new StringRedisSerializer().serialize(redisKey), new GenericJackson2JsonRedisSerializer().serialize(certificationNumber));
 
-            memberInMemRepository.emailAuthCodeSave(redisKey,certificationNumber,3L);
+
+            certificationNumber=  bCryptPasswordEncoder.encode(certificationNumber);
+
+            inMemRepository.save(redisKey,certificationNumber,3L, TimeUnit.MINUTES);
+
 
         } catch (MessagingException e) {
             // TODO Auto-generated catch block
             //기타 에러
-            throw new BadRequestException("ERR-MEM-CUS-02");//사용자 정의 400에러 발생
+            throw new BadRequestException("ERR-EAUTH-CS-01");//사용자 정의 400에러 발생
         }
 
 
@@ -66,8 +72,5 @@ public class JavaMailService implements MailService{
 
     }
 
-    @Override
-    public boolean emailAuthValidation(EmailAuth emailAuth, String code) {
-        return false;
-    }
+
 }
