@@ -9,11 +9,12 @@ import org.springframework.stereotype.Service;
 import rand.api.domain.common.repository.InMemRepository;
 import rand.api.domain.common.util.mail.MailUtil;
 import rand.api.domain.common.util.mail.RandomGenerator;
-import rand.api.domain.member.entity.EmailAuthSend;
+import rand.api.domain.member.model.EmailAuthSend;
 import rand.api.domain.member.repository.MemberRepository;
 import rand.api.web.exception.custom.BadRequestException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import rand.api.web.exception.custom.InternerServerException;
 
 import java.util.concurrent.TimeUnit;
 
@@ -64,7 +65,7 @@ public class JavaMailService implements MailService{
         } catch (MessagingException e) {
             // TODO Auto-generated catch block
             //기타 에러
-            throw new BadRequestException("ERR-EAUTH-CS-01");//사용자 정의 400에러 발생
+            throw new InternerServerException("ERR-EAUTH-CS-01");//사용자 정의 400에러 발생
         }
 
 

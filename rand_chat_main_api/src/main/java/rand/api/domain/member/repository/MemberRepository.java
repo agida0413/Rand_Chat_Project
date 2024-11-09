@@ -1,7 +1,9 @@
 package rand.api.domain.member.repository;
 
-import rand.api.domain.member.entity.EmailAuthSend;
-import rand.api.domain.member.entity.Members;
+import rand.api.domain.member.model.EmailAuthSend;
+import rand.api.domain.member.model.FindId;
+import rand.api.domain.member.model.Members;
+import rand.api.web.dto.member.response.ResFindIdDTO;
 
 public interface MemberRepository {
 
@@ -11,4 +13,5 @@ public interface MemberRepository {
     public int userNameDuplicateCheck(Members members);
     public int nickNameDuplicateCheck(Members members);
     public void join(Members members);
+    public ResFindIdDTO findId(FindId findId);
 }

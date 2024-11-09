@@ -47,4 +47,14 @@
               )
     </insert>
 
+
+    <select id="findId" parameterType="FindId" resultType="ResFindIdDTO">
+        /* Membermapper.xml.FindId 아이디 찾기 */
+       SELECT CONCAT(SUBSTRING(username, 1, LENGTH(username) - 4), '****') AS username
+         FROM MEMBERS
+        WHERE 1=1
+          AND email = #{email}
+          AND nick_name = #{nickName}
+    </select>
+
 </mapper>

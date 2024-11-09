@@ -3,8 +3,7 @@ package rand.api.web.dto.member.request;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Range;
-import rand.api.domain.member.entity.MembersSex;
+import rand.api.domain.member.model.cons.MembersSex;
 
 import java.time.LocalDate;
 
@@ -26,7 +25,7 @@ public class JoinDTO {
     @NotNull(message = "JoinDTO.아이디는 필수 입력 항목입니다.")
     @Pattern(regexp = "^[^\s][^\s]*$", message = "JoinDTO.아이디는 공백으로 시작하거나 공백을 포함할 수 없음")
     @NotBlank(message = "JoinDTO.아이디는 공백일 수 없습니다.")
-    @Size(min = 4, max = 16, message = "JoinDTO.아이디는 4~16자여야 합니다.")
+    @Size(min = 8, max = 16, message = "JoinDTO.아이디는 8~16자여야 합니다.")
     private String username;
 
     // 비밀번호: 8~16자, 최소 하나의 문자, 특수문자, 숫자 포함, 공백 포함 불가

@@ -172,6 +172,9 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("joinDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_NNM;
                 }
+                if (fieldError.getObjectName().equals("findIdDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_FIND_ID_NNM;
+                }
                 break;
             case "password":
                 if (fieldError.getObjectName().equals("joinDTO")) {
@@ -185,6 +188,10 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("emailAuthSendDTO") || fieldError.getObjectName().equals("emailAuthCheckDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_EMAIL_AUTH;
                 }
+                if (fieldError.getObjectName().equals("findIdDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_FIND_ID_EMAIL;
+                }
+
                 break;
             case "sex":
                 if (fieldError.getObjectName().equals("joinDTO")) {

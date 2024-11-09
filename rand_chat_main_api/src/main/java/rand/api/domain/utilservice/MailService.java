@@ -1,6 +1,6 @@
 package rand.api.domain.utilservice;
 
-import rand.api.domain.member.entity.EmailAuthSend;
+import rand.api.domain.member.model.EmailAuthSend;
 
 public interface MailService {
     //이메일 인증코드 보내기 서비스 -- > 코드리턴

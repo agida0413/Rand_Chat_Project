@@ -1,7 +1,5 @@
 package rand.api.domain.member.service;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,15 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import rand.api.domain.common.repository.InMemRepository;
-import rand.api.domain.member.entity.EmailAuthCheck;
-import rand.api.domain.member.entity.EmailAuthSend;
-import rand.api.domain.member.entity.Members;
+import rand.api.domain.member.model.EmailAuthCheck;
+import rand.api.domain.member.model.EmailAuthSend;
+import rand.api.domain.member.model.FindId;
+import rand.api.domain.member.model.Members;
 import rand.api.domain.member.repository.MemberRepository;
 import rand.api.domain.utilservice.MailService;
 import rand.api.web.dto.common.ResponseDTO;
 import rand.api.web.dto.member.request.EmailAuthCheckDTO;
 import rand.api.web.dto.member.request.EmailAuthSendDTO;
+import rand.api.web.dto.member.request.FindIdDTO;
 import rand.api.web.dto.member.request.JoinDTO;
+import rand.api.web.dto.member.response.ResFindIdDTO;
 import rand.api.web.exception.custom.BadRequestException;
 
 import java.util.concurrent.TimeUnit;
@@ -79,6 +80,22 @@ public class MemberServiceImpl implements MemberService{
 
 
         return ResponseEntity.ok(new ResponseDTO<Void>(null));
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<ResFindIdDTO>> findId(FindIdDTO findIdDTO) {
+        FindId findId = new FindId(findIdDTO);
+
+        ResFindIdDTO resFindIdDTO = memberRepository.findId(findId);
+        if(resFindIdDTO==null){
+            throw new BadRequestException("ERR-EAUTH-CS-06"); //등록된 아이디가 없다는 예외
+        }
+
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseDTO<ResFindIdDTO>(resFindIdDTO));
+
     }
 
     @Override

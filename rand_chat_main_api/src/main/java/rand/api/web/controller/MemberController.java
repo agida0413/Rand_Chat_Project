@@ -5,15 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import rand.api.domain.member.service.MemberService;
 import rand.api.web.dto.common.ResponseDTO;
 import rand.api.web.dto.member.request.EmailAuthCheckDTO;
 import rand.api.web.dto.member.request.EmailAuthSendDTO;
+import rand.api.web.dto.member.request.FindIdDTO;
 import rand.api.web.dto.member.request.JoinDTO;
+import rand.api.web.dto.member.response.ResFindIdDTO;
 import rand.api.web.exception.custom.BadRequestException;
 
 @Slf4j
@@ -51,8 +50,12 @@ public class MemberController {
         log.info("joindto={}",joinDTO.getUsername());
         log.info("joindto={}",joinDTO.getPassword());
 
-
         return memberService.join(joinDTO);
         }
 
+    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseDTO<ResFindIdDTO>> findId(@Validated @RequestBody FindIdDTO findIdDTO){
+
+        return  memberService.findId(findIdDTO);
+    }
 }
