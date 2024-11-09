@@ -2,9 +2,11 @@ package rand.api.domain.member.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import rand.api.domain.member.entity.EmailAuthSend;
-import rand.api.domain.member.entity.Members;
+import rand.api.domain.member.model.EmailAuthSend;
+import rand.api.domain.member.model.FindId;
+import rand.api.domain.member.model.Members;
 import rand.api.domain.member.mapper.MemberMapper;
+import rand.api.web.dto.member.response.ResFindIdDTO;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,6 +17,11 @@ public class MyBatisMemberRepository implements MemberRepository{
     @Override
     public int emailDuplicateCheckInJoinForm(Members members) {
         return memberMapper.emailDuplicateCheckInJoinForm(members);
+    }
+
+    @Override
+    public ResFindIdDTO findId(FindId findId) {
+        return memberMapper.findId(findId);
     }
 
     @Override
