@@ -1,7 +1,10 @@
 package rand.api.domain.common.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.TimeUnit;
@@ -22,6 +25,35 @@ public class RedisRepositroy  implements InMemRepository  {
         redisTemplate.opsForValue().increment(key,incrementVal);
 
         redisTemplate.expire(key,ttl,timeUnit);
+    }
+
+    @Override
+    public boolean scan(String key, String value) {
+        RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
+
+        // 키를 매칭하는 ScanOptions 생성 (key 패턴을 지정)
+        ScanOptions options = ScanOptions.scanOptions().match(key).build();
+
+        Cursor<byte[]> cursor = connection.scan(options);
+
+        try {
+            while (cursor.hasNext()) {
+                byte[] resultKey = cursor.next(); // 커서로부터 키를 가져옵니다.
+                String resultKeyString = new String(resultKey); // byte[]를 String으로 변환
+
+                // 키에 해당하는 값을 Redis에서 가져옵니다.
+                String storedValue = (String)redisTemplate.opsForValue().get(resultKeyString);
+
+                // 값이 null이 아니고 주어진 value와 일치하면 true 반환
+                if (storedValue != null && storedValue.equals(value)) {
+                    return true; // 해당 값이 존재하면 true
+                }
+            }
+        } finally {
+            cursor.close(); // Cursor 자원 해제
+        }
+
+        return false; // 주어진 값과 일치하는 키가 없다면 false 반환
     }
 
     @Override

@@ -11,6 +11,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import rand.api.domain.member.repository.MemberRepository;
+import rand.api.web.security.filter.LoginFilter;
+import rand.api.web.security.jwt.JWTUtil;
+import rand.api.web.security.service.TokenService;
 
 @Configuration
 @EnableWebSecurity
@@ -19,11 +24,9 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     //JWTUtil 주입
-   // private final JWTUtil jwtUtil;
-    //액세스 토큰 재발급 서비스
-//    private final RefreshService refreshService;
-//    private final MemberAccountRepository memberAccountRepository;
-    //jackson objectmapper
+    private final JWTUtil jwtUtil;
+    private final TokenService tokenService;
+    private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
 
 
@@ -47,12 +50,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 
-
-
         http
                 .csrf((auth) -> auth.disable()); //jwt 사용으로 인한 disable
-
-
 
         http
                 .formLogin((auth) -> auth.disable()); //jwt사용으로 인한 기본로그인폼  x
@@ -71,9 +70,9 @@ public class SecurityConfig {
 //                .addFilterBefore(new JWTFilter(jwtUtil,objectMapper,memberAccountRepository), LoginFilter.class);
 
 
-//        // 로그인필터를  UsernamePasswordAuthenticationFilter 위치에
-//        http
-//                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,refreshService,objectMapper), UsernamePasswordAuthenticationFilter.class);
+        // 로그인필터를  UsernamePasswordAuthenticationFilter 위치에
+       http
+               .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,tokenService,objectMapper,memberRepository), UsernamePasswordAuthenticationFilter.class);
 
 //        //커스텀한 로그아웃 필터를 등록 =>기존 필터위치에
 //        http

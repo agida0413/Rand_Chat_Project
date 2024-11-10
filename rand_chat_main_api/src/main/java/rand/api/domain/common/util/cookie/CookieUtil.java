@@ -38,6 +38,17 @@ public  final class CookieUtil {
         headerAdd(httpHeaders,cookie);
     }
 
+    public static Cookie createCookie(String key, String value, int age) {//저장할 쿠키의 키값과 밸류를 매개변수로 받음
+
+        Cookie cookie = new Cookie(key, value); // 매개변수로 부터 받은 정보를 바탕으로 쿠키 생성
+        cookie.setMaxAge(age); // 유효기간
+        //cookie.setSecure(true); https
+        cookie.setPath("/");
+        cookie.setHttpOnly(true); //xss 공격방지
+
+        return  cookie;
+    }
+
     //쿠키제거 메서드
     public static void deleteRefreshCookie(String key, HttpHeaders httpHeaders) {//리프레시 토큰을 쿠키에서 지우기 위함
         Cookie cookie = new Cookie(key, null); // 리프레시 토큰의 밸류룰 null

@@ -2,8 +2,10 @@ package rand.api.domain.member.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import rand.api.domain.member.model.Members;
 import rand.api.domain.member.mapper.MemberMapper;
+import rand.api.domain.member.model.cons.MembersState;
 import rand.api.web.dto.member.response.ResFindIdDTO;
 
 @Repository
@@ -18,6 +20,11 @@ public class MyBatisMemberRepository implements MemberRepository{
     }
 
     @Override
+    public Members findByUsername(String username) {
+        return memberMapper.findByUsername(username);
+    }
+
+    @Override
     public void activationMem(Members members) {
         memberMapper.activationMem(members);
     }
@@ -25,6 +32,19 @@ public class MyBatisMemberRepository implements MemberRepository{
     @Override
     public int emailDuplicateCheck(Members members) {
         return memberMapper.emailDuplicateCheck(members);
+    }
+
+    @Override
+    @Transactional
+    public void pwdWrongUpdate(String username) {
+        Members findMembers = findByUsername(username);
+        if(findMembers!=null){
+            memberMapper.pwdWrongUpdate(username);
+
+            if(findMembers.getState().equals(MembersState.ACTIVE) && findMembers.getPwdWrong() >= 4){
+                memberMapper.memberStateLock(findMembers.getUsername());
+            }
+        }
     }
 
     @Override
