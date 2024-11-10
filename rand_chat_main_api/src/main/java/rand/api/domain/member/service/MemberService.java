@@ -17,4 +17,7 @@ public interface MemberService {
 
     public ResponseEntity<ResponseDTO<Void>> resetPwd(ResetPwdDTO pwdDTO);
 
+    public ResponseEntity<ResponseDTO<Void>> emailUnlockAccountSend(UnlockAccountDTO unlockAccountDTO);
+    public ResponseEntity<ResponseDTO<Void>> emailUnlockAccount(UnlockAccountChkDTO unlockAccountChkDTO);
+
 }

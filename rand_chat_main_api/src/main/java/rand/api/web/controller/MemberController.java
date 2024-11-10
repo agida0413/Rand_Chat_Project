@@ -37,6 +37,7 @@ public class MemberController {
         return memberService.emailAuthCheck(emailAuthCheckDTO);
     }
 
+    //회원가입
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<ResponseDTO<Void>> join(@Validated JoinDTO joinDTO ){
 
@@ -49,20 +50,29 @@ public class MemberController {
 
         return memberService.join(joinDTO);
         }
-
+    //아이디 찾기
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDTO<ResFindIdDTO>> findId(@Validated @RequestBody FindIdDTO findIdDTO){
 
         return  memberService.findId(findIdDTO);
     }
-
+    //비밀번호 초기화 이메일 발송 , 업데이트
     @PutMapping(consumes =  MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<ResponseDTO<Void>> resetPwd(@Validated ResetPwdDTO resetPwdDTO){
 
         return memberService.resetPwd(resetPwdDTO);
     }
+    //비활성화 , 잠금계정 활성화 인증코드 보내기
+    @PostMapping(value = "/unlock",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ResponseDTO<Void>> unlockAccountEmailSend(@Validated UnlockAccountDTO unlockAccountDTO){
 
+        return memberService.emailUnlockAccountSend(unlockAccountDTO);
+    }
 
+    //비활성화 , 잠금계정 활성화 인증코드 검증 및 활성화 수행
+    @PutMapping(value = "/unlock",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ResponseDTO<Void>> unlockAccount(@Validated UnlockAccountChkDTO unlockAccountChkDTO){
 
-
+        return memberService.emailUnlockAccount(unlockAccountChkDTO);
+    }
 }

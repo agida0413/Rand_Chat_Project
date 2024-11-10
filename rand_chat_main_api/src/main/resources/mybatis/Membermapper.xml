@@ -4,7 +4,6 @@
 <mapper namespace="rand.api.domain.member.mapper.MemberMapper">
 
 
-
     <select id="emailDuplicateCheck" parameterType="Members" resultType="int">
         /* Membermapper.xml.emailDuplicateCheckInJoinForm  이메일 개수 리턴 By email */
         SELECT  COUNT(usr_id)
@@ -51,7 +50,7 @@
     </select>
 
     <select id="findByNnAndEmail" parameterType="Members" resultType="int">
-        /* Membermapper.xml.emailDuplicateCheckInJoinForm  회원정보개수 리턴 By email and Nickname  */
+        /* Membermapper.xml.findByNnAndEmail  회원정보개수 리턴 By email and Nickname  */
          SELECT COUNT(usr_id)
            FROM MEMBERS
           WHERE 1=1
@@ -61,8 +60,39 @@
     </select>
 
     <update id="resetNewPassword" parameterType="Members">
+        /* Membermapper.xml.resetNewPassword 새 비밀번호 업데이트  */
         UPDATE MEMBERS SET
                password = #{password}
+         WHERE email = #{email}
+    </update>
+
+    <select id="findByUsrAndEmail" parameterType="Members" resultType="Members">
+        /* Membermapper.xml.findByUsrAndEmail  회원정보 리턴 By email and username  */
+        SELECT  email
+              , password
+              , state
+           FROM MEMBERS
+          WHERE 1=1
+            AND email = #{email}
+            AND username = #{username}
+    </select>
+
+
+    <select id="findByEmail" parameterType="Members" resultType="Members">
+        /* Membermapper.xml.findByEmail  회원정보 리턴 By email   */
+        SELECT  email
+              , password
+              , state
+           FROM MEMBERS
+          WHERE 1=1
+            AND email = #{email}
+
+    </select>
+
+
+    <update id="activationMem" parameterType="Members">
+        UPDATE MEMBERS SET
+               state = #{state}
          WHERE email = #{email}
     </update>
 

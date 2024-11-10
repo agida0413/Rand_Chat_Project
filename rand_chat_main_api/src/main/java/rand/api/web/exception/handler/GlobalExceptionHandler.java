@@ -167,6 +167,9 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("joinDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_ID;
                 }
+                if (fieldError.getObjectName().equals("unlockAccountDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_UNLOCK_ACCOUNT_USERNAME;
+                }
                 break;
             case "nickName":
                 if (fieldError.getObjectName().equals("joinDTO")) {
@@ -183,6 +186,9 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("joinDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_PWD;
                 }
+                if (fieldError.getObjectName().equals("unlockAccountDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_UNLOCK_ACCOUNT_PWD;
+                }
                 break;
             case "email":
                 if (fieldError.getObjectName().equals("joinDTO")) {
@@ -197,6 +203,10 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("resetPwdDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_RESET_PWD_EMAIL;
                 }
+                if (fieldError.getObjectName().equals("unlockAccountDTO") || fieldError.getObjectName().equals("unlockAccountChkDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_UNLOCK_ACCOUNT_EMAIL;
+                }
+
 
                 break;
             case "sex":
@@ -210,7 +220,7 @@ public class GlobalExceptionHandler {
                 }
                 break;
             case "authCode":
-                if (fieldError.getObjectName().equals("emailAuthCheckDTO")) {
+                if (fieldError.getObjectName().equals("emailAuthCheckDTO") || fieldError.getObjectName().equals("unlockAccountChkDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_EMAIL_AUTH_CODE;
                 }
                 break;
