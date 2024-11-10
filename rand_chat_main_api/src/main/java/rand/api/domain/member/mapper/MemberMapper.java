@@ -15,4 +15,7 @@ public interface MemberMapper {
     public ResFindIdDTO findId(Members members);
     public int findByNnAndEmail(Members members);
     public void resetNewPassword(Members members);
+    public Members findByUsrAndEmail(Members members);
+    public Members findByEmail(Members members);
+    public void activationMem(Members members);
 }

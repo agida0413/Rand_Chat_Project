@@ -40,6 +40,11 @@ public enum ErrorCode {
     VALIDATAION_FAIL_RESET_PWD_EMAIL(400, "ERR-VALID-MEM-11", "올바른 이메일 형식이 아닙니다."),
     VALIDATAION_FAIL_RESET_PWD_NNM(400, "ERR-VALID-MEM-12", "닉네임은 4~14자 한글만 가능합니다."),
 
+
+    //계정 상태 활성화 관련 에러코드
+    VALIDATAION_FAIL_UNLOCK_ACCOUNT_EMAIL(400, "ERR-VALID-MEM-13", "올바른 이메일 형식이 아닙니다."),
+    VALIDATAION_FAIL_UNLOCK_ACCOUNT_PWD(400, "ERR-VALID-MEM-14", "비밀번호는 공백일 수 없습니다."),
+    VALIDATAION_FAIL_UNLOCK_ACCOUNT_USERNAME(400, "ERR-VALID-MEM-15", "아이디는 공백일 수 없습니다."),
     //사용자 정의 에러코드
 
     //회원 관련 에러코드
@@ -59,13 +64,20 @@ public enum ErrorCode {
     CANT_ACCESS_JOIN(400, "ERR-EAUTH-CS-05", "인증이 만료되었습니다. 이메일 인증을 다시 해주세요."),
 
     //아이디 찾기 관련 에러코드
-    NO_DATA_FROM_FIND_ID(400,"ERR-EAUTH-CS-06","등록된 아이디가 없습니다."),
+    NO_DATA_FROM_MEMBER_BY_ID(400,"ERR-EAUTH-CS-06","등록된 아이디가 없습니다."),
 
     //비밀번호 초기화 관련 에러코드
-    NO_DATA_FROM_PWD_RESET(400,"ERR-EAUTH-CS-07","등록된 정보가 없습니다.");
+    NO_DATA_FROM_MEMBER_BY_INFO(400,"ERR-EAUTH-CS-07","등록된 정보가 없습니다."),
+
+
+    NO_MATCH_PWD_FROM_MEMBER(400,"ERR-EAUTH-CS-09","비밀번호가 일치하지 않습니다."),
+    ALREADY_ACTIVE_FROM_MEMBER(400,"ERR-EAUTH-CS-10","이미 계정이 활성화 상태이거나 존재하지 않는 계정입니다.");
+
+
     private final int status;
     private final String code;
     private final String message;
+
 
 
 

@@ -27,7 +27,7 @@ private MembersSex sex;
 private LocalDate birth;
 
 //엔티티 컬럼 외 정보
-private String authCode;
+private String authCode; // 인증코드 ( 이메일 )
     //회원가입
     public Members(JoinDTO joinDTO) {
         this.username = joinDTO.getUsername();
@@ -37,7 +37,10 @@ private String authCode;
         this.sex = joinDTO.getSex();
         this.birth = joinDTO.getBirth();
     }
-    
+
+    public Members() {
+    }
+
     //아이디 찾기
     public Members(FindIdDTO findIdDTO) {
         
@@ -66,5 +69,16 @@ private String authCode;
     public Members(ResetPwdDTO resetPwdDTO){
         this.email = resetPwdDTO.getEmail();
         this.nickName = resetPwdDTO.getNickName();
+    }
+
+    public  Members(UnlockAccountDTO unlockAccountDTO){
+        this.email = unlockAccountDTO.getEmail();
+        this.username = unlockAccountDTO.getUsername();
+        this.password = unlockAccountDTO.getPassword();
+    }
+
+    public  Members(UnlockAccountChkDTO unlockAccountChkDTO){
+        this.email = unlockAccountChkDTO.getEmail();;
+        this.authCode = unlockAccountChkDTO.getAuthCode();
     }
 }

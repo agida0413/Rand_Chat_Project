@@ -13,6 +13,16 @@ public class MyBatisMemberRepository implements MemberRepository{
 
 
     @Override
+    public Members findByEmail(Members members) {
+        return memberMapper.findByEmail(members);
+    }
+
+    @Override
+    public void activationMem(Members members) {
+        memberMapper.activationMem(members);
+    }
+
+    @Override
     public int emailDuplicateCheck(Members members) {
         return memberMapper.emailDuplicateCheck(members);
     }
@@ -20,6 +30,11 @@ public class MyBatisMemberRepository implements MemberRepository{
     @Override
     public ResFindIdDTO findId(Members members) {
         return memberMapper.findId(members);
+    }
+
+    @Override
+    public Members findByUsrAndEmail(Members members) {
+        return memberMapper.findByUsrAndEmail(members);
     }
 
     @Override
