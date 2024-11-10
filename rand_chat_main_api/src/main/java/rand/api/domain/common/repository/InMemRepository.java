@@ -19,7 +19,7 @@ public interface InMemRepository {
 
 
     //Read
-
+    public boolean scan(String key , String value);
     public Object getValue(String key);
     public Object getHashValue(String key,String hashKey);
 //    public T getListRange(String key,int start,int end);

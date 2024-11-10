@@ -18,4 +18,7 @@ public interface MemberMapper {
     public Members findByUsrAndEmail(Members members);
     public Members findByEmail(Members members);
     public void activationMem(Members members);
+    public Members findByUsername(String username);
+    public void pwdWrongUpdate(String username);
+    public void memberStateLock(String username);
 }

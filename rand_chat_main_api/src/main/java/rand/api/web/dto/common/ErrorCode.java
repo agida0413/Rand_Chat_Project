@@ -71,7 +71,15 @@ public enum ErrorCode {
 
 
     NO_MATCH_PWD_FROM_MEMBER(400,"ERR-EAUTH-CS-09","비밀번호가 일치하지 않습니다."),
-    ALREADY_ACTIVE_FROM_MEMBER(400,"ERR-EAUTH-CS-10","이미 계정이 활성화 상태이거나 존재하지 않는 계정입니다.");
+    ALREADY_ACTIVE_FROM_MEMBER(400,"ERR-EAUTH-CS-10","이미 계정이 활성화 상태이거나 존재하지 않는 계정입니다."),
+
+
+    //시큐리티
+    SEC_LOGIN_FAIL(401,"ERR-SEC-01","입력한 정보가 일치하지 않습니다"),
+    SEC_LOGIN_INPUT_NULL(400,"ERR-SEC-02","아이디, 비밀번호를 입력해주세요."),
+    SEC_LOGIN_THIS_SUSPEND_MEM(401,"ERR-SEC-03","탈퇴한 계정입니다."),
+    SEC_LOGIN_THIS_LOCK_MEM(401,"ERR-SEC-04","잠긴 계정입니다.(패스워드 5회 미일치) 계정을 활성화 해주세요."),
+    SEC_LOGIN_THIS_INACTIVE_MEM(401,"ERR-SEC-05","비 활성화 계정입니다. 계정을 활성화 해주세요.");
 
 
     private final int status;

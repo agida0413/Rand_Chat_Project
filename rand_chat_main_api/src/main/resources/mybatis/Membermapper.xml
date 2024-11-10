@@ -91,9 +91,42 @@
 
 
     <update id="activationMem" parameterType="Members">
+        /* Membermapper.xml.activationMem  계정 활성화 */
         UPDATE MEMBERS SET
                state = #{state}
          WHERE email = #{email}
     </update>
 
+
+    <select id="findByUsername" parameterType="String" resultType="Members">
+        /* Membermapper.xml.findByUsername  회원 전체 정보 리턴 by username */
+        SELECT usr_id
+             , username
+             , password
+             , email
+             , nick_name
+             , pwd_wrong
+             , state
+             , profile_img
+             , locale_lat
+             , locale_lon
+             , sex
+             , birth
+          FROM MEMBERS
+         WHERE 1=1
+           AND username = #{username}
+    </select>
+
+
+    <update id="pwdWrongUpdate" parameterType="String">
+        UPDATE MEMBERS SET
+               pwd_wrong = pwd_wrong + 1
+         WHERE username = #{username}
+    </update>
+
+    <update id="memberStateLock" parameterType="String">
+        UPDATE MEMBERS SET
+               state = 'LOCKED'
+        WHERE username = #{username}
+    </update>
 </mapper>
