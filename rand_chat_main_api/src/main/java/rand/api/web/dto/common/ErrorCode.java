@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 public enum ErrorCode {
     //최상위 공통 에러
     COMMON_UNPREDICTABLE_ERROR(500, "ERR-CMN-01", "서버 내부 오류입니다. 관리자에게 문의하세요."),
+    //쿠키 추출에러
+    COMMON_COOKIE_ERROR(500, "ERR-CMN-02", "서버 내부 오류입니다. 관리자에게 문의하세요."),
 
     //타입에러 , 프론트엔드 측 메시징 금지 및 별도 처리 요망
     PARAMETER_TYPE_MISMATCH(400, "ERR-TYPE-01", "PARAMETER TYPE MISMATCH OR CLIENT GIVE UNPREDICTABLE"),
@@ -79,7 +81,11 @@ public enum ErrorCode {
     SEC_LOGIN_INPUT_NULL(400,"ERR-SEC-02","아이디, 비밀번호를 입력해주세요."),
     SEC_LOGIN_THIS_SUSPEND_MEM(401,"ERR-SEC-03","탈퇴한 계정입니다."),
     SEC_LOGIN_THIS_LOCK_MEM(401,"ERR-SEC-04","잠긴 계정입니다.(패스워드 5회 미일치) 계정을 활성화 해주세요."),
-    SEC_LOGIN_THIS_INACTIVE_MEM(401,"ERR-SEC-05","비 활성화 계정입니다. 계정을 활성화 해주세요.");
+    SEC_LOGIN_THIS_INACTIVE_MEM(401,"ERR-SEC-05","비 활성화 계정입니다. 계정을 활성화 해주세요."),
+    SEC_NO_REFRESH_TOKEN(401,"ERR-SEC-06","비 정상적인 접근입니다."), //클라이언트로 부터 받은  리프레시 토큰이 없음
+    SEC_REFRESH_TOKEN_EXPIRED(401,"ERR-SEC-07","세션이 만료되었습니다."), //클라이언트로 부터 받은  리프레시 토큰의 유효기간이 지남.
+    SEC_NO_MATCH_TOKEN_CATEGORY(401,"ERR-SEC-08","비 정상적인 접근입니다."), //클라이언트로 부터 받은  토큰의 카테고리(액세스,리프레시)가 맞지않음
+    SEC_UN_ILLEGAL_TOKEN(401,"ERR-SEC-09","비 정상적인 접근입니다."); //비정상적인 토큰임 (지워졋어야 했던 토큰이나 등등)
 
 
     private final int status;

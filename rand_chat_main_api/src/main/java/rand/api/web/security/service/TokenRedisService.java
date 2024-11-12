@@ -34,11 +34,16 @@ public class TokenRedisService implements TokenService{
     }
 
     @Override
-    public boolean isExist(String token) {
-        String key = "refresh";
+    public boolean isExist(String key,String token) {
+       String redisKey = "refresh:"+key;
+        String value = (String)inMemRepository.getValue(redisKey);
 
-        boolean isEx = inMemRepository.scan(key,token);
+        if(value.equals(token)){
+            return  true;
+        }
 
-        return isEx;
+
+
+        return false;
     }
 }
