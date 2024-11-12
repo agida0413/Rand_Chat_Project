@@ -58,6 +58,15 @@ public  final class CookieUtil {
         headerAdd(httpHeaders,cookie);
     }
 
+    //쿠키제거 메서드
+    public static Cookie deleteRefreshCookie(String key) {//리프레시 토큰을 쿠키에서 지우기 위함
+        Cookie cookie = new Cookie(key, null); // 리프레시 토큰의 밸류룰 null
+        cookie.setMaxAge(0);//유효기간 0
+        cookie.setPath("/");//path
+
+        return cookie;
+    }
+
     private static void headerAdd(HttpHeaders headers,Cookie cookie){
         headers.add("Set-Cookie", cookie.getName() + "=" + cookie.getValue() + "; Path=" + cookie.getPath()
                 + "; HttpOnly; Max-Age=" + cookie.getMaxAge());

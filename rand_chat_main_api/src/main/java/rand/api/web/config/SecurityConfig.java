@@ -12,7 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import rand.api.domain.member.repository.MemberRepository;
+import rand.api.web.security.filter.CustomLogoutFilter;
 import rand.api.web.security.filter.LoginFilter;
 import rand.api.web.security.jwt.JWTUtil;
 import rand.api.web.security.service.TokenService;
@@ -63,6 +65,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/v1/member/**",
                                 "/index.html","/css/**","/js/**","/images/**","/favicon.ico","/fonts/**","/img/**").permitAll() //로그인 ,회원가입 , 토큰 재발급,이메일인증 api는 권한 필요없음
+                        .requestMatchers("/api/v1/member/logout").authenticated()
                         .anyRequest().authenticated());//나머지는 인증이 필요함
 
         //JWTFilter 등록 = > 로그인 필터 전에 수행
@@ -74,9 +77,9 @@ public class SecurityConfig {
        http
                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,tokenService,objectMapper,memberRepository), UsernamePasswordAuthenticationFilter.class);
 
-//        //커스텀한 로그아웃 필터를 등록 =>기존 필터위치에
-//        http
-//                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshService,objectMapper), LogoutFilter.class);
+        //커스텀한 로그아웃 필터를 등록 =>기존 필터위치에
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, tokenService,objectMapper), LogoutFilter.class);
 
         // 세션방식 미사용
         http
