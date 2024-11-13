@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
+import rand.api.domain.member.model.cons.MembersSex;
 
 @Component
 public final class JWTUtil {
@@ -54,6 +55,18 @@ public final class JWTUtil {
 
     public String getSex(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("sex",String.class);
+    }
+
+    public MembersSex getEnumSex(String token) {
+        String strSex= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("sex",String.class);
+
+        if(strSex.equals(MembersSex.MAN)){
+            return MembersSex.MAN;
+        }
+        else if(strSex.equals(MembersSex.FEMAIL)){
+            return MembersSex.FEMAIL;
+        }
+       return MembersSex.MAN;
     }
 
     public LocalDate getBirth(String token) {

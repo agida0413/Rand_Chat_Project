@@ -1,5 +1,10 @@
 package rand.api.domain.member.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rand.api.domain.common.repository.InMemRepository;
+import rand.api.domain.common.util.cookie.CookieUtil;
 import rand.api.domain.common.util.mail.RandomGenerator;
 import rand.api.domain.member.model.Members;
 import rand.api.domain.member.model.cons.MembersState;
@@ -17,7 +23,13 @@ import rand.api.web.dto.common.ResponseDTO;
 import rand.api.web.dto.member.request.*;
 import rand.api.web.dto.member.response.ResFindIdDTO;
 import rand.api.web.exception.custom.BadRequestException;
+import rand.api.web.exception.custom.InternerServerException;
+import rand.api.web.security.custom.SecurityContextGet;
+import rand.api.web.security.custom.SecurityResponse;
+import rand.api.web.security.jwt.JWTUtil;
+import rand.api.web.security.service.TokenService;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -28,6 +40,7 @@ public class MemberServiceImpl implements MemberService{
     private final MailService mailService;
     private final InMemRepository inMemRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
 
     private static final int MAX_ATTEMPT=5;
