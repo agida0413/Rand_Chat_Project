@@ -224,6 +224,18 @@ public class GlobalExceptionHandler {
                     errorCode = ErrorCode.VALIDATAION_FAIL_EMAIL_AUTH_CODE;
                 }
                 break;
+
+
+            case "localeLat":
+
+                    errorCode = ErrorCode.VALIDATAION_LOCALE_LAT;
+
+                break;
+            case "localeLon":
+
+                errorCode = ErrorCode.VALIDATAION_LOCALE_LOT;
+
+                break;
             default:
                 errorCode = null; // 매칭되는 오류가 없을 경우 null 반환
                 break;

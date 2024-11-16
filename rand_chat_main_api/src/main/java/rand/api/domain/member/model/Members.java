@@ -5,6 +5,7 @@ import lombok.Setter;
 import rand.api.domain.member.model.cons.MembersSex;
 import rand.api.domain.member.model.cons.MembersState;
 import rand.api.web.dto.member.request.*;
+import rand.api.web.security.custom.SecurityContextGet;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,8 +22,8 @@ private String nickName;
 private int pwdWrong;
 private MembersState state;
 private String profileImg;
-private BigDecimal localeLat;
-private BigDecimal localeLon;
+private double localeLat;
+private double localeLon;
 private MembersSex sex;
 private LocalDate birth;
 
@@ -80,5 +81,11 @@ private String authCode; // 인증코드 ( 이메일 )
     public  Members(UnlockAccountChkDTO unlockAccountChkDTO){
         this.email = unlockAccountChkDTO.getEmail();;
         this.authCode = unlockAccountChkDTO.getAuthCode();
+    }
+
+    public Members(CurLocationDTO curLocationDTO){
+        this.localeLat = curLocationDTO.getLocaleLat();
+        this.localeLon = curLocationDTO.getLocaleLon();
+        this.usrId = SecurityContextGet.getUsrId();
     }
 }

@@ -23,5 +23,6 @@ public interface MemberService {
     public ResponseEntity<ResponseDTO<Void>> emailUnlockAccountSend(UnlockAccountDTO unlockAccountDTO);
     public ResponseEntity<ResponseDTO<Void>> emailUnlockAccount(UnlockAccountChkDTO unlockAccountChkDTO);
 
+    public ResponseEntity<ResponseDTO<Void>> memberCurLocationUpdate(CurLocationDTO curLocationDTO);
 
 }

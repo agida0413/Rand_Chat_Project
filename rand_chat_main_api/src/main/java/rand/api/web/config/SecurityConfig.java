@@ -62,11 +62,12 @@ public class SecurityConfig {
         http
                 .httpBasic((auth) -> auth.disable());
 
+
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/v1/member/**","/api/v1/reissue",
+                        .requestMatchers("/api/v1/member","/api/v1/reissue","/api/v1/member/email/**","/api/v1/member/unlock",
                                 "/index.html","/css/**","/js/**","/images/**","/favicon.ico","/fonts/**","/img/**").permitAll() //로그인 ,회원가입 , 토큰 재발급,이메일인증 api는 권한 필요없음
-                        .requestMatchers("/api/v1/member/logout").authenticated()
+                        .requestMatchers("/api/v1/member/logout","/api/v1/member/location").authenticated()
                         .anyRequest().authenticated());//나머지는 인증이 필요함
 
       //  JWTFilter 등록 = > 로그인 필터 전에 수행

@@ -78,6 +78,10 @@ public class MemberController {
         return memberService.emailUnlockAccount(unlockAccountChkDTO);
     }
 
-
+    //현재 사용자 위치 업데이트
+    @PutMapping(value = "/location",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseDTO<Void>> curLocUpdate(@RequestBody @Validated CurLocationDTO curLocationDTO){
+        return  memberService.memberCurLocationUpdate(curLocationDTO);
+    }
 
 }

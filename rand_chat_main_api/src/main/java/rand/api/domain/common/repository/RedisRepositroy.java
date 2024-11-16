@@ -1,6 +1,8 @@
 package rand.api.domain.common.repository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -9,12 +11,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class RedisRepositroy  implements InMemRepository  {
 
   private final  RedisTemplate<String,Object> redisTemplate;
-
+    private static final String GEO_KEY = "member:location";
     @Override
     public void save(String key, Object value, long ttl, TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key,value,ttl,timeUnit);
@@ -25,6 +28,21 @@ public class RedisRepositroy  implements InMemRepository  {
         redisTemplate.opsForValue().increment(key,incrementVal);
 
         redisTemplate.expire(key,ttl,timeUnit);
+    }
+
+    @Override
+    public void saveLoc(String usrId, double lat, double lon) {
+        log.info("usrId={}",usrId);
+        log.info("lat={}",lat);
+        log.info("lon={}",lon);
+        Point point = new Point(lat, lon);
+        redisTemplate.opsForGeo().add(GEO_KEY,point,usrId);
+    }
+
+    @Override
+    public Point getLoc(String usrId) {
+
+        return redisTemplate.opsForGeo().position(GEO_KEY,usrId).stream().findFirst().orElse(null);
     }
 
     @Override

@@ -1,11 +1,14 @@
 package rand.api.domain.common.repository;
 
+import org.springframework.data.geo.Point;
+
 import java.util.concurrent.TimeUnit;
 
 public interface InMemRepository {
     //create
     public void save(String key,Object value);
     public void save(String key, Object value, long ttl, TimeUnit timeUnit);
+    public void saveLoc(String usrId, double lat ,double lon);
     public void increment(String key, int incrementVal,long ttl,TimeUnit timeUnit);
 
     public void hashSave(String key,String hashKey,Object value);
@@ -22,7 +25,8 @@ public interface InMemRepository {
     public boolean scan(String key , String value);
     public Object getValue(String key);
     public Object getHashValue(String key,String hashKey);
-//    public T getListRange(String key,int start,int end);
+    public Point getLoc(String usrId);
+    //    public T getListRange(String key,int start,int end);
     public Object getSetAllValue(String key);
 
 

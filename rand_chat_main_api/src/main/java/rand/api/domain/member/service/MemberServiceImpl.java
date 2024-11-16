@@ -116,6 +116,19 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    public ResponseEntity<ResponseDTO<Void>> memberCurLocationUpdate(CurLocationDTO curLocationDTO) {
+
+        Members members = new Members(curLocationDTO);
+
+        double lat = members.getLocaleLat();
+        double lon = members.getLocaleLon();
+        String usrId =String.valueOf(members.getUsrId());
+        inMemRepository.saveLoc(usrId,lat,lon);
+
+        return ResponseEntity.ok(null);
+    }
+
+    @Override
     public ResponseEntity<ResponseDTO<Void>> join(JoinDTO joinDTO) {
         //패스워드 암호화
         String bcryptPwd = bCryptPasswordEncoder.encode(joinDTO.getPassword());

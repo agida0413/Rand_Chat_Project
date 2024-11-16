@@ -45,8 +45,15 @@ public enum ErrorCode {
 
     //계정 상태 활성화 관련 에러코드
     VALIDATAION_FAIL_UNLOCK_ACCOUNT_EMAIL(400, "ERR-VALID-MEM-13", "올바른 이메일 형식이 아닙니다."),
+    
     VALIDATAION_FAIL_UNLOCK_ACCOUNT_PWD(400, "ERR-VALID-MEM-14", "비밀번호는 공백일 수 없습니다."),
     VALIDATAION_FAIL_UNLOCK_ACCOUNT_USERNAME(400, "ERR-VALID-MEM-15", "아이디는 공백일 수 없습니다."),
+
+
+    //위도경도 Valdiation
+    VALIDATAION_LOCALE_LAT(400, "ERR-VALID-MEM-14", "올바른 위도 형식이 아닙니다."),
+    VALIDATAION_LOCALE_LOT(400, "ERR-VALID-MEM-15", "올바른 경도 형식이 아닙니다."),
+    
     //사용자 정의 에러코드
 
     //회원 관련 에러코드
@@ -87,7 +94,8 @@ public enum ErrorCode {
     SEC_NO_MATCH_TOKEN_CATEGORY(401,"ERR-SEC-08","비 정상적인 접근입니다."), //클라이언트로 부터 받은  토큰의 카테고리(액세스,리프레시)가 맞지않음
     SEC_UN_ILLEGAL_TOKEN(401,"ERR-SEC-09","비 정상적인 접근입니다."), //비정상적인 토큰임 (지워졋어야 했던 토큰이나 등등)
     SEC_MUST_REISSUE_TOKEN(410,"ERR-SEC-10","토큰을 재발행 하세요."); //엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
-
+    
+    
 
     private final int status;
     private final String code;
