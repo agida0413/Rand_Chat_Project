@@ -125,7 +125,7 @@ public class MemberServiceImpl implements MemberService{
         String usrId =String.valueOf(members.getUsrId());
         inMemRepository.saveLoc(usrId,lat,lon);
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(new ResponseDTO<>(null));
     }
 
     @Override

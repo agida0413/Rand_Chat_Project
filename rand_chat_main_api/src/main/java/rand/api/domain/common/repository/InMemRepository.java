@@ -2,6 +2,7 @@ package rand.api.domain.common.repository;
 
 import org.springframework.data.geo.Point;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public interface InMemRepository {
@@ -19,7 +20,7 @@ public interface InMemRepository {
 
     public void setSave(String key , Object value);
     public void setSave(String key , Object value,long ttl, TimeUnit timeUnit);
-
+    public void sortedSetSave(String key , String usrId,long timestamp);
 
     //Read
     public boolean scan(String key , String value);

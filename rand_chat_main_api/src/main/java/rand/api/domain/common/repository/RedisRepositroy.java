@@ -32,11 +32,10 @@ public class RedisRepositroy  implements InMemRepository  {
 
     @Override
     public void saveLoc(String usrId, double lat, double lon) {
-        log.info("usrId={}",usrId);
-        log.info("lat={}",lat);
-        log.info("lon={}",lon);
-        Point point = new Point(lat, lon);
+
+        Point point = new Point(lon, lat);
         redisTemplate.opsForGeo().add(GEO_KEY,point,usrId);
+
     }
 
     @Override
@@ -120,10 +119,6 @@ public class RedisRepositroy  implements InMemRepository  {
         return redisTemplate.opsForValue().get(key);
     }
 
-//    @Override
-//    public T getListRange(String key, int start, int end) {
-//        return redisTemplate.opsForList().range(key,start,end);
-//    }
 
     @Override
     public Object getHashValue(String key, String hashKey) {
@@ -135,10 +130,12 @@ public class RedisRepositroy  implements InMemRepository  {
         return  redisTemplate.opsForSet().members(key);
     }
 
-//    @Override
-//    public void listUpdate(String key, int index, T value) {
-//        redisTemplate
-//    }
+
+
+    @Override
+    public void sortedSetSave(String key, String usrId, long timestamp) {
+        redisTemplate.opsForZSet().add(key,usrId,timestamp);
+    }
 
     @Override
     public void delete(String key) {

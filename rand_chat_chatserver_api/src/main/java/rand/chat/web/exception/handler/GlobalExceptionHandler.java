@@ -220,6 +220,11 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("emailAuthCheckDTO") || fieldError.getObjectName().equals("unlockAccountChkDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_EMAIL_AUTH_CODE;
                 }
+
+            case "distance":
+                if (fieldError.getObjectName().equals("matchDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_MATCH_DISTANCE;
+                }
                 break;
             default:
                 errorCode = null; // 매칭되는 오류가 없을 경우 null 반환
