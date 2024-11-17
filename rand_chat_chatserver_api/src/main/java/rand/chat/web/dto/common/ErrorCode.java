@@ -44,6 +44,10 @@ public enum ErrorCode {
     VALIDATAION_FAIL_UNLOCK_ACCOUNT_EMAIL(400, "ERR-VALID-MEM-13", "올바른 이메일 형식이 아닙니다."),
     VALIDATAION_FAIL_UNLOCK_ACCOUNT_PWD(400, "ERR-VALID-MEM-14", "비밀번호는 공백일 수 없습니다."),
     VALIDATAION_FAIL_UNLOCK_ACCOUNT_USERNAME(400, "ERR-VALID-MEM-15", "아이디는 공백일 수 없습니다."),
+
+    VALIDATAION_FAIL_MATCH_DISTANCE(400, "ERR-VALID-CHAT-01", "매칭거리 조건은 0.1 이상이여야 합니다."),
+
+
     //사용자 정의 에러코드
 
     //회원 관련 에러코드
