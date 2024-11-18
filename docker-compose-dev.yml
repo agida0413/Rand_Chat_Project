@@ -24,62 +24,49 @@ services:
     ports:
       - "80:80"
     depends_on:
-      -  backend_main
-      -  backend_chat1
-      -  backend_chat2
-      -  backend_chat3
+      -  backend_member
+      -  backend_match1
+      -  backend_match2
     container_name: nginx
     networks: 
      - app_network
 
-  backend_main:
+  backend_member:
     build:
-      context: ./rand_chat_main_api
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile-member
     ports:
       - "8080:8080"
     depends_on:
       - mysql
       - redis-master-1
-    container_name: backend_main
+    container_name: backend_member
     networks: 
      - app_network
-  backend_chat1:
+  backend_match1:
     build:
-      context: ./rand_chat_chatserver_api
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile-match
     ports:
       - "8081:8080"
     depends_on:
       - mysql
       - redis-master-1
-    container_name: backend_chat1
+    container_name: backend_match1
     networks: 
      - app_network
-  backend_chat2:
+  backend_match2:
     build:
-      context: ./rand_chat_chatserver_api
-      dockerfile: Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile-match
     ports:
       - "8082:8080"
-    container_name: backend_chat2
+    container_name: backend_match2
     depends_on:
       - mysql
       - redis-master-1
     networks: 
      - app_network 
-  backend_chat3:
-    build:
-      context: ./rand_chat_chatserver_api
-      dockerfile: Dockerfile
-    ports:
-      - "8083:8080"
-    container_name: backend_chat3
-    depends_on:
-      - mysql
-      - redis-master-1
-    networks: 
-     - app_network
   mysql:
     image: mysql:8.0.17
     container_name: mysql
@@ -96,7 +83,7 @@ services:
     networks: 
      - app_network  
   redis-master-1:
-    image: redis:6.2
+    image: redis:alpine
     ports:
       - "6379:6379"
     container_name: redis-master-1  
