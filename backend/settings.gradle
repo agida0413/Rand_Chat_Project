@@ -1,0 +1,9 @@
+rootProject.name = 'backend'
+include 'rand-chat-security'
+include 'rand-chat-config'
+include 'rand-chat-matching'
+include 'rand-chat-domain'
+include 'rand-chat-core'
+include 'rand-chat-member'
+include 'rand-chat-main-server'
+

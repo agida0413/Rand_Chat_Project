@@ -1,0 +1,68 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+
+
+repositories {
+	mavenCentral()
+}
+
+
+
+subprojects { // 각 모듈에 적용할 공통 설정
+	bootJar.enabled = false // 빌드시 현재 모듈(multi-module)의 .jar를 생성하지 않습니다.
+	group = 'com.rand'
+	version = '0.0.1-SNAPSHOT'
+	sourceCompatibility = '17'
+	apply plugin: 'java'
+	apply plugin: 'java-library'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+
+	dependencies { // 롬복은 공통적으로 사용하는 의존성이니 여기서 끌어다 사용
+		implementation 'org.springframework.boot:spring-boot-starter-mail'
+		implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+		runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+		runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+		implementation 'software.amazon.awssdk:s3:2.27.2'
+		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+		implementation 'org.springframework.boot:spring-boot-starter-security'
+		implementation 'org.springframework.boot:spring-boot-starter-validation'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.springframework.boot:spring-boot-starter-websocket'
+		implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+		compileOnly 'org.projectlombok:lombok'
+		developmentOnly 'org.springframework.boot:spring-boot-devtools'
+		implementation 'com.mysql:mysql-connector-j'
+		annotationProcessor 'org.projectlombok:lombok'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+		testImplementation 'org.springframework.security:spring-security-test'
+		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	}
+	repositories {
+		mavenCentral()
+	}
+
+	sourceSets {
+		main {
+			resources {
+				srcDirs = ['src/main/resources',"rand-chat-config/src/main/java","rand-chat-core/src/main/java","rand-chat-domain/src/main/java","rand-chat-matching/src/main/java","rand-chat-member/src/main/java"]
+			}
+		}
+	}
+
+
+	tasks.named('test') {
+		useJUnitPlatform()
+	}
+
+	configurations {
+		compileOnly {
+			extendsFrom annotationProcessor
+		}
+	}
+}
