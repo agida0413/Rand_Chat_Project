@@ -6,16 +6,16 @@ import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResults;
 import org.springframework.data.geo.Point;
+import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -128,12 +128,14 @@ public class RedisRepositroy  implements InMemRepository  {
 
 //    @Override
 //    public T getListRange(String key, int start, int end) {
+
+
 //        return redisTemplate.opsForList().range(key,start,end);
 //    }
 
     @Override
     public Object getHashValue(String key, String hashKey) {
-        log.info("getHashValue={}",key);
+
         return  redisTemplate.opsForHash().get(key,hashKey);
     }
 
@@ -153,8 +155,42 @@ public class RedisRepositroy  implements InMemRepository  {
     }
 
     @Override
+    public Set<String> geoRadius(String usrId, double radiusInMeters, int count) {
+        // 반경 내 사용자의 위치를 조회
+        Distance distance = new Distance(radiusInMeters, RedisGeoCommands.DistanceUnit.METERS);
+
+        // 반경 조회에 대한 추가 옵션 설정 (좌표 및 거리 포함)
+        RedisGeoCommands.GeoRadiusCommandArgs args = RedisGeoCommands.GeoRadiusCommandArgs
+                .newGeoRadiusArgs()
+                .includeCoordinates()  // 좌표 포함
+                .includeDistance()     // 거리 포함
+                .limit(count);             // 가장 가까운 1명만 가져오기
+
+        List<Point> points = redisTemplate.opsForGeo().position(GEO_KEY, usrId);
+
+        Point point = points.get(0); // 사용자 좌표
+
+        // Redis에서 주어진 member를 기준으로 반경 내 사용자들 조회
+        GeoResults<RedisGeoCommands.GeoLocation<Object>> geoResults;
+        geoResults = redisTemplate.opsForGeo().radius(GEO_KEY, new Circle(point, distance), args);
+
+        // 결과가 없으면 빈 Set 반환
+        if (geoResults == null || geoResults.getContent().isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        // 가장 가까운 사용자 한 명만 추출
+        RedisGeoCommands.GeoLocation<Object> closestUser = geoResults.getContent().iterator().next().getContent();
+
+        Set<String> nearestUserIds = new HashSet<>();
+        nearestUserIds.add((String) closestUser.getName());
+
+        return nearestUserIds;
+    }
+
+    @Override
     public Set<String> geoRadius(String usrId, double radiusInMeters) {
-        log.info("geoRadius={}",usrId);
+
         Distance distance = new Distance(radiusInMeters, RedisGeoCommands.DistanceUnit.METERS);
 
         // 반경 조회에 대한 추가 옵션 설정
@@ -164,9 +200,7 @@ public class RedisRepositroy  implements InMemRepository  {
                 .includeDistance();    // 거리 포함
 
         List<Point> points = redisTemplate.opsForGeo().position(GEO_KEY, usrId);
-        log.info("size={}",points.size());
-        log.info("point={}",points.get(0).getX());
-        log.info("point={}",points.get(0).getY());
+
         Point point = points.get(0);
 
 
@@ -174,7 +208,7 @@ public class RedisRepositroy  implements InMemRepository  {
         GeoResults<RedisGeoCommands.GeoLocation<Object>> geoResults;
 
         geoResults = redisTemplate.opsForGeo().radius(GEO_KEY, new Circle(point, distance), args);
-        log.info("geoRadius2={}",usrId);
+
         // 결과가 없으면 빈 Set 반환
         if (geoResults == null || geoResults.getContent().isEmpty()) {
             return Collections.emptySet();
@@ -184,7 +218,6 @@ public class RedisRepositroy  implements InMemRepository  {
         Set<String> nearbyUserIds = geoResults.getContent().stream()
                 .map(geoResult -> (String) geoResult.getContent().getName())  // GeoLocation에서 사용자 ID 추출
                 .collect(Collectors.toSet());
-        log.info("geoRadius3={}",usrId);
 
         return nearbyUserIds;
     }
@@ -194,6 +227,13 @@ public class RedisRepositroy  implements InMemRepository  {
     @Override
     public Object getSetAllValue(String key) {
         return  redisTemplate.opsForSet().members(key);
+    }
+
+    @Override
+    public boolean lockSetting(String lockKey, String value, int expired) {
+        TimeUnit timeUnit = TimeUnit.SECONDS;
+
+        return redisTemplate.opsForValue().setIfAbsent(lockKey,value,expired,timeUnit);
     }
 
     @Override
@@ -226,7 +266,7 @@ public class RedisRepositroy  implements InMemRepository  {
 
     @Override
     public void sortedSetSave(String key, String usrId, long timestamp) {
-        log.info("save={}",usrId);
+
         redisTemplate.opsForZSet().add(key,usrId,timestamp);
     }
 

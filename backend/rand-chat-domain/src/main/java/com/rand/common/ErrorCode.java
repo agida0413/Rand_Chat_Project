@@ -8,6 +8,7 @@ public enum ErrorCode {
     COMMON_UNPREDICTABLE_ERROR(500, "ERR-CMN-01", "서버 내부 오류입니다. 관리자에게 문의하세요."),
     //쿠키 추출에러
     COMMON_COOKIE_ERROR(500, "ERR-CMN-02", "서버 내부 오류입니다. 관리자에게 문의하세요."),
+    COMMON_LOCK_FAIL(500, "ERR-CMN-03", "락 획득 실패(타임아웃)"),
 
     //타입에러 , 프론트엔드 측 메시징 금지 및 별도 처리 요망
     PARAMETER_TYPE_MISMATCH(400, "ERR-TYPE-01", "PARAMETER TYPE MISMATCH OR CLIENT GIVE UNPREDICTABLE"),
