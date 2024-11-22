@@ -17,13 +17,17 @@ public enum ErrorCode {
 
     //Validation Fail 코드
 
+    VALIDATAION_FAIL_ID(400, "ERR-VALID-MEM-19", "올바른 아이디 형식이 아닙니다."),
     //회원가입 관련 에러코드
     VALIDATAION_FAIL_JOIN_ID(400, "ERR-VALID-MEM-01", "아이디는 8~16자리여야 합니다."),
+
     VALIDATAION_FAIL_JOIN_NNM(400, "ERR-VALID-MEM-02", "닉네임은 3~14자 한글만 가능합니다."),
     VALIDATAION_FAIL_JOIN_PWD(400, "ERR-VALID-MEM-03", "비밀번호는 형식이 맞지 않습니다.(8~16자, 특수문자 포함 및 공백불가) "),
     VALIDATAION_FAIL_JOIN_EMAIL(400, "ERR-VALID-MEM-04", "올바른 이메일 형식이 아닙니다."),
     VALIDATAION_FAIL_JOIN_SEX(400, "ERR-VALID-MEM-05", "올바른 성별 형식이 아닙니다."),
     VALIDATAION_FAIL_JOIN_BIRTH(400, "ERR-VALID-MEM-06", "올바른 생년월일 형식이 아닙니다."),
+    //11 /22 추가
+    VALIDATAION_FAIL_NAME(400, "ERR-VALID-MEM-18", "올바른 이름 형식이 아닙니다."),
 
     //이메일 인증 관련 에러코드
     VALIDATAION_FAIL_EMAIL_AUTH(400, "ERR-VALID-MEM-07", "올바른 이메일 형식이 아닙니다."),

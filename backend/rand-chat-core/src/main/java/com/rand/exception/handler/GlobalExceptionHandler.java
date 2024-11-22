@@ -165,19 +165,16 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("joinDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_ID;
                 }
-                if (fieldError.getObjectName().equals("unlockAccountDTO")) {
+                else  if (fieldError.getObjectName().equals("unlockAccountDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_UNLOCK_ACCOUNT_USERNAME;
+                }
+                else{
+                    errorCode = ErrorCode.VALIDATAION_FAIL_ID; //19
                 }
                 break;
             case "nickName":
                 if (fieldError.getObjectName().equals("joinDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_JOIN_NNM;
-                }
-                if (fieldError.getObjectName().equals("findIdDTO")) {
-                    errorCode = ErrorCode.VALIDATAION_FAIL_FIND_ID_NNM;
-                }
-                if (fieldError.getObjectName().equals("resetPwdDTO")) {
-                    errorCode = ErrorCode.VALIDATAION_FAIL_RESET_PWD_NNM;
                 }
                 break;
             case "password":
@@ -239,6 +236,12 @@ public class GlobalExceptionHandler {
                     errorCode = ErrorCode.VALIDATAION_FAIL_MATCH_DISTANCE;
                 }
                 break;
+            case "name":
+
+                    errorCode = ErrorCode.VALIDATAION_FAIL_NAME;
+
+                break;
+
             default:
                 errorCode = null; // 매칭되는 오류가 없을 경우 null 반환
                 break;

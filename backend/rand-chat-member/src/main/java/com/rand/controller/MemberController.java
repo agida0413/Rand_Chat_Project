@@ -54,8 +54,8 @@ public class MemberController {
         return memberService.join(joinDTO);
         }
     //아이디 찾기
-    @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseDTO<ResFindIdDTO>> findId(@Validated @RequestBody FindIdDTO findIdDTO){
+    @GetMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ResponseDTO<ResFindIdDTO>> findId(@Validated FindIdDTO findIdDTO){
 
         return  memberService.findId(findIdDTO);
     }

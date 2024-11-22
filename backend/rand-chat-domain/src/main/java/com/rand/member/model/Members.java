@@ -28,7 +28,7 @@ private double localeLat;
 private double localeLon;
 private MembersSex sex;
 private LocalDate birth;
-
+private String name;
 //엔티티 컬럼 외 정보
 private String authCode; // 인증코드 ( 이메일 )
     private double distance;
@@ -40,6 +40,7 @@ private String authCode; // 인증코드 ( 이메일 )
         this.nickName = joinDTO.getNickName();
         this.sex = joinDTO.getSex();
         this.birth = joinDTO.getBirth();
+        this.name = joinDTO.getName();
     }
 
     public Members() {
@@ -49,7 +50,7 @@ private String authCode; // 인증코드 ( 이메일 )
     public Members(FindIdDTO findIdDTO) {
         
         this.email = findIdDTO.getEmail();
-        this.nickName = findIdDTO.getNickName();
+        this.name = findIdDTO.getName();
        
     }
 
@@ -72,7 +73,8 @@ private String authCode; // 인증코드 ( 이메일 )
 
     public Members(ResetPwdDTO resetPwdDTO){
         this.email = resetPwdDTO.getEmail();
-        this.nickName = resetPwdDTO.getNickName();
+        this.name = resetPwdDTO.getName();
+        this.username = resetPwdDTO.getUsername();
     }
 
     public  Members(UnlockAccountDTO unlockAccountDTO){
