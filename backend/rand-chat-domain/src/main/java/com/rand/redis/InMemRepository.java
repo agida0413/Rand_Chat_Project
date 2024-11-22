@@ -1,6 +1,8 @@
 package com.rand.redis;
 import org.springframework.data.geo.Point;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +30,8 @@ public interface InMemRepository {
     public Point getLoc(String usrId);
     public Set<String> sortedSetRangeByScore(String key ,long minScore,long maxScore);
     public Set<String> geoRadius( String usrId, double radiusInMeters);
+    public Set<String> geoRadius( String usrId, double radiusInMeters, int count);
+
     //    public T getListRange(String key,int start,int end);
     public Object getSetAllValue(String key);
     public double calculateDistance(String usrId1 , String usrId2);
@@ -42,5 +46,12 @@ public interface InMemRepository {
     public void setDelete(String key,String value);
     public void sortedSetRemove(String key , String value);
 
+
+    //LOCKING
+    public boolean lockSetting(String lockKey, String value, int expired);
+
+
+
+    //pub/sub
 
 }

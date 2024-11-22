@@ -1,6 +1,5 @@
 package com.rand.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rand.common.ResponseDTO;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
@@ -10,21 +9,16 @@ import com.rand.member.model.Members;
 import com.rand.member.model.cons.MembersState;
 import com.rand.member.repository.MemberRepository;
 import com.rand.redis.InMemRepository;
+import com.rand.service.mail.MailService;
 import com.rand.util.mail.RandomGenerator;
-import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @Service
