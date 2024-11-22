@@ -138,7 +138,7 @@ public class MatchServiceImpl implements MatchService {
         inMemRepository.sortedSetRemove(WAITING_QUE_KEY, secondUserId);
 
 
-        publisher.publishNotification( "notificationChannel","MATCH COMPLETE");
+
     }
 
     private boolean lockCheck(String LOCK_KEY, long LOCK_TIMEOUT) {
