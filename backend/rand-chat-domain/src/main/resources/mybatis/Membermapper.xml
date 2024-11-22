@@ -28,7 +28,7 @@
 
     <insert id="join" parameterType="Members">
         /* Membermapper.xml.join 회원가입 */
-        INSERT INTO MEMBERS(username,password,email,nick_name,sex,birth)
+        INSERT INTO MEMBERS(username,password,email,nick_name,sex,birth,name)
         VALUES(
                #{username}
               ,#{password}
@@ -36,6 +36,7 @@
               ,#{nickName}
               ,#{sex}
               ,#{birth}
+              ,#{name}
               )
     </insert>
 
@@ -46,16 +47,17 @@
          FROM MEMBERS
         WHERE 1=1
           AND email = #{email}
-          AND nick_name = #{nickName}
+          AND name = #{name}
     </select>
 
     <select id="findByNnAndEmail" parameterType="Members" resultType="int">
-        /* Membermapper.xml.findByNnAndEmail  회원정보개수 리턴 By email and Nickname  */
+        /* Membermapper.xml.findByNnAndEmail  회원정보개수 리턴 By email and username and name  */
          SELECT COUNT(usr_id)
            FROM MEMBERS
           WHERE 1=1
             AND email = #{email}
-            AND nick_name = #{nickName}
+            AND name = #{name}
+            AND username = #{username}
 
     </select>
 
