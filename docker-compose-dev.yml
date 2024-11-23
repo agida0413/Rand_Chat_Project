@@ -43,6 +43,8 @@ services:
     container_name: backend_member
     networks: 
      - app_network
+    environment: 
+      - INSTANCE_ID=server3  
   backend_match1:
     build:
       context: ./backend
@@ -55,6 +57,8 @@ services:
     container_name: backend_match1
     networks: 
      - app_network
+    environment: 
+      - INSTANCE_ID=server1 
   backend_match2:
     build:
       context: ./backend
@@ -67,6 +71,8 @@ services:
       - redis-master-1
     networks: 
      - app_network 
+    environment: 
+      - INSTANCE_ID=server2  
   mysql:
     image: mysql:8.0.17
     container_name: mysql
