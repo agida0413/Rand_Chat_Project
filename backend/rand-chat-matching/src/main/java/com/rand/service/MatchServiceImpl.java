@@ -1,13 +1,15 @@
 package com.rand.service;
 
 import com.rand.common.ResponseDTO;
+import com.rand.config.redis.pubsub.Publisher;
+import com.rand.config.redis.pubsub.SseNotificationService;
+import com.rand.config.redis.pubsub.SubsCriber;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.InternerServerException;
 import com.rand.match.dto.MatchDTO;
 import com.rand.member.model.Members;
 import com.rand.redis.InMemRepository;
-import com.rand.service.pubsub.NotificationService;
-import com.rand.service.pubsub.Publisher;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,9 @@ public class MatchServiceImpl implements MatchService {
     private static final String MATCH_LOCK_KEY = "match:lock";
     private static final long MATCH_LOCK_TIMEOUT = 5; // 5초 동안 대기 후 재시도
     private final Publisher publisher;
+    private final SubsCriber subsCriber;
+    private final SseNotificationService sseNotificationService;
+
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> matchLogic(MatchDTO matchDTO) {
@@ -58,6 +63,8 @@ public class MatchServiceImpl implements MatchService {
 
                 inMemRepository.hashSave(MEMBER_DISTANCE_COND_KEY, usrId, distance);
 
+                //sse 저장
+                sseNotificationService.connect(usrId);
 
                 processMatchingQueue();
             } finally {
@@ -92,7 +99,8 @@ public class MatchServiceImpl implements MatchService {
 
             // 4. 첫 번째 사용자와 가까운 사용자들 찾기 (GeoRadius로 범위 내 사용자 조회)
             Set<String> nearbyUsers = inMemRepository.geoRadius(firstUserId, firstUserDistance);
-
+            //교집합 (매칭 대기열과)
+            nearbyUsers.retainAll(usrIds);
             // 5. 범위 내에 사용자가 있으면 두 번째 사용자와 거리 조건을 비교
             for (String secondUserId : nearbyUsers) {
                 if (firstUserId.equals(secondUserId)) {
@@ -137,7 +145,8 @@ public class MatchServiceImpl implements MatchService {
         inMemRepository.sortedSetRemove(WAITING_QUE_KEY, firstUserId);
         inMemRepository.sortedSetRemove(WAITING_QUE_KEY, secondUserId);
 
-
+        publisher.sendNotification(firstUserId,"MATCH COMPLETE");
+        publisher.sendNotification(secondUserId,"MATCH COMPLETE");
 
     }
 
