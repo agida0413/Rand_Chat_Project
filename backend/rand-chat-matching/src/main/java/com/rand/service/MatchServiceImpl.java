@@ -4,6 +4,7 @@ import com.rand.common.ResponseDTO;
 import com.rand.config.redis.pubsub.Publisher;
 import com.rand.config.redis.pubsub.SseNotificationService;
 import com.rand.config.redis.pubsub.SubsCriber;
+import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.InternerServerException;
 import com.rand.match.dto.MatchDTO;
@@ -28,19 +29,14 @@ import java.util.concurrent.TimeUnit;
 public class MatchServiceImpl implements MatchService {
 
     private final InMemRepository inMemRepository;
-    private static final String WAITING_QUE_KEY = "matching-queue";
-    private static final String MEMBER_DISTANCE_COND_KEY = "member:distance";
-    private static final String MATCH_LOCK_KEY = "match:lock";
-    private static final long MATCH_LOCK_TIMEOUT = 5; // 5초 동안 대기 후 재시도
+
     private final Publisher publisher;
-    private final SubsCriber subsCriber;
-    private final SseNotificationService sseNotificationService;
 
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> matchLogic(MatchDTO matchDTO) {
 
-        boolean acquired = lockCheck(MATCH_LOCK_KEY,MATCH_LOCK_TIMEOUT);
+        boolean acquired = lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
 
         if (acquired) {
             try {
@@ -57,19 +53,19 @@ public class MatchServiceImpl implements MatchService {
 
                 log.info("usrid={}", usrId);
                 //큐 저장
-                inMemRepository.sortedSetSave(WAITING_QUE_KEY, usrId, timestamp);
+                inMemRepository.sortedSetSave(RedisKey.WAITING_QUE_KEY, usrId, timestamp);
 
                 //거리 조건 저장
                 double distance = members.getDistance();
 
-                inMemRepository.hashSave(MEMBER_DISTANCE_COND_KEY, usrId, distance);
+                inMemRepository.hashSave(RedisKey.MEMBER_DISTANCE_COND_KEY, usrId, distance);
 
 //                //sse 저장
 //                sseNotificationService.connect(usrId);
 
                 processMatchingQueue();
             } finally {
-                inMemRepository.delete(MATCH_LOCK_KEY);
+                inMemRepository.delete(RedisKey.MATCH_LOCK_KEY);
             }
 
         } else {
@@ -81,12 +77,12 @@ public class MatchServiceImpl implements MatchService {
 
     @Scheduled(fixedRate = 6000)
     public void removeQueue1Min(){
-        log.info("dddd");
+
         String server = System.getenv("INSTANCE_ID");
         if(server.equals("server1")){
             return;
         }
-        boolean acquired = lockCheck(MATCH_LOCK_KEY,MATCH_LOCK_TIMEOUT);
+        boolean acquired = lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
 
         if (acquired) {
             try {
@@ -94,19 +90,19 @@ public class MatchServiceImpl implements MatchService {
                 long currentTime = System.currentTimeMillis();
                 long thresholdTime = currentTime - TimeUnit.SECONDS.toMillis(60); // 1분   전의 시간
                 // "1분 초과된" 사용자만 찾아야 하므로, 현재 시간에서 60초를 빼고, 그 시간이 지난 사용자들을 가져옵니다.
-                Set<String> expiredUsrIds = inMemRepository.sortedSetRangeByScore(WAITING_QUE_KEY, 0, thresholdTime - 1);
+                Set<String> expiredUsrIds = inMemRepository.sortedSetRangeByScore(RedisKey.WAITING_QUE_KEY, 0, thresholdTime - 1);
 
                 //1분 넘은 사람 제거 후 웹소켓 알람
                 // 1분 이상 대기한 사용자 처리
                 for (String expiredUserId : expiredUsrIds) {
                     log.info("1분 이상 대기한 사용자: " + expiredUserId);
                     //대기 큐에서 제거
-                    inMemRepository.sortedSetRemove(WAITING_QUE_KEY, expiredUserId);
+                    inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, expiredUserId);
                     //1분 경과 알람
                     publisher.sendNotification(expiredUserId,"WAITING EXPIRED["+expiredUserId+"]");
                 }
             } finally {
-                inMemRepository.delete(MATCH_LOCK_KEY);
+                inMemRepository.delete(RedisKey.MATCH_LOCK_KEY);
             }
 
         } else {
@@ -120,7 +116,7 @@ public class MatchServiceImpl implements MatchService {
         long currentTime = System.currentTimeMillis();
         long thresholdTime = currentTime - TimeUnit.SECONDS.toMillis(60); //1분 이내 매칭 대기열 들어온 사람
 
-        Set<String> usrIds = inMemRepository.sortedSetRangeByScore(WAITING_QUE_KEY, thresholdTime, currentTime);
+        Set<String> usrIds = inMemRepository.sortedSetRangeByScore(RedisKey.WAITING_QUE_KEY, thresholdTime, currentTime);
 
 
         if (usrIds.size() < 2) {
@@ -130,7 +126,7 @@ public class MatchServiceImpl implements MatchService {
         // 3. 사용자들의 geo 정보를 가져와 거리 조건을 비교
         for (String firstUserId : usrIds) {
             log.info(firstUserId);
-            Double firstUserDistance = (Double) inMemRepository.getHashValue(MEMBER_DISTANCE_COND_KEY, firstUserId);
+            Double firstUserDistance = (Double) inMemRepository.getHashValue(RedisKey.MEMBER_DISTANCE_COND_KEY, firstUserId);
 
             // 4. 첫 번째 사용자와 가까운 사용자들 찾기 (GeoRadius로 범위 내 사용자 조회)
             Set<String> nearbyUsers = inMemRepository.geoRadius(firstUserId, firstUserDistance);
@@ -142,7 +138,7 @@ public class MatchServiceImpl implements MatchService {
                     continue;  // 자신과 비교하지 않음
                 }
 
-                Double secondUserDistance = (Double) inMemRepository.getHashValue(MEMBER_DISTANCE_COND_KEY, secondUserId);
+                Double secondUserDistance = (Double) inMemRepository.getHashValue(RedisKey.MEMBER_DISTANCE_COND_KEY, secondUserId);
 
                 // 6. 두 사용자 간의 거리 조건을 비교
                 if (isDistanceConditionMet(firstUserId, firstUserDistance, secondUserId, secondUserDistance)) {
@@ -177,8 +173,8 @@ public class MatchServiceImpl implements MatchService {
         log.info("Matched users2 = {}", secondUserId);
 
         // 매칭된 사용자 제거
-        inMemRepository.sortedSetRemove(WAITING_QUE_KEY, firstUserId);
-        inMemRepository.sortedSetRemove(WAITING_QUE_KEY, secondUserId);
+        inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, firstUserId);
+        inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, secondUserId);
 
         double distance = inMemRepository.calculateDistance(firstUserId, secondUserId);
 

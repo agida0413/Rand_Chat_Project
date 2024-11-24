@@ -1,6 +1,7 @@
 package com.rand.config.redis.pubsub;
 
 
+import com.rand.config.var.RedisKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,21 +17,20 @@ public class SseNotificationService implements NotificationService {
         this.redisTemplate = redisTemplate;
     }
 
-    private static final String SSE_CONNECTION_KEY = "sse:match:";
 
     // 특정 회원의 SSE 연결을 Redis에 저장
     public void registerConnection(String userId, String serverInstanceId) {
-        redisTemplate.opsForValue().set(SSE_CONNECTION_KEY + userId, serverInstanceId);
+        redisTemplate.opsForValue().set(RedisKey.SSE_CONNECTION_KEY + userId, serverInstanceId);
     }
 
     // 특정 회원의 SSE 연결 정보 조회
     public String getServerInstanceForUser(String userId) {
-        return redisTemplate.opsForValue().get(SSE_CONNECTION_KEY + userId);
+        return redisTemplate.opsForValue().get(RedisKey.SSE_CONNECTION_KEY + userId);
     }
 
     // 연결 해제 시 삭제
     public void removeConnection(String userId) {
-        redisTemplate.delete(SSE_CONNECTION_KEY + userId);
+        redisTemplate.delete(RedisKey.SSE_CONNECTION_KEY + userId);
     }
 
 

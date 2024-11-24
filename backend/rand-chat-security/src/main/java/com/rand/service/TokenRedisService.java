@@ -2,6 +2,7 @@ package com.rand.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rand.common.ResponseDTO;
+import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityResponse;
 import com.rand.exception.custom.InternerServerException;
 import com.rand.jwt.JWTUtil;
@@ -30,13 +31,13 @@ public class TokenRedisService implements TokenService{
         TimeUnit timeUnit =TimeUnit.HOURS;
 
         long ttl = 24L;
-        String rediskey = "refresh:"+key;
+        String rediskey = RedisKey.REFRESH_TOKEN_KEY +key;
         inMemRepository.save(rediskey , token,ttl,timeUnit);
     }
 
     @Override
     public void deleteRefresh(String key , String token) {
-        String rediskey = "refresh:"+key;
+        String rediskey = RedisKey.REFRESH_TOKEN_KEY+key;
 
         String findToken =(String) inMemRepository.getValue(rediskey);
 
@@ -48,7 +49,7 @@ public class TokenRedisService implements TokenService{
 
     @Override
     public boolean isExist(String key,String token) {
-       String redisKey = "refresh:"+key;
+       String redisKey = RedisKey.REFRESH_TOKEN_KEY+key;
         String value = (String)inMemRepository.getValue(redisKey);
 
         if(value.equals(token)){

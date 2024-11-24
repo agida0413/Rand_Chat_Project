@@ -1,6 +1,7 @@
 package com.rand.service;
 
 import com.rand.common.ResponseDTO;
+import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
 import com.rand.member.dto.request.*;
@@ -52,7 +53,8 @@ public class MemberServiceImpl implements MemberService{
 
         String email = findMembers.getEmail();
         // 이메일 전송으로 저장된 인증코드 레디스 키
-        String redisKey = email+":UnlockAccount"; //이메일인증코드 키
+
+        String redisKey = RedisKey.UNLOCK_ACCOUNT_KEY+email; //이메일인증코드 키
         //인증 코드 가져오기
         String redisCertificationNum = (String)inMemRepository.getValue(redisKey);
 
@@ -62,7 +64,7 @@ public class MemberServiceImpl implements MemberService{
         }
 
         //이메일 인증시도 횟수 키
-        String redisAttemptKey=email+":unlockAttempt";
+        String redisAttemptKey=RedisKey.UNLOCK_ACCOUNT_ATTEMP_KEY+email;
 
         //횟수 1 증가 , 5분 TTL
         inMemRepository.increment(redisAttemptKey,1,5L,TimeUnit.MINUTES);
@@ -126,7 +128,7 @@ public class MemberServiceImpl implements MemberService{
         //엔티티 변환
         Members members = new Members(joinDTO);
 
-      String historySaveKey = members.getEmail()+":authHs"; //이메일 인증이력
+      String historySaveKey =RedisKey.AUTH_HISTORY_KEY+ members.getEmail(); //이메일 인증이력
         
       String emailAuthHistory= (String) inMemRepository.getValue(historySaveKey);
         
@@ -273,11 +275,11 @@ public class MemberServiceImpl implements MemberService{
         String authCode = members.getAuthCode();
 
 
-        String redisKey = email+":authCd"; //이메일인증코드 키
+        String redisKey = RedisKey.JOIN_EMAIL_AUTH_CODE_KEY+email; //이메일인증코드 키
 
         String authCodeResult = (String)inMemRepository.getValue(redisKey);
 
-        String redisAttemptKey=email+":emlAuthAttemp"; //이메일 인증시도 횟수 키
+        String redisAttemptKey=RedisKey.JOIN_EMAIL_AUTH_CODE_ATTEMPT_KEY+email; //이메일 인증시도 횟수 키
 
 
         inMemRepository.increment(redisAttemptKey,1,5L,TimeUnit.MINUTES); //횟수 1 증가 , 5분 TTL
@@ -303,7 +305,7 @@ public class MemberServiceImpl implements MemberService{
             throw new BadRequestException("ERR-EAUTH-CS-03"); // 이메일 인증 코드 틀림  에러
         }
 
-        String historySaveKey = email+":authHs"; //이메일 인증이력
+        String historySaveKey =RedisKey.AUTH_HISTORY_KEY+email; //이메일 인증이력
         inMemRepository.save(historySaveKey,"Y",15L, TimeUnit.MINUTES);
         //인증코드 데이터 삭제
         inMemRepository.delete(redisKey);

@@ -1,5 +1,6 @@
 package com.rand.redis;
 
+import com.rand.config.var.RedisKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Circle;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 public class RedisRepositroy  implements InMemRepository  {
 
     private final  RedisTemplate<String,Object> redisTemplate;
-    private static final String GEO_KEY = "member:location";
+
 
     @Override
     public void save(String key, Object value, long ttl, TimeUnit timeUnit) {
@@ -85,14 +86,14 @@ public class RedisRepositroy  implements InMemRepository  {
     public void saveLoc(String usrId, double lat, double lon) {
 
         Point point = new Point(lon, lat);
-        redisTemplate.opsForGeo().add(GEO_KEY,point,usrId);
+        redisTemplate.opsForGeo().add(RedisKey.GEO_KEY,point,usrId);
 
     }
 
     @Override
     public Point getLoc(String usrId) {
 
-        return redisTemplate.opsForGeo().position(GEO_KEY,usrId).stream().findFirst().orElse(null);
+        return redisTemplate.opsForGeo().position(RedisKey.GEO_KEY,usrId).stream().findFirst().orElse(null);
     }
     @Override
     public void setSave(String key, Object value, long ttl, TimeUnit timeUnit) {
@@ -143,7 +144,7 @@ public class RedisRepositroy  implements InMemRepository  {
     public double calculateDistance(String usrId1, String usrId2) {
 
 
-        Distance distance = redisTemplate.opsForGeo().distance(GEO_KEY ,usrId1 ,usrId2, RedisGeoCommands.DistanceUnit.METERS);
+        Distance distance = redisTemplate.opsForGeo().distance(RedisKey.GEO_KEY ,usrId1 ,usrId2, RedisGeoCommands.DistanceUnit.METERS);
 
         // distance가 null인 경우 (두 사용자 간에 거리가 계산되지 않음)
         if (distance == null) {
@@ -166,13 +167,13 @@ public class RedisRepositroy  implements InMemRepository  {
                 .includeDistance()     // 거리 포함
                 .limit(count);             // 가장 가까운 1명만 가져오기
 
-        List<Point> points = redisTemplate.opsForGeo().position(GEO_KEY, usrId);
+        List<Point> points = redisTemplate.opsForGeo().position(RedisKey.GEO_KEY, usrId);
 
         Point point = points.get(0); // 사용자 좌표
 
         // Redis에서 주어진 member를 기준으로 반경 내 사용자들 조회
         GeoResults<RedisGeoCommands.GeoLocation<Object>> geoResults;
-        geoResults = redisTemplate.opsForGeo().radius(GEO_KEY, new Circle(point, distance), args);
+        geoResults = redisTemplate.opsForGeo().radius(RedisKey.GEO_KEY, new Circle(point, distance), args);
 
         // 결과가 없으면 빈 Set 반환
         if (geoResults == null || geoResults.getContent().isEmpty()) {
@@ -199,7 +200,7 @@ public class RedisRepositroy  implements InMemRepository  {
                 .includeCoordinates()  // 좌표 포함
                 .includeDistance();    // 거리 포함
 
-        List<Point> points = redisTemplate.opsForGeo().position(GEO_KEY, usrId);
+        List<Point> points = redisTemplate.opsForGeo().position(RedisKey.GEO_KEY, usrId);
 
         Point point = points.get(0);
 
@@ -207,7 +208,7 @@ public class RedisRepositroy  implements InMemRepository  {
         // Redis에서 주어진 member를 기준으로 반경 내 사용자들 조회
         GeoResults<RedisGeoCommands.GeoLocation<Object>> geoResults;
 
-        geoResults = redisTemplate.opsForGeo().radius(GEO_KEY, new Circle(point, distance), args);
+        geoResults = redisTemplate.opsForGeo().radius(RedisKey.GEO_KEY, new Circle(point, distance), args);
 
         // 결과가 없으면 빈 Set 반환
         if (geoResults == null || geoResults.getContent().isEmpty()) {
