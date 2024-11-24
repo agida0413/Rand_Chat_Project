@@ -35,7 +35,7 @@ public class SseNotificationService implements NotificationService {
 
 
     public SseEmitter connect(String userId) {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE); // 연결 유지
+        SseEmitter emitter = new SseEmitter(180 * 1000L); // 90초 타임아웃
         SseConnectionRegistry.register(userId, emitter);
         registerConnection(userId, getCurrentServerInstanceId());
         emitter.onCompletion(() -> cleanup(userId));
