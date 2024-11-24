@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 public interface MatchService {
 
     public ResponseEntity<ResponseDTO<Void>> matchLogic(MatchDTO matchDTO);
+    public void removeQueue1Min();
 
 
 }

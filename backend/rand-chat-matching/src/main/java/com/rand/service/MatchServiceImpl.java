@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -78,6 +79,42 @@ public class MatchServiceImpl implements MatchService {
         return ResponseEntity.ok(new ResponseDTO<>(null));
     }
 
+    @Scheduled(fixedRate = 6000)
+    public void removeQueue1Min(){
+        log.info("dddd");
+        String server = System.getenv("INSTANCE_ID");
+        if(server.equals("server1")){
+            return;
+        }
+        boolean acquired = lockCheck(MATCH_LOCK_KEY,MATCH_LOCK_TIMEOUT);
+
+        if (acquired) {
+            try {
+
+                long currentTime = System.currentTimeMillis();
+                long thresholdTime = currentTime - TimeUnit.SECONDS.toMillis(60); // 1분   전의 시간
+                // "1분 초과된" 사용자만 찾아야 하므로, 현재 시간에서 60초를 빼고, 그 시간이 지난 사용자들을 가져옵니다.
+                Set<String> expiredUsrIds = inMemRepository.sortedSetRangeByScore(WAITING_QUE_KEY, 0, thresholdTime - 1);
+
+                //1분 넘은 사람 제거 후 웹소켓 알람
+                // 1분 이상 대기한 사용자 처리
+                for (String expiredUserId : expiredUsrIds) {
+                    log.info("1분 이상 대기한 사용자: " + expiredUserId);
+                    //대기 큐에서 제거
+                    inMemRepository.sortedSetRemove(WAITING_QUE_KEY, expiredUserId);
+                    //1분 경과 알람
+                    publisher.sendNotification(expiredUserId,"WAITING EXPIRED["+expiredUserId+"]");
+                }
+            } finally {
+                inMemRepository.delete(MATCH_LOCK_KEY);
+            }
+
+        } else {
+            throw new InternerServerException("ERR-CMN-03");
+        }
+
+
+    }
     @Async
     private void processMatchingQueue() {
         long currentTime = System.currentTimeMillis();
@@ -85,8 +122,6 @@ public class MatchServiceImpl implements MatchService {
 
         Set<String> usrIds = inMemRepository.sortedSetRangeByScore(WAITING_QUE_KEY, thresholdTime, currentTime);
 
-
-        //1분 넘은 사람 제거 후 웹소켓 알람
 
         if (usrIds.size() < 2) {
             // 매칭할 수 있는 사용자가 충분하지 않으면 종료

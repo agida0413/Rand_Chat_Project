@@ -17,33 +17,39 @@ import java.util.Map;
 @Component
 public class SubsCriber implements MessageListener {
 
-    private final StringRedisTemplate redisTemplate;
+
     private final NotificationService connectionService;
 
-    public SubsCriber(StringRedisTemplate redisTemplate, NotificationService connectionService) {
-        this.redisTemplate = redisTemplate;
+
+    public SubsCriber(NotificationService connectionService) {
+
         this.connectionService = connectionService;
+
     }
 
     // Redis 메시지 수신 처리
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String payload = new String(message.getBody());
-        Map<String, String> data = null;
-        try {
-            data = parsePayload(payload);
-        } catch (JsonProcessingException e) {
+        try{
+            String payload = new String(message.getBody());
+            Map<String, String> data = null;
+
+                data = parsePayload(payload);
+
+
+            String userId = data.get("userId");
+            String notificationMessage = data.get("message");
+
+            // 현재 서버에 연결된 클라이언트라면 메시지 전송
+            String serverInstanceId = connectionService.getServerInstanceForUser(userId);
+            if (isCurrentInstance(serverInstanceId)) {
+                sendToClient(userId, notificationMessage);
+            }
+        }
+        catch (Exception e){
             throw new RuntimeException(e);
         }
 
-        String userId = data.get("userId");
-        String notificationMessage = data.get("message");
-
-        // 현재 서버에 연결된 클라이언트라면 메시지 전송
-        String serverInstanceId = connectionService.getServerInstanceForUser(userId);
-        if (isCurrentInstance(serverInstanceId)) {
-            sendToClient(userId, notificationMessage);
-        }
     }
 
     private Map<String, String> parsePayload(String payload) throws JsonProcessingException {
