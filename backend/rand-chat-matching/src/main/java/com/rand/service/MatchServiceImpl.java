@@ -63,8 +63,8 @@ public class MatchServiceImpl implements MatchService {
 
                 inMemRepository.hashSave(MEMBER_DISTANCE_COND_KEY, usrId, distance);
 
-                //sse 저장
-                sseNotificationService.connect(usrId);
+//                //sse 저장
+//                sseNotificationService.connect(usrId);
 
                 processMatchingQueue();
             } finally {
@@ -145,8 +145,10 @@ public class MatchServiceImpl implements MatchService {
         inMemRepository.sortedSetRemove(WAITING_QUE_KEY, firstUserId);
         inMemRepository.sortedSetRemove(WAITING_QUE_KEY, secondUserId);
 
-        publisher.sendNotification(firstUserId,"MATCH COMPLETE");
-        publisher.sendNotification(secondUserId,"MATCH COMPLETE");
+        double distance = inMemRepository.calculateDistance(firstUserId, secondUserId);
+
+        publisher.sendNotification(firstUserId,"MATCH COMPLETE["+secondUserId+","+distance+"km]");
+        publisher.sendNotification(secondUserId,"MATCH COMPLETE["+firstUserId+","+distance+"km]");
 
     }
 
