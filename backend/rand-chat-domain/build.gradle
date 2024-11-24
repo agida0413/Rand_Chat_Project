@@ -10,3 +10,9 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+
+    implementation project(':rand-chat-config')
+
+
+}
