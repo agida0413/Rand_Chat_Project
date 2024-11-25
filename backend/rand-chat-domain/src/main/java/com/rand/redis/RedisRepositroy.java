@@ -92,8 +92,13 @@ public class RedisRepositroy  implements InMemRepository  {
 
     @Override
     public Point getLoc(String usrId) {
+        List<Point> points = redisTemplate.opsForGeo().position(RedisKey.GEO_KEY, usrId);
 
-        return redisTemplate.opsForGeo().position(RedisKey.GEO_KEY,usrId).stream().findFirst().orElse(null);
+        // Null 또는 빈 리스트 처리
+        if (points == null || points.isEmpty()) {
+            return null; // 위치 정보를 찾을 수 없을 경우
+        }
+        return points.get(0); // 첫 번째 Point 반환
     }
     @Override
     public void setSave(String key, Object value, long ttl, TimeUnit timeUnit) {

@@ -6,13 +6,16 @@ import com.rand.config.redis.pubsub.SseNotificationService;
 import com.rand.config.redis.pubsub.SubsCriber;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
+import com.rand.exception.custom.BadRequestException;
 import com.rand.exception.custom.InternerServerException;
 import com.rand.match.dto.MatchDTO;
+import com.rand.match.model.Match;
 import com.rand.member.model.Members;
 import com.rand.redis.InMemRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.geo.Point;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
+import java.awt.*;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +40,9 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public ResponseEntity<ResponseDTO<Void>> matchLogic(MatchDTO matchDTO) {
 
+
+
+
         boolean acquired = lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
 
         if (acquired) {
@@ -51,6 +58,15 @@ public class MatchServiceImpl implements MatchService {
                 long timestamp = System.currentTimeMillis();
                 String usrId = String.valueOf(members.getUsrId());
 
+                // validation
+
+                // 거리 정보가 없을 경우
+                Point point = inMemRepository.getLoc(usrId);
+                if(point ==null){
+                    throw new BadRequestException("ERR-LOC-CS-01");
+                }
+
+
                 log.info("usrid={}", usrId);
                 //큐 저장
                 inMemRepository.sortedSetSave(RedisKey.WAITING_QUE_KEY, usrId, timestamp);
@@ -60,8 +76,6 @@ public class MatchServiceImpl implements MatchService {
 
                 inMemRepository.hashSave(RedisKey.MEMBER_DISTANCE_COND_KEY, usrId, distance);
 
-//                //sse 저장
-//                sseNotificationService.connect(usrId);
 
                 processMatchingQueue();
             } finally {

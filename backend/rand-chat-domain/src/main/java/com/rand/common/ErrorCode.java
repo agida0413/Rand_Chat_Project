@@ -88,6 +88,8 @@ public enum ErrorCode {
     NO_MATCH_PWD_FROM_MEMBER(400,"ERR-EAUTH-CS-09","비밀번호가 일치하지 않습니다."),
     ALREADY_ACTIVE_FROM_MEMBER(400,"ERR-EAUTH-CS-10","이미 계정이 활성화 상태이거나 존재하지 않는 계정입니다."),
 
+    // 회원의 위치정보가 없음
+    NO_MEMBER_LOCATION(400,"ERR-LOC-CS-01","회원의 등록된 위치정보가 없습니다."),
 
     //시큐리티
     SEC_LOGIN_FAIL(401,"ERR-SEC-01","입력한 정보가 일치하지 않습니다"),
