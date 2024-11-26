@@ -28,17 +28,17 @@ public class MatchingController {
         return  matchService.matchLogic(matchDTO);
     }
 
-    @GetMapping("/test")
-    public String test(){
-        long startTime = System.currentTimeMillis(); // 또는 System.nanoTime()
-
-        testService.matchingtest();
-        // 실행 종료 시간 기록
-        long endTime = System.currentTimeMillis(); // 또는 System.nanoTime()
-
-        long duration = endTime - startTime;
-
-        log.info("종료시간 = {} ",duration);
-        return "OK";
-    }
+//    @GetMapping("/test")
+//    public String test(){
+//        long startTime = System.currentTimeMillis(); // 또는 System.nanoTime()
+//
+//        testService.matchingtest();
+//        // 실행 종료 시간 기록
+//        long endTime = System.currentTimeMillis(); // 또는 System.nanoTime()
+//
+//        long duration = endTime - startTime;
+//
+//        log.info("종료시간 = {} ",duration);
+//        return "OK";
+//    }
 }

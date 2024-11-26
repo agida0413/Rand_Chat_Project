@@ -113,7 +113,7 @@ public class MatchServiceImpl implements MatchService {
                     //대기 큐에서 제거
                     inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, expiredUserId);
                     //1분 경과 알람
-                    publisher.sendNotification(expiredUserId,"WAITING EXPIRED["+expiredUserId+"]");
+                    publisher.sendNotification(expiredUserId,"WAITING EXPIRED");
                 }
             } finally {
                 inMemRepository.delete(RedisKey.MATCH_LOCK_KEY);
