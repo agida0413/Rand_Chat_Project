@@ -29,9 +29,12 @@ private double localeLon;
 private MembersSex sex;
 private LocalDate birth;
 private String name;
-//엔티티 컬럼 외 정보
-private String authCode; // 인증코드 ( 이메일 )
+
+   //엔티티 컬럼 외 정보
+    private String authCode; // 인증코드 ( 이메일 )
     private double distance;
+    private String newPassword;
+
     //회원가입
     public Members(JoinDTO joinDTO) {
         this.username = joinDTO.getUsername();
@@ -97,5 +100,9 @@ private String authCode; // 인증코드 ( 이메일 )
     public Members(MatchDTO matchDTO){
         this.distance = matchDTO.getDistance();
 
+    }
+    public Members(UpdatePwdDTO updatePwdDTO){
+        this.password = updatePwdDTO.getPassword();
+        this.newPassword = updatePwdDTO.getNewPassword();
     }
 }

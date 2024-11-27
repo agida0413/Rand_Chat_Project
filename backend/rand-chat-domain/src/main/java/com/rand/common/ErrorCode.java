@@ -31,6 +31,9 @@ public enum ErrorCode {
     VALIDATAION_FAIL_JOIN_BIRTH(400, "ERR-VALID-MEM-06", "올바른 생년월일 형식이 아닙니다."),
     //11 /22 추가
     VALIDATAION_FAIL_NAME(400, "ERR-VALID-MEM-18", "올바른 이름 형식이 아닙니다."),
+    VALIDATAION_FAIL_PWD(400, "ERR-VALID-MEM-19", "현재 비밀번호는 공백일 수 없습니다."),
+    VALIDATAION_FAIL_NEW_PWD(400, "ERR-VALID-MEM-20", "새로운 비밀번호 형식이 맞지 않습니다.(8~16자, 특수문자 포함 및 공백불가) "),
+
 
     //이메일 인증 관련 에러코드
     VALIDATAION_FAIL_EMAIL_AUTH(400, "ERR-VALID-MEM-07", "올바른 이메일 형식이 아닙니다."),
@@ -91,18 +94,21 @@ public enum ErrorCode {
     // 회원의 위치정보가 없음
     NO_MEMBER_LOCATION(400,"ERR-LOC-CS-01","회원의 등록된 위치정보가 없습니다."),
 
+    //동일한 비밀번호로 변경 불가
+    CANT_SAME_PASSWORD(400, "ERR-MEM-CS-01", "기존 비밀번호와 동일한 비밀번호로 바꿀 수 없습니다."),
     //시큐리티
     SEC_LOGIN_FAIL(401,"ERR-SEC-01","입력한 정보가 일치하지 않습니다"),
     SEC_LOGIN_INPUT_NULL(400,"ERR-SEC-02","아이디, 비밀번호를 입력해주세요."),
     SEC_LOGIN_THIS_SUSPEND_MEM(401,"ERR-SEC-03","탈퇴한 계정입니다."),
     SEC_LOGIN_THIS_LOCK_MEM(401,"ERR-SEC-04","잠긴 계정입니다.(패스워드 5회 미일치) 계정을 활성화 해주세요."),
     SEC_LOGIN_THIS_INACTIVE_MEM(401,"ERR-SEC-05","비 활성화 계정입니다. 계정을 활성화 해주세요."),
+    SEC_LOGIN_THIS_NOT_ACTIVE(401,"ERR-SEC-11","활성화 계정이 아닙니다.(잠금 혹은 비활성화)"),
     SEC_NO_REFRESH_TOKEN(401,"ERR-SEC-06","비 정상적인 접근입니다."), //클라이언트로 부터 받은  리프레시 토큰이 없음
     SEC_REFRESH_TOKEN_EXPIRED(401,"ERR-SEC-07","세션이 만료되었습니다."), //클라이언트로 부터 받은  리프레시 토큰의 유효기간이 지남.
     SEC_NO_MATCH_TOKEN_CATEGORY(401,"ERR-SEC-08","비 정상적인 접근입니다."), //클라이언트로 부터 받은  토큰의 카테고리(액세스,리프레시)가 맞지않음
     SEC_UN_ILLEGAL_TOKEN(401,"ERR-SEC-09","비 정상적인 접근입니다."), //비정상적인 토큰임 (지워졋어야 했던 토큰이나 등등)
     SEC_MUST_REISSUE_TOKEN(410,"ERR-SEC-10","토큰을 재발행 하세요."); //엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
-    
+
     
 
     private final int status;

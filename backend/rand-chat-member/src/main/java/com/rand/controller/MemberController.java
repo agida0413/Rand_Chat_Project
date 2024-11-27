@@ -85,4 +85,10 @@ public class MemberController {
         return  memberService.memberCurLocationUpdate(curLocationDTO);
     }
 
+    //비밀번호 업데이트
+    @PutMapping(value = "/pwd",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ResponseDTO<Void>> updatePwd(@Validated UpdatePwdDTO updatePwdDTO){
+        return memberService.memberUpdatePwd(updatePwdDTO);
+    }
+
 }

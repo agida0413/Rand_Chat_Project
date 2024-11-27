@@ -131,4 +131,49 @@
                state = 'LOCKED'
         WHERE username = #{username}
     </update>
+
+    <select id="findByUsrId" parameterType="Members" resultType="Members">
+        /* Membermapper.xml.findByUsername  회원 전체 정보 리턴 by userId */
+        SELECT usr_id
+              , username
+              , password
+              , email
+              , nick_name
+              , pwd_wrong
+              , state
+              , profile_img
+              , locale_lat
+              , locale_lon
+              , sex
+              , birth
+           FROM MEMBERS
+          WHERE 1=1
+            AND usr_id = #{usrId}
+
+    </select>
+
+    <select id="findByUsrIdWithLock" parameterType="Members" resultType="Members">
+        /* Membermapper.xml.findByUsername  회원 전체 정보 리턴 by userId AND LOCK */
+        SELECT usr_id
+             , username
+             , password
+             , email
+             , nick_name
+             , pwd_wrong
+             , state
+             , profile_img
+             , locale_lat
+             , locale_lon
+             , sex
+             , birth
+               FROM MEMBERS
+               WHERE 1=1
+           AND usr_id = #{usrId}
+           FOR UPDATE
+    </select>
+    <update id="updatePwd" parameterType="Members">
+        UPDATE MEMBERS SET
+               password = #{newPassword}
+        WHERE  usr_id   = #{usrId}
+    </update>
 </mapper>

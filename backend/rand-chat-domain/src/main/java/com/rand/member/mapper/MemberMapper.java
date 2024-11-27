@@ -22,4 +22,7 @@ public interface MemberMapper {
     public Members findByUsername(String username);
     public void pwdWrongUpdate(String username);
     public void memberStateLock(String username);
+    public Members findByUsrIdWithLock(Members members);
+    public Members findByUsrId(Members members);
+    public void updatePwd(Members members);
 }

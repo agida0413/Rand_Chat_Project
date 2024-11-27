@@ -35,6 +35,16 @@ public class MyBatisMemberRepository implements MemberRepository{
     }
 
     @Override
+    public Members findByUsrId(Members members) {
+        return memberMapper.findByUsrId(members);
+    }
+
+    @Override
+    public Members findByUsrIdWithLock(Members members) {
+        return memberMapper.findByUsrIdWithLock(members);
+    }
+
+    @Override
     @Transactional
     public void pwdWrongUpdate(String username) {
         Members findMembers = findByUsername(username);
@@ -82,5 +92,8 @@ public class MyBatisMemberRepository implements MemberRepository{
         return memberMapper.userNameDuplicateCheck(members);
     }
 
-
+    @Override
+    public void updatePwd(Members members){
+        memberMapper.updatePwd(members);
+    }
 }

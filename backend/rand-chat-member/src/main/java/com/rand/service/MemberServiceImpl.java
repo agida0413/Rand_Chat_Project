@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.concurrent.TimeUnit;
@@ -261,6 +262,45 @@ public class MemberServiceImpl implements MemberService{
         mailService.emailNewPwdSend(email,password);
 
         return ResponseEntity.ok(new ResponseDTO<Void>(null));
+    }
+
+    //비밀번호 변경
+    @Override
+    @Transactional
+    public ResponseEntity<ResponseDTO<Void>> memberUpdatePwd(UpdatePwdDTO updatePwdDTO) {
+        Members members = new Members(updatePwdDTO);
+        //아이디번호
+        int intUsrId = SecurityContextGet.getUsrId();
+
+        members.setUsrId(intUsrId);
+
+        //업데이트를 위한 조회 (락킹)
+        Members findMembers = memberRepository.findByUsrIdWithLock(members);
+
+        // 회원정보가 없음
+        if(findMembers == null){
+            throw new BadRequestException("ERR-EAUTH-CS-07");
+        }
+
+        //비밀번호가 일치하지 않음
+        if(!bCryptPasswordEncoder.matches(members.getPassword(),findMembers.getPassword())){
+            throw new BadRequestException("ERR-EAUTH-CS-09");
+        }
+        //기존비밀번호와 일치함
+        if(bCryptPasswordEncoder.matches(members.getNewPassword(),findMembers.getPassword())){
+            throw new BadRequestException("ERR-MEM-CS-01");
+        }
+
+        //활성화 계정이 아님
+        if(!findMembers.getState().equals(MembersState.ACTIVE)){
+            throw new BadRequestException("ERR-SEC-11");
+        }
+
+        //업데이트
+        members.setNewPassword(bCryptPasswordEncoder.encode(members.getNewPassword()));
+        memberRepository.updatePwd(members);
+
+        return ResponseEntity.ok(new ResponseDTO<Void>());
     }
 
     @Override

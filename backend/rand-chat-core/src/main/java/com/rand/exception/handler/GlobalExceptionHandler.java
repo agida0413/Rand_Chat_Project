@@ -184,6 +184,9 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("unlockAccountDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_UNLOCK_ACCOUNT_PWD;
                 }
+                if (fieldError.getObjectName().equals("updatePwdDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_PWD;
+                }
                 break;
             case "email":
                 if (fieldError.getObjectName().equals("joinDTO")) {
@@ -241,7 +244,11 @@ public class GlobalExceptionHandler {
                     errorCode = ErrorCode.VALIDATAION_FAIL_NAME;
 
                 break;
-
+            case "newPassword":
+                if (fieldError.getObjectName().equals("updatePwdDTO")) {
+                    errorCode = ErrorCode.VALIDATAION_FAIL_NEW_PWD;
+                }
+                break;
             default:
                 errorCode = null; // 매칭되는 오류가 없을 경우 null 반환
                 break;
