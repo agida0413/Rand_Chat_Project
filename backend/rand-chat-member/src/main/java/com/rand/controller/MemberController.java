@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/member",produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
-
-
     private final MemberService memberService;
 
     //이메일 인증번호 발송 One per Service
