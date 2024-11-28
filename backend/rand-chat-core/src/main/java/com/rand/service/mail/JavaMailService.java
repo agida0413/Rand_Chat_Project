@@ -1,5 +1,6 @@
 package com.rand.service.mail;
 
+import com.rand.config.var.RedisKey;
 import com.rand.exception.custom.InternerServerException;
 import com.rand.member.model.Members;
 import com.rand.member.repository.MemberRepository;
@@ -24,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 public class JavaMailService implements MailService {
 
     private final JavaMailSender javaMailSender;
-    private final MemberRepository memberRepository;//멤버관련 레파지토리
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final InMemRepository inMemRepository;
 
@@ -47,7 +47,8 @@ public class JavaMailService implements MailService {
             mimeMessageHelper.setText(htmlContent,true);
 
             javaMailSender.send(message);//전송
-            String redisKey = email+":UnlockAccount"; //이메일인증코드 키
+
+            String redisKey = RedisKey.UNLOCK_ACCOUNT_KEY+email; //이메일인증코드 키
 
             certificationNumber=  bCryptPasswordEncoder.encode(certificationNumber);
 
@@ -86,11 +87,7 @@ public class JavaMailService implements MailService {
             mimeMessageHelper.setText(htmlContent,true);
 
             javaMailSender.send(message);//전송
-            String redisKey = email+":authCd"; //이메일인증코드 키
-//            RedisConnection connection = ((RedisRoutingConfig.DynamicRedisConnectionFactory) redisTemplate.getConnectionFactory()).getConnection(redisKey);
-//            // 이제 해당 연결로 Redis 작업 수행
-//            connection.set(new StringRedisSerializer().serialize(redisKey), new GenericJackson2JsonRedisSerializer().serialize(certificationNumber));
-
+            String redisKey = RedisKey.JOIN_EMAIL_AUTH_CODE_KEY+email; //이메일인증코드 키
 
             certificationNumber=  bCryptPasswordEncoder.encode(certificationNumber);
 

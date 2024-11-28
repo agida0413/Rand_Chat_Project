@@ -21,7 +21,7 @@ public final class RedisKey {
     public static final String JOIN_EMAIL_AUTH_CODE_KEY= "authCd:";
     
     //회원가입 이메일 인증 시도 횟수
-    public static final String JOIN_EMAIL_AUTH_CODE_ATTEMPT_KEY= "emlAuthAttempt:";
+    public static final String JOIN_EMAIL_AUTH_CODE_ATTEMPT_KEY= "emailAuthAttempt:";
     //리프레시토큰
     public static final String REFRESH_TOKEN_KEY ="refresh:";
 

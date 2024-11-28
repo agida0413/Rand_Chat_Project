@@ -13,5 +13,6 @@ repositories {
 
 dependencies {
     implementation project(':rand-chat-domain')
+    implementation project(':rand-chat-config')
 }
 
