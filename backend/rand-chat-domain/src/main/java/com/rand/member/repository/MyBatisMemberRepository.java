@@ -96,4 +96,9 @@ public class MyBatisMemberRepository implements MemberRepository{
     public void updatePwd(Members members){
         memberMapper.updatePwd(members);
     }
+
+    @Override
+    public void memberDel(Members members){
+        memberMapper.memberDel(members);
+    }
 }

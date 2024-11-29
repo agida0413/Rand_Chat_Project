@@ -171,9 +171,16 @@
            AND usr_id = #{usrId}
            FOR UPDATE
     </select>
+
     <update id="updatePwd" parameterType="Members">
         UPDATE MEMBERS SET
                password = #{newPassword}
+        WHERE  usr_id   = #{usrId}
+    </update>
+
+    <update id="memberDel" parameterType="Members">
+        UPDATE MEMBERS SET
+        state = #{state}
         WHERE  usr_id   = #{usrId}
     </update>
 </mapper>

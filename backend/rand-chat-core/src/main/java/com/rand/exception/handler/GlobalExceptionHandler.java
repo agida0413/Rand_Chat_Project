@@ -184,7 +184,7 @@ public class GlobalExceptionHandler {
                 if (fieldError.getObjectName().equals("unlockAccountDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_UNLOCK_ACCOUNT_PWD;
                 }
-                if (fieldError.getObjectName().equals("updatePwdDTO")) {
+                if (fieldError.getObjectName().equals("updatePwdDTO") || fieldError.getObjectName().equals("memberDelDTO")) {
                     errorCode = ErrorCode.VALIDATAION_FAIL_PWD;
                 }
                 break;
