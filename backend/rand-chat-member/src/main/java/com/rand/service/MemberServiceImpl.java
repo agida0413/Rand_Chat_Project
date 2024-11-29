@@ -303,6 +303,50 @@ public class MemberServiceImpl implements MemberService{
         return ResponseEntity.ok(new ResponseDTO<Void>());
     }
 
+    //멤버 탈퇴
+    @Override
+    @Transactional
+    public ResponseEntity<ResponseDTO<Void>> memberDel(String refreshToken,MemberDelDTO memberDelDTO) {
+        String usrId = String.valueOf(SecurityContextGet.getUsrId());
+
+        Members members  = new Members(memberDelDTO);
+        members.setUsrId(SecurityContextGet.getUsrId());
+
+        //보안을 위한 리프레시토큰도 점검
+
+        // 액세스토큰 usrid기반 리프레시토큰 가져오기
+        String originalToken=(String)inMemRepository.getValue(RedisKey.REFRESH_TOKEN_KEY+usrId);
+
+        if(originalToken == null ){
+            throw new BadRequestException("ERR-SEC-06");
+        }
+        //리프레시 토큰 불일치 시
+        if(!originalToken.equals(refreshToken)){
+                throw new BadRequestException("ERR-SEC-06");
+        }
+
+        //업데이트를 위한 조회 (락킹)
+        Members findMembers = memberRepository.findByUsrIdWithLock(members);
+
+        // 회원정보가 없음
+        if(findMembers == null){
+            throw new BadRequestException("ERR-EAUTH-CS-07");
+        }
+
+        //비밀번호가 일치하지 않음
+        if(!bCryptPasswordEncoder.matches(members.getPassword(),findMembers.getPassword())){
+            throw new BadRequestException("ERR-EAUTH-CS-09");
+        }
+
+
+
+        memberRepository.memberDel(members);
+
+
+
+        return ResponseEntity.ok(new ResponseDTO<Void>());
+    }
+
     @Override
     public ResponseEntity<ResponseDTO<Void>> emailAuthCheck(EmailAuthCheckDTO emailAuthCheckDTO) {
 

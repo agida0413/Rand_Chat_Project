@@ -22,5 +22,6 @@ public interface MemberRepository {
     public Members findByUsrIdWithLock(Members members);
     public Members findByUsrId(Members members);
     public void updatePwd(Members members);
+    public void memberDel(Members members);
 
 }

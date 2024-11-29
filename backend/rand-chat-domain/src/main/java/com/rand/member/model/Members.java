@@ -105,4 +105,8 @@ private String name;
         this.password = updatePwdDTO.getPassword();
         this.newPassword = updatePwdDTO.getNewPassword();
     }
+    public Members(MemberDelDTO memberDelDTO){
+        this.password = memberDelDTO.getPassword();
+        this.state = MembersState.SUSPENDED;
+    }
 }

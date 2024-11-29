@@ -89,5 +89,10 @@ public class MemberController {
     public ResponseEntity<ResponseDTO<Void>> updatePwd(@Validated UpdatePwdDTO updatePwdDTO){
         return memberService.memberUpdatePwd(updatePwdDTO);
     }
+    //비밀번호 업데이트
+    @PutMapping(value = "/del",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<ResponseDTO<Void>> memberDel(@CookieValue(value = "refresh",required = false) String refreshToken, @Validated MemberDelDTO memberDelDTO){
+        return memberService.memberDel(refreshToken,memberDelDTO);
+    }
 
 }

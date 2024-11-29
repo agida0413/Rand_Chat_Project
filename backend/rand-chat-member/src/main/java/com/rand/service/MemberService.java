@@ -27,4 +27,5 @@ public interface MemberService {
     public ResponseEntity<ResponseDTO<Void>> memberCurLocationUpdate(CurLocationDTO curLocationDTO);
 
     public ResponseEntity<ResponseDTO<Void>> memberUpdatePwd(UpdatePwdDTO updatePwdDTO);
+    public ResponseEntity<ResponseDTO<Void>> memberDel(String refreshToken,MemberDelDTO memberDelDTO);
 }
