@@ -7,6 +7,7 @@ import com.rand.member.model.cons.MembersSex;
 import com.rand.member.model.cons.MembersState;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.math.BigDecimal;
@@ -34,7 +35,7 @@ private String name;
     private String authCode; // 인증코드 ( 이메일 )
     private double distance;
     private String newPassword;
-
+    private MultipartFile uptProfileImg;
     //회원가입
     public Members(JoinDTO joinDTO) {
         this.username = joinDTO.getUsername();
@@ -109,4 +110,9 @@ private String name;
         this.password = memberDelDTO.getPassword();
         this.state = MembersState.SUSPENDED;
     }
+    public Members(UpdateProfileImgDTO updateProfileImgDTO){
+        this.uptProfileImg = updateProfileImgDTO.getUptProfileImg();
+
+    }
+
 }

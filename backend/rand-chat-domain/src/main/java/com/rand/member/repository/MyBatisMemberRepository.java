@@ -101,4 +101,12 @@ public class MyBatisMemberRepository implements MemberRepository{
     public void memberDel(Members members){
         memberMapper.memberDel(members);
     }
+    @Override
+    public void updateProfileImg(Members members){
+        memberMapper.updateProfileImg(members);
+    }
+    @Override
+    public Members selectMemberInfo(Members members){
+        return memberMapper.selectMemberInfo(members);
+    }
 }

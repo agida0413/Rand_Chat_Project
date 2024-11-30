@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rand.common.ResponseDTO;
 import com.rand.member.dto.request.*;
 import com.rand.member.dto.response.ResFindIdDTO;
+import com.rand.member.dto.response.ResMemInfoDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -28,4 +29,7 @@ public interface MemberService {
 
     public ResponseEntity<ResponseDTO<Void>> memberUpdatePwd(UpdatePwdDTO updatePwdDTO);
     public ResponseEntity<ResponseDTO<Void>> memberDel(String refreshToken,MemberDelDTO memberDelDTO);
+    public ResponseEntity<ResponseDTO<Void>> updateProfileImg(UpdateProfileImgDTO updateProfileImgDTO);
+
+    public ResponseEntity<ResponseDTO<ResMemInfoDTO>> getMemberInfo();
 }

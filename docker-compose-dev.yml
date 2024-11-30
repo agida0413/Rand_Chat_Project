@@ -43,6 +43,8 @@ services:
     container_name: backend_member
     networks: 
      - app_network
+    env_file:
+      - .env  # .env 파일을 로드
     environment: 
       - INSTANCE_ID=server3  
   backend_match1:
@@ -57,6 +59,8 @@ services:
     container_name: backend_match1
     networks: 
      - app_network
+    env_file:
+      - .env  # .env 파일을 로드
     environment: 
       - INSTANCE_ID=server1 
   backend_match2:
@@ -71,6 +75,8 @@ services:
       - redis-master-1
     networks: 
      - app_network 
+    env_file:
+    - .env  # .env 파일을 로드     
     environment: 
       - INSTANCE_ID=server2  
   mysql:

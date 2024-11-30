@@ -4,12 +4,15 @@ import com.rand.common.ResponseDTO;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
+import com.rand.exception.custom.InternerServerException;
 import com.rand.member.dto.request.*;
 import com.rand.member.dto.response.ResFindIdDTO;
+import com.rand.member.dto.response.ResMemInfoDTO;
 import com.rand.member.model.Members;
 import com.rand.member.model.cons.MembersState;
 import com.rand.member.repository.MemberRepository;
 import com.rand.redis.InMemRepository;
+import com.rand.service.file.FileService;
 import com.rand.service.mail.MailService;
 import com.rand.util.mail.RandomGenerator;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,7 @@ public class MemberServiceImpl implements MemberService{
     private final MailService mailService;
     private final InMemRepository inMemRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final FileService fileService;
 
 
 
@@ -402,5 +406,84 @@ public class MemberServiceImpl implements MemberService{
 
     }
 
+    //프로필 이미지 업데이트
+    @Override
+    @Transactional
+    public ResponseEntity<ResponseDTO<Void>> updateProfileImg(UpdateProfileImgDTO updateProfileImgDTO){
+        Members members = new Members(updateProfileImgDTO);
 
+        //회원 고유번호
+        int usrId = SecurityContextGet.getUsrId();
+        members.setUsrId(usrId);
+
+        Members findMembers = memberRepository.findByUsrIdWithLock(members);
+        // 회원정보가 없음
+        if(findMembers == null){
+            throw new BadRequestException("ERR-EAUTH-CS-07");
+        }
+        //기존 이미지
+        String originalProfileImg = null;
+        if(findMembers.getProfileImg()!=null){
+
+            originalProfileImg = findMembers.getProfileImg();
+        }
+
+
+        String profileImg = null;
+
+        // 파일이 비어있지 않을시 - > 업데이트하려는 프사가 기본이미지가 아닐 시
+        if(!members.getUptProfileImg().isEmpty()){
+            // 새 이미지 업로드
+              profileImg = fileService.upload(members.getUptProfileImg());
+              members.setProfileImg(profileImg);
+
+           // 기존 이미지 NULL 아닐 시 s3 삭제
+            if(originalProfileImg!=null){
+                fileService.deleteImage(originalProfileImg);
+            }
+
+        }
+
+        //데이터 베이스 업데이트 (null 일시 기본이미지)
+        try {
+            //데이터베이스 로직 수행중 익셉션 발생 시 s3 롤백을 위한 try
+            memberRepository.updateProfileImg(members);
+        } catch (Exception e) {
+            //s3에 업로드한 이미지가 있을 경우
+            if(members.getProfileImg() != null){
+                fileService.deleteImage(members.getProfileImg());
+            }
+            throw new InternerServerException("ERR-FILE-07");
+        }
+
+
+
+
+
+
+
+        return  ResponseEntity.ok(new ResponseDTO<Void>());
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO<ResMemInfoDTO>> getMemberInfo(){
+        Members members = new Members();
+        int usrId = SecurityContextGet.getUsrId();
+        members.setUsrId(usrId);
+
+        Members resultMembers = memberRepository.selectMemberInfo(members);
+
+        if(resultMembers == null){
+            //회원정보가 없음
+            throw new BadRequestException("ERR-EAUTH-CS-07");
+        }
+
+        ResMemInfoDTO memberInfo = new ResMemInfoDTO(resultMembers);
+        
+        //바디만 캐시
+        ResponseDTO<ResMemInfoDTO> responseDTO = new ResponseDTO<>(memberInfo);
+        //바디만 캐시
+        return ResponseEntity.ok(responseDTO);
+
+    }
 }
