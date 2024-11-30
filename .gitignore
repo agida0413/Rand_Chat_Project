@@ -7,7 +7,7 @@
 mysqlevn
 # BlueJ files
 *.ctxt
-
+.evn
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
