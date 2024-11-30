@@ -23,11 +23,13 @@ subprojects { // 각 모듈에 적용할 공통 설정
 	apply plugin: 'io.spring.dependency-management'
 
 	dependencies { // 롬복은 공통적으로 사용하는 의존성이니 여기서 끌어다 사용
+		implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 		implementation 'org.springframework.boot:spring-boot-starter-mail'
 		implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
 		runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
 		runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 		implementation 'software.amazon.awssdk:s3:2.27.2'
+		implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2' // 버전은 프로젝트에 맞게 조정
 		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 		implementation 'org.springframework.boot:spring-boot-starter-security'
 		implementation 'org.springframework.boot:spring-boot-starter-validation'

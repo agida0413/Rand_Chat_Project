@@ -26,4 +26,6 @@ public interface MemberMapper {
     public Members findByUsrId(Members members);
     public void updatePwd(Members members);
     public void memberDel(Members members);
+    public void updateProfileImg(Members members);
+    public Members selectMemberInfo(Members members);
 }

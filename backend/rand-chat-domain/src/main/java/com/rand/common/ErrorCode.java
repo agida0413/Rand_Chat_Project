@@ -107,9 +107,18 @@ public enum ErrorCode {
     SEC_REFRESH_TOKEN_EXPIRED(401,"ERR-SEC-07","세션이 만료되었습니다."), //클라이언트로 부터 받은  리프레시 토큰의 유효기간이 지남.
     SEC_NO_MATCH_TOKEN_CATEGORY(401,"ERR-SEC-08","비 정상적인 접근입니다."), //클라이언트로 부터 받은  토큰의 카테고리(액세스,리프레시)가 맞지않음
     SEC_UN_ILLEGAL_TOKEN(401,"ERR-SEC-09","비 정상적인 접근입니다."), //비정상적인 토큰임 (지워졋어야 했던 토큰이나 등등)
-    SEC_MUST_REISSUE_TOKEN(410,"ERR-SEC-10","토큰을 재발행 하세요."); //엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
+    SEC_MUST_REISSUE_TOKEN(410,"ERR-SEC-10","토큰을 재발행 하세요."),//엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
 
-    
+    //파일
+
+    FILE_INTERNER_UPLOAD_FAIL(500,"ERR-FILE-01","새 파일 업로드 중 에러발생"),
+    FILE_INTERNER_REMOVE_FAIL(500,"ERR-FILE-02","기존 파일 삭제 중 에러발생"),
+    FILE_INTERNER_UPDATE_FAIL(500,"ERR-FILE-07","프로필 업데이트에 실패 했습니다."),
+
+    FILE_NO_NAME(400,"ERR-FILE-03","기본이미지가 아닌 이미지로 변경중 파일이 비어있거나 이름이 없습니다."),
+    FILE_NO_EXTENSE(400,"ERR-FILE-04","기본이미지가 아닌 이미지로 변경중 파일 확장자가 없습니다"),
+    FILE_NO_ALLOW_EXTENSE(400,"ERR-FILE-05","기본이미지가 아닌 이미지로 변경중 지원되는 확장자가 아닙니다.(jpg,jpeg,png만 가능)"),
+    FILE_TO_MANY_SIZE(400,"ERR-FILE-06","기본이미지가 아닌 이미지로 변경중 파일 사이즈가 너무 큽니다.(최대 5MB)");
 
     private final int status;
     private final String code;

@@ -1,9 +1,12 @@
 package com.rand.controller;
 
 import com.rand.common.ResponseDTO;
+import com.rand.custom.SecurityContextGet;
 import com.rand.member.dto.request.*;
 import com.rand.member.dto.response.ResFindIdDTO;
+import com.rand.member.dto.response.ResMemInfoDTO;
 import com.rand.service.MemberService;
+import com.rand.service.file.FileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 
 
 @Slf4j
@@ -21,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/v1/member",produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberController {
     private final MemberService memberService;
-
+    private final FileService fileService;
     //이메일 인증번호 발송 One per Service
     @PostMapping(value = "/email",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<ResponseDTO<Void>> emailAuthJoin(@Validated EmailAuthSendDTO emailAuthDTO){
@@ -93,6 +98,18 @@ public class MemberController {
     @PutMapping(value = "/del",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<ResponseDTO<Void>> memberDel(@CookieValue(value = "refresh",required = false) String refreshToken, @Validated MemberDelDTO memberDelDTO){
         return memberService.memberDel(refreshToken,memberDelDTO);
+    }
+
+
+    @PutMapping( value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDTO<Void>> updateProfileImg(UpdateProfileImgDTO updateProfileImgDTO){
+        return memberService.updateProfileImg(updateProfileImgDTO);
+    }
+    @GetMapping(value = "/info")
+    public ResponseEntity<ResponseDTO<ResMemInfoDTO>> getMemberInfo(){
+
+
+        return memberService.getMemberInfo();
     }
 
 }
