@@ -9,6 +9,7 @@ import com.rand.member.dto.request.*;
 import com.rand.member.dto.response.ResFindIdDTO;
 import com.rand.member.dto.response.ResMemInfoDTO;
 import com.rand.member.model.Members;
+import com.rand.member.model.cons.MembersSex;
 import com.rand.member.model.cons.MembersState;
 import com.rand.member.repository.MemberRepository;
 import com.rand.redis.InMemRepository;
@@ -24,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -437,11 +440,14 @@ public class MemberServiceImpl implements MemberService{
               profileImg = fileService.upload(members.getUptProfileImg());
               members.setProfileImg(profileImg);
 
-           // 기존 이미지 NULL 아닐 시 s3 삭제
-            if(originalProfileImg!=null){
-                fileService.deleteImage(originalProfileImg);
-            }
 
+
+        }
+
+        // 기존 이미지 NULL 아닐 시 s3 삭제
+        if(originalProfileImg!=null){
+            log.info("profileImg={}",originalProfileImg);
+            fileService.deleteImage(originalProfileImg);
         }
 
         //데이터 베이스 업데이트 (null 일시 기본이미지)
@@ -460,8 +466,8 @@ public class MemberServiceImpl implements MemberService{
 
 
 
-
-
+        //레디스 멤버정보 캐시 업데이트
+        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"profileImg",profileImg,60,TimeUnit.SECONDS);
         return  ResponseEntity.ok(new ResponseDTO<Void>());
     }
 
@@ -471,7 +477,46 @@ public class MemberServiceImpl implements MemberService{
         int usrId = SecurityContextGet.getUsrId();
         members.setUsrId(usrId);
 
-        Members resultMembers = memberRepository.selectMemberInfo(members);
+        Map<Object,Object> cachedMemberInfo = inMemRepository.getHashValueEntry(RedisKey.MEMBER_INFO_KEY+usrId);
+
+        if (cachedMemberInfo != null && !cachedMemberInfo.isEmpty()) {
+            // Redis에 캐시가 있는 경우 DTO로 변환
+            String name = (String) cachedMemberInfo.get("name");
+            String email = (String) cachedMemberInfo.get("email");
+            String username = (String) cachedMemberInfo.get("username");
+            String nickname = (String) cachedMemberInfo.get("nickname");
+            String profileImg = (String) cachedMemberInfo.get("profileImg");
+            String sex = (String) cachedMemberInfo.get("sex");
+
+
+            LocalDate birth = LocalDate.parse((String) cachedMemberInfo.get("birth"));
+
+            Members redisMembers = new Members();
+            redisMembers.setProfileImg(profileImg);
+            redisMembers.setName(name);
+            redisMembers.setEmail(email);
+            redisMembers.setUsername(username);
+            redisMembers.setNickName(nickname);
+            redisMembers.setBirth(birth);
+
+            redisMembers.setUsrId(usrId);
+            if(sex.equals("MAN")){
+                redisMembers.setSex(MembersSex.MAN);
+
+            }else{
+                redisMembers.setSex(MembersSex.FEMAIL);
+            }
+
+
+            ResMemInfoDTO resMemInfoDTO = new ResMemInfoDTO(redisMembers);
+            ResponseDTO<ResMemInfoDTO> responseDTO = new ResponseDTO<>(resMemInfoDTO);
+
+            return  ResponseEntity.ok(responseDTO);
+
+
+        }
+
+            Members resultMembers = memberRepository.selectMemberInfo(members);
 
         if(resultMembers == null){
             //회원정보가 없음
@@ -479,10 +524,18 @@ public class MemberServiceImpl implements MemberService{
         }
 
         ResMemInfoDTO memberInfo = new ResMemInfoDTO(resultMembers);
-        
-        //바디만 캐시
+
+        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"name",resultMembers.getName(),60,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"email",resultMembers.getEmail(),60,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"username",resultMembers.getUsername(),60,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"nickname",resultMembers.getNickName(),60,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"profileImg",resultMembers.getProfileImg(),60,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"birth",resultMembers.getBirth(),60,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"sex",resultMembers.getSex(),60,TimeUnit.SECONDS);
+
+
         ResponseDTO<ResMemInfoDTO> responseDTO = new ResponseDTO<>(memberInfo);
-        //바디만 캐시
+
         return ResponseEntity.ok(responseDTO);
 
     }

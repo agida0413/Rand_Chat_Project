@@ -285,4 +285,11 @@ public class RedisRepositroy  implements InMemRepository  {
     public void setDelete(String key, String value) {
         redisTemplate.opsForSet().remove(key,value);
     }
+    @Override
+    public Map<Object,Object> getHashValueEntry(String key){
+
+        Map<Object, Object> map = redisTemplate.opsForHash().entries(key);
+
+        return  map;
+    }
 }

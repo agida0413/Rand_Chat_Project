@@ -141,6 +141,8 @@ public class S3FileService implements FileService {
     public void deleteImage(String imageAddress) {
         bucket=bucket.trim();
         String key = getKeyFromImageAddress(imageAddress);
+        log.info("key={}",key);
+        log.info("bucket={}",bucket);
         try {
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                     .bucket(bucket)
@@ -148,11 +150,13 @@ public class S3FileService implements FileService {
                     .build();
             s3Client.deleteObject(deleteObjectRequest);
         } catch (S3Exception e) {
-
+            log.error("S3Exception occurred: {}, HTTP Status Code: {}", e.awsErrorDetails().errorMessage(), e.statusCode());
+            log.error("Request failed for bucket={}, key={}", bucket, key, e);
+            log.info("발생지점5");
             //기존 파일 삭제 중 에러발생
             throw new InternerServerException("ERR-FILE-02");
         } catch (Exception e) {
-
+            log.info("발생지점6");
             //기존 파일 삭제 중 에러발생
             throw new InternerServerException("ERR-FILE-02");
         }
@@ -164,16 +168,17 @@ public class S3FileService implements FileService {
             String decodedPath = URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8.name());
             return decodedPath.startsWith("/") ? decodedPath.substring(1) : decodedPath;
         } catch (MalformedURLException e) {
+                log.info("발생지점1");
 
             //기존 파일 삭제 중 에러발생
             throw new InternerServerException("ERR-FILE-02");
         } catch (UnsupportedEncodingException e) {
-
+            log.info("발생지점2");
             //기존 파일 삭제 중 에러발생
             throw new InternerServerException("ERR-FILE-02");
         }
         catch (Exception e) {
-
+            log.info("발생지점3");
             //기존 파일 삭제 중 에러발생
             throw new InternerServerException("ERR-FILE-02");
         }

@@ -35,6 +35,7 @@ public interface InMemRepository {
     //    public T getListRange(String key,int start,int end);
     public Object getSetAllValue(String key);
     public double calculateDistance(String usrId1 , String usrId2);
+    public Map<Object,Object> getHashValueEntry(String key);
 
 //    //update
 //    public void listUpdate(String key, int index, T value);
