@@ -27,5 +27,7 @@ public final class RedisKey {
 
     //매칭 락 타임아웃
     public static final long MATCH_LOCK_TIMEOUT = 5; // 5초 동안 대기 후 재시도
+    //멤버인포 키
+    public static final String MEMBER_INFO_KEY = "memberInfo:"; // 5초 동안 대기 후 재시도
 
 }
