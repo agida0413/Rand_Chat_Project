@@ -1,29 +1,33 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { api } from '@/api'
 
-export const useSendAuthCode = () => {
-  const queryClient = useQueryClient()
+type BaseResponse = {
+  status: number
+  code: string
+  timestamp: string
+}
+type SuccessResponse = BaseResponse & { data: string }
+type ErrorResponse = BaseResponse & { message: string }
 
-  return useMutation({
+type ResponseValue = SuccessResponse | ErrorResponse
+
+export const useSendAuthCode = () => {
+  return useMutation<ResponseValue, Error, string>({
     mutationFn: async (email: string) => {
+      const formData = new URLSearchParams()
+      formData.append('email', email)
+
       const res = await api.post('/api/v1/member/email', {
-        body: JSON.stringify({ email })
+        body: formData
       })
 
+      const data = await res.json()
+
       if (!res.ok) {
-        const errorData = await res.json()
-        console.error('Error details:', errorData)
-        throw new Error(errorData.message || '서버 에러 발생')
+        throw data
       }
 
-      return res.json()
-    },
-    onMutate: async newUser => {},
-    onSuccess: data => {
-      console.log(data)
-    },
-    onError: error => {
-      console.log(error)
+      return data
     }
   })
 }
