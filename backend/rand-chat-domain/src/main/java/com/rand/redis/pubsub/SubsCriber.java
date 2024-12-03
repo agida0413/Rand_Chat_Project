@@ -1,13 +1,17 @@
-package com.rand.config.redis.pubsub;
+package com.rand.redis.pubsub;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rand.common.ErrorCode;
+import com.rand.common.ResponseDTO;
+import com.rand.common.ResponseErr;
+import com.rand.config.constant.SSETYPE;
+import com.rand.match.dto.response.ResMatchResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -34,16 +38,20 @@ public class SubsCriber implements MessageListener {
             String payload = new String(message.getBody());
             Map<String, String> data = null;
 
-                data = parsePayload(payload);
+            data = parsePayload(payload);
 
 
             String userId = data.get("userId");
-            String notificationMessage = data.get("message");
+            String nickname = data.get("nickname");
+            String profileImg = data.get("profileImg");
+            String sex = data.get("sex");
+            String type= data.get("type");
+            String distance = data.get("distance");
 
             // 현재 서버에 연결된 클라이언트라면 메시지 전송
             String serverInstanceId = connectionService.getServerInstanceForUser(userId);
             if (isCurrentInstance(serverInstanceId)) {
-                sendToClient(userId, notificationMessage);
+                sendToClient(userId, nickname,profileImg,sex,type,distance);
             }
         }
         catch (Exception e){
@@ -63,16 +71,33 @@ public class SubsCriber implements MessageListener {
         return getCurrentInstanceId().equals(serverInstanceId);
     }
 
-    private void sendToClient(String userId, String message) {
+    private void sendToClient(String userId, String nickname,String profileImg,String sex,String type,String distance) {
         // SSE 연결된 클라이언트에게 메시지 전송
         SseEmitter emitter = SseConnectionRegistry.getEmitter(userId);
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().name("notification").data(message));
-                log.info("test result= {}",message);
-                log.info("emmiter={}",emitter);
-                log.info("emmiter str ={}",emitter.toString());
-                log.info("emmiter id={}",userId);
+                if(type.equals(SSETYPE.MATCHINGCOMPLETE.toString())){
+                    ResMatchResultDTO resMatchResultDTO = new ResMatchResultDTO();
+                    resMatchResultDTO.setNickname(nickname);
+                    resMatchResultDTO.setProfileImg(profileImg);
+                    resMatchResultDTO.setSex(sex);
+                    resMatchResultDTO.setDistance(distance);
+
+                    ResponseDTO<ResMatchResultDTO> responseDTO = new ResponseDTO(resMatchResultDTO);
+                    emitter.send(SseEmitter.event().name("notification").data(responseDTO));
+                    log.info("test result= {}",responseDTO);
+                    log.info("emmiter={}",emitter);
+                    log.info("emmiter str ={}",emitter.toString());
+                    log.info("emmiter id={}",userId);
+                }
+                else if(type.equals(SSETYPE.MATCHINGTIMEOUT.toString())){
+                    ResponseErr responseErr = new ResponseErr(ErrorCode.COMMON_SSE_MATCH_1MIN_TIME_OUT);
+                    emitter.send(SseEmitter.event().name("notification").data(responseErr));
+                    log.info("test result= {}",responseErr);
+                    log.info("emmiter={}",emitter);
+                    log.info("emmiter id={}",userId);
+                }
+
 
             } catch (Exception e) {
                 // 전송 실패 시 처리

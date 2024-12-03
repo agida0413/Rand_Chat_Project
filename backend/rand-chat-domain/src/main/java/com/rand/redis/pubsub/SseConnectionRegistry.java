@@ -1,6 +1,5 @@
-package com.rand.config.redis.pubsub;
+package com.rand.redis.pubsub;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.concurrent.ConcurrentHashMap;

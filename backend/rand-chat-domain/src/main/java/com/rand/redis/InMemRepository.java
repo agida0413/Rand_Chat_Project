@@ -49,8 +49,7 @@ public interface InMemRepository {
 
 
     //LOCKING
-    public boolean lockSetting(String lockKey, String value, int expired);
-
+    public boolean lockCheck(String LOCK_KEY, long LOCK_TIMEOUT);
 
 
     //pub/sub

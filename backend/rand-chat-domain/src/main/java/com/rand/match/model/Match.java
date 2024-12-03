@@ -1,6 +1,6 @@
 package com.rand.match.model;
 
-import com.rand.match.dto.MatchDTO;
+import com.rand.match.dto.request.MatchDTO;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,4 +1,4 @@
-package com.rand.config.redis.pubsub;
+package com.rand.redis.pubsub;
 
 public interface NotificationService {
     public void registerConnection(String userId, String serverInstanceId);

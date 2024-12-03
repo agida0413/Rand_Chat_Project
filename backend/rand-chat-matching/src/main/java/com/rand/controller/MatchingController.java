@@ -1,9 +1,8 @@
 package com.rand.controller;
 
 import com.rand.common.ResponseDTO;
-import com.rand.match.dto.MatchDTO;
+import com.rand.match.dto.request.MatchDTO;
 import com.rand.service.MatchService;
-import com.rand.service.TestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MatchingController {
 
     private final MatchService matchService;
-    private final TestService  testService;
+
     @GetMapping
     public ResponseEntity<ResponseDTO<Void>> matchUser(@Validated @ModelAttribute MatchDTO matchDTO){
         return  matchService.matchLogic(matchDTO);

@@ -1,11 +1,14 @@
-package com.rand.config.redis.pubsub;
+package com.rand.redis.pubsub;
 
 
+import com.rand.common.ResponseDTO;
 import com.rand.config.var.RedisKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.io.IOException;
 
 @Service
 @Slf4j

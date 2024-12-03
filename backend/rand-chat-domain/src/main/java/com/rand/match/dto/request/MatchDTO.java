@@ -1,4 +1,4 @@
-package com.rand.match.dto;
+package com.rand.match.dto.request;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
