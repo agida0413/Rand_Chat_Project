@@ -9,13 +9,12 @@ export const getAccessToken = () => {
   return accessToken || ''
 }
 
+const unknownError = { message: '알 수 없는 에러 입니다.' }
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => null)
 
-    const error = new Error(
-      errorData?.message || `HTTP error! status: ${response.status}`
-    )
+    const error = errorData?.state ? errorData : unknownError
     throw error
   }
 
@@ -32,7 +31,6 @@ const fetchWrapper = async (url: string, options: RequestInit = {}) => {
     const response = await fetch(`${API_BASE_URL}${url}`, {
       ...options,
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
         Accept: 'application/json',
         ...options.headers,
         Authorization: `Bearer ${getAccessToken()}`
