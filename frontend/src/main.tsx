@@ -1,34 +1,24 @@
-import { StrictMode } from 'react'
+import { StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ThemeProvider } from 'styled-components'
 import {
-  MutationCache,
-  QueryCache,
   QueryClient,
-  QueryClientProvider
+  QueryClientProvider,
+  QueryErrorResetBoundary
 } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { notify } from '@/utils/toast'
 
 import { GlobalStyle } from '@/styles/global'
 import theme from '@/styles/theme'
 import Router from './routes'
+import ErrorFallback from './routes/layout/ErrorFallback'
+import Loading from './routes/layout/Loading'
+import { ErrorBoundary } from 'react-error-boundary'
 
-const queryClient = new QueryClient({
-  queryCache: new QueryCache({
-    onError: error => {
-      notify('error', error.message)
-    }
-  }),
-  mutationCache: new MutationCache({
-    onError: error => {
-      notify('error', error.message)
-    }
-  })
-})
+const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -36,7 +26,17 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider theme={theme}>
         <ToastContainer />
         <GlobalStyle />
-        <Router />
+        <QueryErrorResetBoundary>
+          {({ reset }) => (
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={ErrorFallback}>
+              <Suspense fallback={<Loading />}>
+                <Router />
+              </Suspense>
+            </ErrorBoundary>
+          )}
+        </QueryErrorResetBoundary>
       </ThemeProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
