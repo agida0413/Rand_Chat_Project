@@ -1,13 +1,17 @@
-import { FallbackProps } from 'react-error-boundary'
+type ErrorPageProps = {
+  error: Error
+  resetErrorBoundary: () => void
+}
+
 export default function ErrorFallback({
   error,
   resetErrorBoundary
-}: FallbackProps) {
+}: ErrorPageProps) {
   return (
-    <>
-      <h1>ErrorFallback...</h1>
-      <div>{error.message}</div>
-      <button onClick={() => resetErrorBoundary()}>reset</button>
-    </>
+    <div>
+      <h1>Error occurred</h1>
+      <p>{error?.message || 'An unexpected error occurred.'}</p>
+      <button onClick={resetErrorBoundary}>Retry</button>
+    </div>
   )
 }
