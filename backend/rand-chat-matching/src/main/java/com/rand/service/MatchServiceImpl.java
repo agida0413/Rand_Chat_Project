@@ -1,18 +1,17 @@
 package com.rand.service;
 
 import com.rand.common.ResponseDTO;
-import com.rand.config.redis.pubsub.Publisher;
-import com.rand.config.redis.pubsub.SseNotificationService;
-import com.rand.config.redis.pubsub.SubsCriber;
+import com.rand.common.service.CommonMemberService;
+import com.rand.config.constant.SSETYPE;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
 import com.rand.exception.custom.InternerServerException;
-import com.rand.match.dto.MatchDTO;
-import com.rand.match.model.Match;
+import com.rand.match.dto.request.MatchDTO;
 import com.rand.member.model.Members;
 import com.rand.redis.InMemRepository;
 
+import com.rand.redis.pubsub.Publisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
@@ -20,10 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
-import java.awt.*;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class MatchServiceImpl implements MatchService {
 
     private final InMemRepository inMemRepository;
-
+    private final CommonMemberService commonMemberService;
     private final Publisher publisher;
 
 
@@ -43,7 +40,7 @@ public class MatchServiceImpl implements MatchService {
 
 
 
-        boolean acquired = lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
+        boolean acquired = inMemRepository.lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
 
         if (acquired) {
             try {
@@ -96,7 +93,7 @@ public class MatchServiceImpl implements MatchService {
         if(server.equals("server1")){
             return;
         }
-        boolean acquired = lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
+        boolean acquired =inMemRepository.lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
 
         if (acquired) {
             try {
@@ -113,7 +110,7 @@ public class MatchServiceImpl implements MatchService {
                     //대기 큐에서 제거
                     inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, expiredUserId);
                     //1분 경과 알람
-                    publisher.sendNotification(expiredUserId,"WAITING EXPIRED");
+                    publisher.sendNotification(expiredUserId, null,null,null,SSETYPE.MATCHINGTIMEOUT.toString(),null);
                 }
             } finally {
                 inMemRepository.delete(RedisKey.MATCH_LOCK_KEY);
@@ -191,32 +188,18 @@ public class MatchServiceImpl implements MatchService {
         inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, secondUserId);
 
         double distance = inMemRepository.calculateDistance(firstUserId, secondUserId);
+        
+        //회원정보
+        Members firstMemberInfo = commonMemberService.memberGetInfoMethod(Integer.parseInt(firstUserId));
+        Members secondeMemberInfo = commonMemberService.memberGetInfoMethod(Integer.parseInt(secondUserId));
+        String strDistance = String.valueOf(distance);
 
-        publisher.sendNotification(firstUserId,"MATCH COMPLETE["+secondUserId+","+distance+"km]");
-        publisher.sendNotification(secondUserId,"MATCH COMPLETE["+firstUserId+","+distance+"km]");
+        publisher.sendNotification(firstUserId,secondeMemberInfo.getNickName(),secondeMemberInfo.getProfileImg(),secondeMemberInfo.getSex().toString(),
+                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance);
+        publisher.sendNotification(secondUserId,firstMemberInfo.getNickName(),firstMemberInfo.getProfileImg(),firstMemberInfo.getSex().toString(),
+                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance);
 
     }
 
-    private boolean lockCheck(String LOCK_KEY, long LOCK_TIMEOUT) {
-        String lockVal = String.valueOf(System.currentTimeMillis() + 10000);
-        boolean acquired = false;
-        long startTime = System.currentTimeMillis();
 
-        // 락 획득 시도 (최대 10초 동안 시도)
-        while (System.currentTimeMillis() - startTime < TimeUnit.SECONDS.toMillis(LOCK_TIMEOUT)) {
-            acquired = inMemRepository.lockSetting(LOCK_KEY, lockVal, 10);
-
-            if (Boolean.TRUE.equals(acquired)) {
-                acquired = true;
-                break;  // 락 획득 성공
-            } else {
-                try {
-                    Thread.sleep(1000);  // 1초 대기 후 재시도
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();  // 인터럽트 처리
-                }
-            }
-        }
-        return acquired;
-    }
 }

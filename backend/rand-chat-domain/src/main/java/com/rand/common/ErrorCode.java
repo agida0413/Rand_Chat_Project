@@ -11,6 +11,7 @@ public enum ErrorCode {
     
     COMMON_LOCK_FAIL(500, "ERR-CMN-03", "락 획득 실패(타임아웃)"),
     COMMON_SSE_SEND_FAIL(500, "ERR-CMN-04", "SSE 서버응답 실패"),
+    COMMON_SSE_MATCH_1MIN_TIME_OUT(500, "ERR-CMN-05", "매칭 대기열 1분 초과하여 대기열에서 제외되었음"),
 
     //타입에러 , 프론트엔드 측 메시징 금지 및 별도 처리 요망
     PARAMETER_TYPE_MISMATCH(400, "ERR-TYPE-01", "PARAMETER TYPE MISMATCH OR CLIENT GIVE UNPREDICTABLE"),

@@ -1,7 +1,8 @@
 package com.rand.controller;
 
-import com.rand.config.redis.pubsub.SseNotificationService;
+
 import com.rand.custom.SecurityContextGet;
+import com.rand.redis.pubsub.SseNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

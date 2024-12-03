@@ -235,11 +235,36 @@ public class RedisRepositroy  implements InMemRepository  {
         return  redisTemplate.opsForSet().members(key);
     }
 
-    @Override
-    public boolean lockSetting(String lockKey, String value, int expired) {
+
+    private boolean lockSetting(String lockKey, String value, int expired) {
         TimeUnit timeUnit = TimeUnit.SECONDS;
 
         return redisTemplate.opsForValue().setIfAbsent(lockKey,value,expired,timeUnit);
+    }
+
+    @Override
+    public boolean lockCheck(String LOCK_KEY, long LOCK_TIMEOUT) {
+        String lockVal = String.valueOf(System.currentTimeMillis() + 10000);
+        boolean acquired = false;
+        long startTime = System.currentTimeMillis();
+
+        // 락 획득 시도 (최대 10초 동안 시도)
+        while (System.currentTimeMillis() - startTime < TimeUnit.SECONDS.toMillis(LOCK_TIMEOUT)) {
+            acquired = lockSetting(LOCK_KEY, lockVal, 10);
+
+            if (Boolean.TRUE.equals(acquired)) {
+                acquired = true;
+                break;  // 락 획득 성공
+            } else {
+                try {
+                    Thread.sleep(1000);  // 1초 대기 후 재시도
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();  // 인터럽트 처리
+                }
+            }
+        }
+        return acquired;
+
     }
 
     @Override
