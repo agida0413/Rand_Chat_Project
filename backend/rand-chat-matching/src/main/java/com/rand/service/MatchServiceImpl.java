@@ -9,6 +9,7 @@ import com.rand.exception.custom.BadRequestException;
 import com.rand.exception.custom.InternerServerException;
 import com.rand.match.dto.request.MatchDTO;
 import com.rand.member.model.Members;
+import com.rand.member.model.cons.MembersSex;
 import com.rand.redis.InMemRepository;
 
 import com.rand.redis.pubsub.Publisher;
