@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rand.common.ErrorCode;
 import com.rand.common.ResponseDTO;
 import com.rand.common.ResponseErr;
+import com.rand.config.constant.PubSubChannel;
 import com.rand.config.constant.SSETYPE;
+import com.rand.config.var.RedisKey;
 import com.rand.match.dto.response.ResMatchResultDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -39,19 +41,39 @@ public class SubsCriber implements MessageListener {
             Map<String, String> data = null;
 
             data = parsePayload(payload);
-
-
+            //필수 값
             String userId = data.get("userId");
-            String nickname = data.get("nickname");
-            String profileImg = data.get("profileImg");
-            String sex = data.get("sex");
-            String type= data.get("type");
-            String distance = data.get("distance");
+            String channel = data.get("channel");
 
+            String serverInstanceId = "";
             // 현재 서버에 연결된 클라이언트라면 메시지 전송
-            String serverInstanceId = connectionService.getServerInstanceForUser(userId);
+
+            if(channel.equals(PubSubChannel.MATCHING_CHANNEL.toString())){
+                //매칭 채널
+                serverInstanceId = connectionService.getServerInstanceForUser(userId,PubSubChannel.MATCHING_CHANNEL.toString(), RedisKey.SSE_MATCHING_CONNECTION_KEY);
+            }
+            else if (channel.equals(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString())){
+                serverInstanceId = connectionService.getServerInstanceForUser(userId,PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), RedisKey.SSE_MATCHING_ACCEPT_CONNECTION_KEY);
+            }
+
+            log.info("serverTest={}",serverInstanceId);
             if (isCurrentInstance(serverInstanceId)) {
-                sendToClient(userId, nickname,profileImg,sex,type,distance);
+                //분기
+                if(channel.equals(PubSubChannel.MATCHING_CHANNEL.toString())){
+                    log.info("t1");
+                    //매칭채널
+                    String nickname = data.get("nickname");
+                    String profileImg = data.get("profileImg");
+                    String sex = data.get("sex");
+                    String type= data.get("type");
+                    String distance = data.get("distance");
+                    matchingResultSendToClient(userId, nickname,profileImg,sex,type,distance);
+                }else if (channel.equals(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString())){
+                    log.info("t2");
+                    //매칭 수락 채널
+                    matchingAcceptSendToClient(userId);
+                }
+
             }
         }
         catch (Exception e){
@@ -71,9 +93,10 @@ public class SubsCriber implements MessageListener {
         return getCurrentInstanceId().equals(serverInstanceId);
     }
 
-    private void sendToClient(String userId, String nickname,String profileImg,String sex,String type,String distance) {
+    //매칭 결과 전송
+    private void matchingResultSendToClient(String userId, String nickname,String profileImg,String sex,String type,String distance) {
         // SSE 연결된 클라이언트에게 메시지 전송
-        SseEmitter emitter = SseConnectionRegistry.getEmitter(userId);
+        SseEmitter emitter = SseConnectionRegistry.getEmitter(userId,PubSubChannel.MATCHING_CHANNEL.toString());
         if (emitter != null) {
             try {
                 if(type.equals(SSETYPE.MATCHINGCOMPLETE.toString())){
@@ -84,7 +107,7 @@ public class SubsCriber implements MessageListener {
                     resMatchResultDTO.setDistance(distance);
 
                     ResponseDTO<ResMatchResultDTO> responseDTO = new ResponseDTO(resMatchResultDTO);
-                    emitter.send(SseEmitter.event().name("notification").data(responseDTO));
+                    emitter.send(SseEmitter.event().name(PubSubChannel.MATCHING_CHANNEL.toString()).data(responseDTO));
                     log.info("test result= {}",responseDTO);
                     log.info("emmiter={}",emitter);
                     log.info("emmiter str ={}",emitter.toString());
@@ -92,7 +115,7 @@ public class SubsCriber implements MessageListener {
                 }
                 else if(type.equals(SSETYPE.MATCHINGTIMEOUT.toString())){
                     ResponseErr responseErr = new ResponseErr(ErrorCode.COMMON_SSE_MATCH_1MIN_TIME_OUT);
-                    emitter.send(SseEmitter.event().name("notification").data(responseErr));
+                    emitter.send(SseEmitter.event().name(PubSubChannel.MATCHING_CHANNEL.toString()).data(responseErr));
                     log.info("test result= {}",responseErr);
                     log.info("emmiter={}",emitter);
                     log.info("emmiter id={}",userId);
@@ -101,7 +124,26 @@ public class SubsCriber implements MessageListener {
 
             } catch (Exception e) {
                 // 전송 실패 시 처리
-                SseConnectionRegistry.removeEmitter(userId);
+                SseConnectionRegistry.removeEmitter(userId,PubSubChannel.MATCHING_CHANNEL.toString());
+                log.info("test result= fail");
+            }
+        }
+    }
+
+    private void matchingAcceptSendToClient(String userId) {
+        // SSE 연결된 클라이언트에게 메시지 전송
+        SseEmitter emitter = SseConnectionRegistry.getEmitter(userId,PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString());
+        log.info("emmiter1={}",emitter);
+        if (emitter != null) {
+            try {
+
+                log.info("emmiter2={}",emitter);
+                    emitter.send(SseEmitter.event().name(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString()).data("OK"));
+
+
+            } catch (Exception e) {
+                // 전송 실패 시 처리
+                SseConnectionRegistry.removeEmitter(userId,PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString());
                 log.info("test result= fail");
             }
         }
@@ -112,4 +154,6 @@ public class SubsCriber implements MessageListener {
         log.info("serverId={}",System.getenv("INSTANCE_ID"));
         return System.getenv("INSTANCE_ID");
     }
+
+
 }
