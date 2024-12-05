@@ -5,7 +5,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SseConnectionRegistry {
-    // 클라이언트 ID (userId)와 SSE 연결을 관리하는 맵
+    // 클라이언트 ID (userId)와 SSE 연결을 관리하는 맵 CuncerrnetHashMap 동시성 제어 유리
     private static final ConcurrentHashMap<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 
     // 클라이언트의 SSE 연결을 등록

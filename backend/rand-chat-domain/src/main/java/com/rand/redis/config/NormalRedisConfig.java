@@ -48,6 +48,7 @@ public class NormalRedisConfig {
             RedisConnectionFactory connectionFactory, SubsCriber subscriber) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
+        // 매칭 채널
         container.addMessageListener(subscriber, new PatternTopic(PubSubChannel.MATCHING_CHANNEL.toString()));
         container.addMessageListener(subscriber, new PatternTopic(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString()));
 
