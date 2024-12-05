@@ -2,7 +2,9 @@ package com.rand.config.var;
 
 public final class RedisKey {
     //매칭 sse 정보담는  키
-    public static final String SSE_CONNECTION_KEY = "sse:match:";
+    public static final String SSE_MATCHING_CONNECTION_KEY = "sse:match:";
+    //매칭 수락 sse
+    public static final String SSE_MATCHING_ACCEPT_CONNECTION_KEY = "sse:match:accept:";
     //회원 위치정보
     public static final String GEO_KEY = "member:location";
     //대기열 

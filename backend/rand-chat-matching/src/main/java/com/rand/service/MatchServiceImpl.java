@@ -2,6 +2,7 @@ package com.rand.service;
 
 import com.rand.common.ResponseDTO;
 import com.rand.common.service.CommonMemberService;
+import com.rand.config.constant.PubSubChannel;
 import com.rand.config.constant.SSETYPE;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
@@ -111,7 +112,7 @@ public class MatchServiceImpl implements MatchService {
                     //대기 큐에서 제거
                     inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, expiredUserId);
                     //1분 경과 알람
-                    publisher.sendNotification(expiredUserId, null,null,null,SSETYPE.MATCHINGTIMEOUT.toString(),null);
+                    publisher.sendNotification(expiredUserId, null,null,null,SSETYPE.MATCHINGTIMEOUT.toString(),null, PubSubChannel.MATCHING_CHANNEL.toString());
                 }
             } finally {
                 inMemRepository.delete(RedisKey.MATCH_LOCK_KEY);
@@ -196,9 +197,9 @@ public class MatchServiceImpl implements MatchService {
         String strDistance = String.valueOf(distance);
 
         publisher.sendNotification(firstUserId,secondeMemberInfo.getNickName(),secondeMemberInfo.getProfileImg(),secondeMemberInfo.getSex().toString(),
-                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance);
+                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance, PubSubChannel.MATCHING_CHANNEL.toString());
         publisher.sendNotification(secondUserId,firstMemberInfo.getNickName(),firstMemberInfo.getProfileImg(),firstMemberInfo.getSex().toString(),
-                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance);
+                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance, PubSubChannel.MATCHING_CHANNEL.toString());
 
     }
 

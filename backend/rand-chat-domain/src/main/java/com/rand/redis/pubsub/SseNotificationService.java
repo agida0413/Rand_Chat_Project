@@ -22,34 +22,34 @@ public class SseNotificationService implements NotificationService {
 
 
     // 특정 회원의 SSE 연결을 Redis에 저장
-    public void registerConnection(String userId, String serverInstanceId) {
-        redisTemplate.opsForValue().set(RedisKey.SSE_CONNECTION_KEY + userId, serverInstanceId);
+    public void registerConnection(String userId,String channel, String serverInstanceId,String key) {
+        redisTemplate.opsForValue().set(key + userId+":"+channel, serverInstanceId);
     }
 
     // 특정 회원의 SSE 연결 정보 조회
-    public String getServerInstanceForUser(String userId) {
-        return redisTemplate.opsForValue().get(RedisKey.SSE_CONNECTION_KEY + userId);
+    public String getServerInstanceForUser(String userId,String channel,String key) {
+        return redisTemplate.opsForValue().get(key + userId+":"+channel);
     }
 
     // 연결 해제 시 삭제
-    public void removeConnection(String userId) {
-        redisTemplate.delete(RedisKey.SSE_CONNECTION_KEY + userId);
+    public void removeConnection(String userId,String channel,String key) {
+        redisTemplate.delete(key + userId+":"+channel);
     }
 
 
-    public SseEmitter connect(String userId) {
+    public SseEmitter connect(String userId,String channel,String key) {
         SseEmitter emitter = new SseEmitter(180 * 1000L); // 90초 타임아웃
-        SseConnectionRegistry.register(userId, emitter);
-        registerConnection(userId, getCurrentServerInstanceId());
-        emitter.onCompletion(() -> cleanup(userId));
-        emitter.onTimeout(() -> cleanup(userId));
-        emitter.onError(e -> cleanup(userId));
+        SseConnectionRegistry.register(userId,channel, emitter);
+        registerConnection(userId, channel,getCurrentServerInstanceId(),key);
+        emitter.onCompletion(() -> cleanup(userId,channel,key));
+        emitter.onTimeout(() -> cleanup(userId,channel,key));
+        emitter.onError(e -> cleanup(userId,channel,key));
         return emitter;
     }
 
-    private void cleanup(String userId) {
-        SseConnectionRegistry.removeEmitter(userId);
-        removeConnection(userId);
+    private void cleanup(String userId,String channel,String key) {
+        SseConnectionRegistry.removeEmitter(userId,channel);
+        removeConnection(userId,channel,key);
     }
 
     private String getCurrentServerInstanceId() {
