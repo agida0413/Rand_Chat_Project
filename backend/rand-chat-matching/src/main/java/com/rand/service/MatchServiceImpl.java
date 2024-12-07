@@ -8,6 +8,7 @@ import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
 import com.rand.exception.custom.InternerServerException;
+import com.rand.jwt.JWTUtil;
 import com.rand.match.dto.request.MatchDTO;
 import com.rand.member.model.Members;
 import com.rand.member.model.cons.MembersSex;
@@ -34,7 +35,7 @@ public class MatchServiceImpl implements MatchService {
     private final InMemRepository inMemRepository;
     private final CommonMemberService commonMemberService;
     private final Publisher publisher;
-
+    private final JWTUtil jwtUtil;
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> matchLogic(MatchDTO matchDTO) {
@@ -112,7 +113,7 @@ public class MatchServiceImpl implements MatchService {
                     //대기 큐에서 제거
                     inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, expiredUserId);
                     //1분 경과 알람
-                    publisher.sendNotification(expiredUserId, null,null,null,SSETYPE.MATCHINGTIMEOUT.toString(),null, PubSubChannel.MATCHING_CHANNEL.toString());
+                    publisher.sendNotification(expiredUserId, null,null,null,SSETYPE.MATCHINGTIMEOUT.toString(),null, PubSubChannel.MATCHING_CHANNEL.toString(),null);
                 }
             } finally {
                 inMemRepository.delete(RedisKey.MATCH_LOCK_KEY);
@@ -182,9 +183,6 @@ public class MatchServiceImpl implements MatchService {
 
     private void matchUsers(String firstUserId, String secondUserId) {
 
-        log.info("Matched users1 = {}", firstUserId);
-        log.info("Matched users2 = {}", secondUserId);
-
         // 매칭된 사용자 제거
         inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, firstUserId);
         inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, secondUserId);
@@ -196,10 +194,20 @@ public class MatchServiceImpl implements MatchService {
         Members secondeMemberInfo = commonMemberService.memberGetInfoMethod(Integer.parseInt(secondUserId));
         String strDistance = String.valueOf(distance);
 
+        //매칭 수락,거절을 위한 토큰 생성
+        String matchToken = jwtUtil.createMatchingToken(firstUserId,secondUserId);
+
+        //매칭 수락,거절에 대한 레디스 값 생성
+        //첫번째 유저+두번째유저에 대한 고유 hashset  , firstuser 컬럼 - > wait 상태로 설정 30초 ttl
+        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,firstUserId,"WAIT",30,TimeUnit.SECONDS);
+        //첫번째 유저+두번째유저에 대한 고유 hashset  , seconduser 컬럼 - > wait 상태로 설정 30초 ttl
+        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,secondUserId,"WAIT",30,TimeUnit.SECONDS);
+
+
         publisher.sendNotification(firstUserId,secondeMemberInfo.getNickName(),secondeMemberInfo.getProfileImg(),secondeMemberInfo.getSex().toString(),
-                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance, PubSubChannel.MATCHING_CHANNEL.toString());
+                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance, PubSubChannel.MATCHING_CHANNEL.toString(),matchToken);
         publisher.sendNotification(secondUserId,firstMemberInfo.getNickName(),firstMemberInfo.getProfileImg(),firstMemberInfo.getSex().toString(),
-                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance, PubSubChannel.MATCHING_CHANNEL.toString());
+                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance, PubSubChannel.MATCHING_CHANNEL.toString(),matchToken);
 
     }
 

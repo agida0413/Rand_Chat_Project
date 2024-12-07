@@ -13,7 +13,7 @@ public class Publisher {
     private final StringRedisTemplate redisTemplate;
 
     //매칭결과
-    public void sendNotification(String userId, String nickname,String profileImg,String sex,String type,String distance,String channel) {
+    public void sendNotification(String userId, String nickname,String profileImg,String sex,String type,String distance,String channel,String matchingAcceptKey) {
         String payload = "";
         //매칭성공 시
         if(type.equals(SSETYPE.MATCHINGCOMPLETE.toString())){
@@ -27,7 +27,8 @@ public class Publisher {
         }
         // 매칭 성공 or 실패 시
         if(type.equals(SSETYPE.MATCHINGCOMPLETE.toString()) || type.equals(SSETYPE.MATCHINGTIMEOUT.toString())){
-            payload = String.format("{\"userId\":\"%s\",\"nickname\":\"%s\",\"profileImg\":\"%s\",\"sex\":\"%s\",\"type\":\"%s\",\"distance\":\"%s\",\"channel\":\"%s\"}", userId, nickname,profileImg,sex,type,distance,channel);
+            payload = String.format("{\"userId\":\"%s\",\"nickname\":\"%s\",\"profileImg\":\"%s\",\"sex\":\"%s\",\"type\":\"%s\",\"distance\":\"%s\",\"channel\":\"%s\",\"matchingAcceptKey\":\"%s\"}"
+                    , userId, nickname,profileImg,sex,type,distance,channel,matchingAcceptKey);
 
             redisTemplate.convertAndSend(PubSubChannel.MATCHING_CHANNEL.toString(), payload);
         }
@@ -37,7 +38,8 @@ public class Publisher {
 
     //매칭 수락
     public void SendMatchingAcceptNotify(String userId, String channel){
-       String payload = String.format("{\"userId\":\"%s\",\"channel\":\"%s\"}", userId,channel);
+       String payload = String.format("{\"userId\":\"%s\",\"channel\":\"%s\",\"type\":\"%s\"}", userId,channel);
         redisTemplate.convertAndSend(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), payload);
     }
+
 }

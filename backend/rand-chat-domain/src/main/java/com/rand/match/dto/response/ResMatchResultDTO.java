@@ -10,5 +10,6 @@ public class ResMatchResultDTO {
     private String sex;
     private String profileImg;
     private String distance;
+    private String matchAcptToken;
 
 }

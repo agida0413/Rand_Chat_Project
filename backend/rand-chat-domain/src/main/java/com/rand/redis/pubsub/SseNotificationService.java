@@ -3,6 +3,7 @@ package com.rand.redis.pubsub;
 
 import com.rand.common.ResponseDTO;
 import com.rand.config.var.RedisKey;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -12,13 +13,12 @@ import java.io.IOException;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SseNotificationService implements NotificationService {
 
     private final StringRedisTemplate redisTemplate;
+    private final Publisher publisher;
 
-    public SseNotificationService(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
 
     // 특정 회원의 SSE 연결을 Redis에 저장
@@ -38,10 +38,12 @@ public class SseNotificationService implements NotificationService {
 
 
     public SseEmitter connect(String userId,String channel,String key) {
-        SseEmitter emitter = new SseEmitter(180 * 1000L); // 90초 타임아웃
+        SseEmitter emitter = new SseEmitter( 1800*1000L); // 90초 타임아웃
         SseConnectionRegistry.register(userId,channel, emitter);
         registerConnection(userId, channel,getCurrentServerInstanceId(),key);
-        emitter.onCompletion(() -> cleanup(userId,channel,key));
+        emitter.onCompletion(() -> {
+            cleanup(userId, channel, key);
+        });
         emitter.onTimeout(() -> cleanup(userId,channel,key));
         emitter.onError(e -> cleanup(userId,channel,key));
         return emitter;
@@ -51,6 +53,7 @@ public class SseNotificationService implements NotificationService {
         SseConnectionRegistry.removeEmitter(userId,channel);
         removeConnection(userId,channel,key);
     }
+
 
     private String getCurrentServerInstanceId() {
         return System.getenv("INSTANCE_ID"); // 서버 인스턴스 ID 반환
