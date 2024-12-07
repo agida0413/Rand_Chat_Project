@@ -10,7 +10,9 @@ import com.rand.common.ResponseErr;
 import com.rand.config.constant.PubSubChannel;
 import com.rand.config.constant.SSETYPE;
 import com.rand.config.var.RedisKey;
+import com.rand.match.dto.response.ResMatchAcceptDTO;
 import com.rand.match.dto.response.ResMatchResultDTO;
+import com.rand.match.model.AcceptState;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -52,7 +54,7 @@ public class SubsCriber implements MessageListener {
                 serverInstanceId = connectionService.getServerInstanceForUser(userId,PubSubChannel.MATCHING_CHANNEL.toString(), RedisKey.SSE_MATCHING_CONNECTION_KEY);
             }
             else if (channel.equals(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString())){
-                serverInstanceId = connectionService.getServerInstanceForUser(userId,PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), RedisKey.SSE_MATCHING_ACCEPT_CONNECTION_KEY);
+                    serverInstanceId = connectionService.getServerInstanceForUser(userId,PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), RedisKey.SSE_MATCHING_ACCEPT_CONNECTION_KEY);
             }
 
 
@@ -74,7 +76,9 @@ public class SubsCriber implements MessageListener {
 
                 }else if (channel.equals(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString())){
                     //매칭 수락 채널
-                    matchingAcceptSendToClient(userId);
+                    String state = data.get("state");
+                    String roomId = data.get("roomId");
+                    matchingAcceptSendToClient(userId,state,roomId);
                 }
 
                 //특정 EMITTER 가져오기
@@ -135,15 +139,32 @@ public class SubsCriber implements MessageListener {
         }
     }
 
-    private void matchingAcceptSendToClient(String userId) {
+    private void matchingAcceptSendToClient(String userId,String state,String roomId) {
         // SSE 연결된 클라이언트에게 메시지 전송
         SseEmitter emitter = SseConnectionRegistry.getEmitter(userId,PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString());
         log.info("emmiter1={}",emitter);
         if (emitter != null) {
             try {
 
-                log.info("emmiter2={}",emitter);
-                    emitter.send(SseEmitter.event().name(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString()).data("OK"));
+                ResMatchAcceptDTO resMatchAcceptDTO = new ResMatchAcceptDTO();
+                resMatchAcceptDTO.setRoomId(roomId);
+                if(state.equals(AcceptState.CLOSE.toString())){
+                    resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
+
+                }
+                if(state.equals(AcceptState.WAITING.toString())){
+                    resMatchAcceptDTO.setAcceptState(AcceptState.WAITING);
+                }
+                if(state.equals(AcceptState.SUCCESS.toString())){
+                    resMatchAcceptDTO.setAcceptState(AcceptState.SUCCESS);
+                }
+                if(state.equals(AcceptState.REFUSED.toString())){
+                    resMatchAcceptDTO.setAcceptState(AcceptState.REFUSED);
+                }
+                resMatchAcceptDTO.setDescription();
+
+                ResponseDTO responseDTO = new ResponseDTO(resMatchAcceptDTO);
+                    emitter.send(SseEmitter.event().name(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString()).data(responseDTO));
 
 
             } catch (Exception e) {

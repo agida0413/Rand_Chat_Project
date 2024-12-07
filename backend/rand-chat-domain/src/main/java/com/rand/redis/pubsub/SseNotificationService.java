@@ -38,7 +38,7 @@ public class SseNotificationService implements NotificationService {
 
 
     public SseEmitter connect(String userId,String channel,String key) {
-        SseEmitter emitter = new SseEmitter( 1800*1000L); // 90초 타임아웃
+        SseEmitter emitter = new SseEmitter( 180*1000L); // 90초 타임아웃
         SseConnectionRegistry.register(userId,channel, emitter);
         registerConnection(userId, channel,getCurrentServerInstanceId(),key);
         emitter.onCompletion(() -> {

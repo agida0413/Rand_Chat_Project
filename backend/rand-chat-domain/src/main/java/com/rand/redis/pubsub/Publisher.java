@@ -2,6 +2,7 @@ package com.rand.redis.pubsub;
 
 import com.rand.config.constant.PubSubChannel;
 import com.rand.config.constant.SSETYPE;
+import com.rand.match.model.AcceptState;
 import com.rand.member.model.cons.MembersSex;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -37,8 +38,8 @@ public class Publisher {
     }
 
     //매칭 수락
-    public void SendMatchingAcceptNotify(String userId, String channel){
-       String payload = String.format("{\"userId\":\"%s\",\"channel\":\"%s\",\"type\":\"%s\"}", userId,channel);
+    public void SendMatchingAcceptNotify(String userId, String channel, AcceptState acceptState,String roomId){
+       String payload = String.format("{\"userId\":\"%s\",\"channel\":\"%s\",\"state\":\"%s\",\"roomId\":\"%s\"}", userId,channel,acceptState.toString(),roomId);
         redisTemplate.convertAndSend(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), payload);
     }
 

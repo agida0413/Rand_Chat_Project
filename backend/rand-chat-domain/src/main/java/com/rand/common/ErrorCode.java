@@ -109,7 +109,10 @@ public enum ErrorCode {
     SEC_NO_MATCH_TOKEN_CATEGORY(401,"ERR-SEC-08","비 정상적인 접근입니다."), //클라이언트로 부터 받은  토큰의 카테고리(액세스,리프레시)가 맞지않음
     SEC_UN_ILLEGAL_TOKEN(401,"ERR-SEC-09","비 정상적인 접근입니다."), //비정상적인 토큰임 (지워졋어야 했던 토큰이나 등등)
     SEC_MUST_REISSUE_TOKEN(410,"ERR-SEC-10","토큰을 재발행 하세요."),//엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
+    SEC_NOT_MATCH_TOKEN_WITH_INFO(410,"ERR-SEC-11","토큰과 로그인 정보가 일치하지 않음."),//엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
 
+    //매칭
+    MATCH_ACCEPT_EXPIRED(400,"ERR-MATCH-01","매칭 수락,거절 가능시간이 종료되었습니다."),
     //파일
 
     FILE_INTERNER_UPLOAD_FAIL(500,"ERR-FILE-01","새 파일 업로드 중 에러발생"),
