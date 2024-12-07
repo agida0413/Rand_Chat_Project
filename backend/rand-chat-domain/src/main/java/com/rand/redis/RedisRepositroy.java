@@ -257,7 +257,7 @@ public class RedisRepositroy  implements InMemRepository  {
                 break;  // 락 획득 성공
             } else {
                 try {
-                    Thread.sleep(1000);  // 1초 대기 후 재시도
+                    Thread.sleep(200);  // 0.2초 대기 후 재시도
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();  // 인터럽트 처리
                 }

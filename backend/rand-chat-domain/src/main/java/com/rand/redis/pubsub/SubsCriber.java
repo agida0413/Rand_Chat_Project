@@ -61,29 +61,43 @@ public class SubsCriber implements MessageListener {
 
             if (isCurrentInstance(serverInstanceId)) {
 
+                try {
+                    //분기
+                    if(channel.equals(PubSubChannel.MATCHING_CHANNEL.toString())){
+                        //매칭채널
+                        String nickname = data.get("nickname");
+                        String profileImg = data.get("profileImg");
+                        String sex = data.get("sex");
+                        String type= data.get("type");
+                        String distance = data.get("distance");
+                        String matchingAcceptKey = data.get("matchingAcceptKey");
+                        matchingResultSendToClient(userId, nickname,profileImg,sex,type,distance,matchingAcceptKey);
 
-                //분기
-                if(channel.equals(PubSubChannel.MATCHING_CHANNEL.toString())){
-                    //매칭채널
-                    String nickname = data.get("nickname");
-                    String profileImg = data.get("profileImg");
-                    String sex = data.get("sex");
-                    String type= data.get("type");
-                    String distance = data.get("distance");
-                    String matchingAcceptKey = data.get("matchingAcceptKey");
-                    matchingResultSendToClient(userId, nickname,profileImg,sex,type,distance,matchingAcceptKey);
 
+                    }else if (channel.equals(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString())){
+                        //매칭 수락 채널
+                        String state = data.get("state");
+                        String roomId = data.get("roomId");
+                        matchingAcceptSendToClient(userId,state,roomId);
+                    }
+                }
+                catch (Exception e){
+                    if(e.getMessage().equals("ResponseBodyEmitter has already completed")){
+                        log.info("Success match");
+                    }
+                }
+                finally {
+                    //특정 EMITTER 가져오기
+                    SseEmitter emitter = SseConnectionRegistry.getEmitter(userId, channel);
+                    if(emitter!=null){
 
-                }else if (channel.equals(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString())){
-                    //매칭 수락 채널
-                    String state = data.get("state");
-                    String roomId = data.get("roomId");
-                    matchingAcceptSendToClient(userId,state,roomId);
+                        emitter.complete(); // 연결 종료
+                    }
+
                 }
 
-                //특정 EMITTER 가져오기
-                SseEmitter emitter = SseConnectionRegistry.getEmitter(userId, channel);
-                emitter.complete(); // 연결 종료
+
+
             }
 
         }
@@ -133,9 +147,12 @@ public class SubsCriber implements MessageListener {
 
             } catch (Exception e) {
                 // 전송 실패 시 처리
+                log.error("err={}",e.getMessage());
+                log.error("err2={}",e.getCause());
                 SseConnectionRegistry.removeEmitter(userId,PubSubChannel.MATCHING_CHANNEL.toString());
                 log.info("test result= fail");
             }
+
         }
     }
 

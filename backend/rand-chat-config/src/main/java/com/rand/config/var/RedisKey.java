@@ -7,6 +7,10 @@ public final class RedisKey {
     public static final String SSE_MATCHING_ACCEPT_CONNECTION_KEY = "sse:match:accept:";
     // 매칭 락
     public static final String MATCH_LOCK_KEY = "match:lock";
+    // 매칭 수락,거절 락
+    public static final String MATCH_ACCEPT_LOCK_KEY = "match:accept:lock:";
+    // 매칭 거절 시 일정시간 리매치 불가 키
+    public static final String MATCH_TEMP_DENY_KEY = "match:deny:";
     //매칭 락 타임아웃
     public static final long MATCH_LOCK_TIMEOUT = 5; // 5초 동안 대기 후 재시도
     //대기열

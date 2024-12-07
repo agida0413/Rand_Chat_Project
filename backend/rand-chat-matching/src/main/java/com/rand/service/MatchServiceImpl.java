@@ -93,7 +93,7 @@ public class MatchServiceImpl implements MatchService {
     public void removeQueue1Min(){
 
         String server = System.getenv("INSTANCE_ID");
-        if(server.equals("server1")){
+        if(!server.equals("server1")){
             return;
         }
         boolean acquired =inMemRepository.lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
@@ -139,7 +139,7 @@ public class MatchServiceImpl implements MatchService {
         }
         // 3. 사용자들의 geo 정보를 가져와 거리 조건을 비교
         for (String firstUserId : usrIds) {
-            log.info(firstUserId);
+
             Double firstUserDistance = (Double) inMemRepository.getHashValue(RedisKey.MEMBER_DISTANCE_COND_KEY, firstUserId);
 
             // 4. 첫 번째 사용자와 가까운 사용자들 찾기 (GeoRadius로 범위 내 사용자 조회)
@@ -151,6 +151,19 @@ public class MatchServiceImpl implements MatchService {
                 if (firstUserId.equals(secondUserId)) {
                     continue;  // 자신과 비교하지 않음
                 }
+                //매칭 거절에 따른 매칭제외
+                String excludeResult1 = (String)inMemRepository.getValue(RedisKey.MATCH_TEMP_DENY_KEY+firstUserId+secondUserId);
+
+                if(excludeResult1!=null){
+                    continue;
+                }else{
+                    String excludeResult2 = (String)inMemRepository.getValue(RedisKey.MATCH_TEMP_DENY_KEY+secondUserId+firstUserId);
+                    if(excludeResult2!=null){
+                        continue;
+                    }
+                }
+                //매칭 거절에 따른 매칭제외  종료
+
 
                 Double secondUserDistance = (Double) inMemRepository.getHashValue(RedisKey.MEMBER_DISTANCE_COND_KEY, secondUserId);
 
@@ -172,7 +185,6 @@ public class MatchServiceImpl implements MatchService {
         //두사용자와의 거리
         double distance = inMemRepository.calculateDistance(firstUserId, secondUserId);
         boolean condition = false;
-        log.info("distance = {}", distance);
 
         if (distance <= firstUserDistance && distance <= secondUserDistance) {
             condition = true;

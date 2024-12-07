@@ -5,6 +5,7 @@ import com.rand.config.constant.PubSubChannel;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
+import com.rand.exception.custom.InternerServerException;
 import com.rand.jwt.JWTUtil;
 import com.rand.match.dto.request.MatchAcceptDTO;
 import com.rand.match.dto.response.ResMatchAcceptDTO;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -41,7 +43,7 @@ public class MatchAcceptServiceImpl implements MatchAcceptService {
 
         String usrId = String.valueOf(SecurityContextGet.getUsrId());
         //매칭토큰
-        String connectionKey = matchToken+":"+usrId;
+
 
         boolean isFirstUsrId;
 
@@ -58,13 +60,7 @@ public class MatchAcceptServiceImpl implements MatchAcceptService {
             throw new BadRequestException("ERR-SEC-11"); //토큰과 로그인 정보가 일치하지 않음.
         }
 
-        //매칭수락이 가능한 상태인지 확인
-        Map<Object,Object> isExistMap =  inMemRepository.getHashValueEntry(RedisKey.MATCHING_ACCEPT_KEY+matchToken);
 
-        //수락가능한 시간이 끝남
-        if(isExistMap.isEmpty()){
-            throw new BadRequestException("ERR-MATCH-01"); //매칭 수락,거절 가능시간이 종료되었습니다.
-        }
 
         String key = RedisKey.MATCHING_ACCEPT_KEY+matchToken;
         //매칭된 첫번째 회원정보
@@ -75,95 +71,126 @@ public class MatchAcceptServiceImpl implements MatchAcceptService {
 
         //응답 값
         ResMatchAcceptDTO resMatchAcceptDTO = new ResMatchAcceptDTO();
+        
+        //분산 락 획득 
+        boolean acquired =inMemRepository.lockCheck(RedisKey.MATCH_ACCEPT_LOCK_KEY+matchToken, 5);
 
-        //현재 회원이 첫번째 유저일 시
-        if(isFirstUsrId){
-            //두번째 유저의 현재 수락밸류
-            String secondUsrVal = (String)inMemRepository.getHashValue(key , secondUsrId);
+        if (acquired) {
 
-            //두번째 유저의 현재 수락밸류가 대기상태
-            if(secondUsrVal.equals("WAIT")){
+            try {
+                //매칭수락이 가능한 상태인지 확인
+                Map<Object,Object> isExistMap =  inMemRepository.getHashValueEntry(RedisKey.MATCHING_ACCEPT_KEY+matchToken);
 
-                if(match.isApproveChk()){
-                    //현재유저가 수락
-                    //SSE 연결포인트 - > 알람을 받아야함  - > 수락대기중
-                    inMemRepository.hashSave(key,firstUsrId,"Y");
-                    resMatchAcceptDTO.setAcceptState(AcceptState.WAITING);
-
-                }else{
-                    //현재유저가 거절
-                    inMemRepository.hashSave(key,firstUsrId,"N");
-                    resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
+                //수락가능한 시간이 끝남
+                if(isExistMap.isEmpty()){
+                    throw new BadRequestException("ERR-MATCH-01"); //매칭 수락,거절 가능시간이 종료되었습니다.
                 }
-            } else if (secondUsrVal.equals("Y")) { //두번째 유저의 현재 수락밸류가 수락상태
+                //현재 회원이 첫번째 유저일 시
+                if (isFirstUsrId) {
+                    //두번째 유저의 현재 수락밸류
+                    String secondUsrVal = (String) inMemRepository.getHashValue(key, secondUsrId);
 
-                if(match.isApproveChk()){
-                    //현재유저가 수락
+                    //두번째 유저의 현재 수락밸류가 대기상태
+                    if (secondUsrVal.equals("WAIT")) {
 
-                    inMemRepository.delete(key);
-                    resMatchAcceptDTO.setAcceptState(AcceptState.SUCCESS);
+                        if (match.isApproveChk()) {
+                            //현재유저가 수락
+                            //SSE 연결포인트 - > 알람을 받아야함  - > 수락대기중
+                            inMemRepository.hashSave(key, firstUsrId, "Y");
+                            resMatchAcceptDTO.setAcceptState(AcceptState.WAITING);
 
-                    String roomId = "";
+                        } else {
+                            //현재유저가 거절
+                            inMemRepository.hashSave(key, firstUsrId, "N");
+                            //5분동안 재매칭 불가
+                            inMemRepository.save(RedisKey.MATCH_TEMP_DENY_KEY+firstUsrId+secondUsrId,"Y",5,TimeUnit.MINUTES);
 
-                    //채팅방 생성 포인트
+                            resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
+                        }
+                    } else if (secondUsrVal.equals("Y")) { //두번째 유저의 현재 수락밸류가 수락상태
 
-                    //SSE 전송 포인트
-                    publisher.SendMatchingAcceptNotify(matchToken+":"+secondUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(),AcceptState.SUCCESS,roomId);
-                }else{
-                    //현재유저가 거절
-                    //SSE 전송 포인트
-                    publisher.SendMatchingAcceptNotify(matchToken+":"+secondUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(),AcceptState.REFUSED,null);
-                    inMemRepository.delete(key);
-                    resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
+                        if (match.isApproveChk()) {
+                            //현재유저가 수락
+
+                            inMemRepository.delete(key);
+                            resMatchAcceptDTO.setAcceptState(AcceptState.SUCCESS);
+
+                            String roomId = "";
+
+                            //채팅방 생성 포인트
+
+                            //SSE 전송 포인트
+                            publisher.SendMatchingAcceptNotify(matchToken + ":" + secondUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), AcceptState.SUCCESS, roomId);
+                        } else {
+                            //현재유저가 거절
+                            //SSE 전송 포인트
+                            publisher.SendMatchingAcceptNotify(matchToken + ":" + secondUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), AcceptState.REFUSED, null);
+                            //5분동안 재매칭 불가
+                            inMemRepository.save(RedisKey.MATCH_TEMP_DENY_KEY+firstUsrId+secondUsrId,"Y",5,TimeUnit.MINUTES);
+
+                            inMemRepository.delete(key);
+                            resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
+                        }
+                    } else if (secondUsrVal.equals("N")) { //두번째 유저의 현재 수락밸류가 거절상태
+                        inMemRepository.delete(key);
+                        resMatchAcceptDTO.setAcceptState(AcceptState.REFUSED);
+                    }
+                } else if (!isFirstUsrId) {  //현재 회원이 두번째 유저
+
+                    //첫번째 유저의 현재 수락밸류
+                    String firstUsrVal = (String) inMemRepository.getHashValue(key, firstUsrId);
+
+                    //첫번째 유저의 현재 수락밸류가 대기상태
+                    if (firstUsrVal.equals("WAIT")) {
+                        if (match.isApproveChk()) {
+                            //현재유저가 수락
+                            //SSE 연결포인트 - > 알람을 받아야함  - > 수락대기중
+                            inMemRepository.hashSave(key, secondUsrId, "Y");
+                            resMatchAcceptDTO.setAcceptState(AcceptState.WAITING);
+
+                        } else {
+                            //현재유저가 거절
+                            inMemRepository.hashSave(key, secondUsrId, "N");
+                            //5분동안 재매칭 불가
+                            inMemRepository.save(RedisKey.MATCH_TEMP_DENY_KEY+firstUsrId+secondUsrId,"Y",5,TimeUnit.MINUTES);
+                            resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
+                        }
+                    } else if (firstUsrVal.equals("Y")) { //첫번째 유저의 현재 수락밸류가 수락상태
+
+                        if (match.isApproveChk()) {
+                            //현재유저가 수락
+
+                            inMemRepository.delete(key);
+                            resMatchAcceptDTO.setAcceptState(AcceptState.SUCCESS);
+
+                            String roomId = "";
+
+                            //채팅방 생성 포인트
+
+                            //SSE 전송 포인트
+                            publisher.SendMatchingAcceptNotify(matchToken + ":" + firstUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), AcceptState.SUCCESS, roomId);
+                        } else {
+                            //현재유저가 거절
+                            //SSE 전송 포인트
+                            publisher.SendMatchingAcceptNotify(matchToken + ":" + firstUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), AcceptState.REFUSED, null);
+                            //5분동안 재매칭 불가
+                            inMemRepository.save(RedisKey.MATCH_TEMP_DENY_KEY+firstUsrId+secondUsrId,"Y",5,TimeUnit.MINUTES);
+
+                            inMemRepository.delete(key);
+                            resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
+                        }
+                    } else if (firstUsrVal.equals("N")) { //첫번째 유저의 현재 수락밸류가 거절상태
+                        inMemRepository.delete(key);
+                        resMatchAcceptDTO.setAcceptState(AcceptState.REFUSED);
+                    }
+
                 }
-            } else if (secondUsrVal.equals("N")) { //두번째 유저의 현재 수락밸류가 거절상태
-                inMemRepository.delete(key);
-                resMatchAcceptDTO.setAcceptState(AcceptState.REFUSED);
+            } finally {
+                //락 킹 해제
+                inMemRepository.delete(RedisKey.MATCH_ACCEPT_LOCK_KEY+matchToken);
             }
-        } else if (!isFirstUsrId) {  //현재 회원이 두번째 유저
-
-            //첫번째 유저의 현재 수락밸류
-            String firstUsrVal = (String)inMemRepository.getHashValue(key , firstUsrId);
-
-            //첫번째 유저의 현재 수락밸류가 대기상태
-            if(firstUsrVal.equals("WAIT")){
-                if(match.isApproveChk()){
-                    //현재유저가 수락
-                    //SSE 연결포인트 - > 알람을 받아야함  - > 수락대기중
-                    inMemRepository.hashSave(key,secondUsrId,"Y");
-                    resMatchAcceptDTO.setAcceptState(AcceptState.WAITING);
-
-                }else{
-                    //현재유저가 거절
-                    inMemRepository.hashSave(key,secondUsrId,"N");
-                    resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
-                }
-            } else if (firstUsrVal.equals("Y")) { //첫번째 유저의 현재 수락밸류가 수락상태
-
-                if(match.isApproveChk()){
-                    //현재유저가 수락
-
-                    inMemRepository.delete(key);
-                    resMatchAcceptDTO.setAcceptState(AcceptState.SUCCESS);
-
-                    String roomId = "";
-
-                    //채팅방 생성 포인트
-
-                    //SSE 전송 포인트
-                    publisher.SendMatchingAcceptNotify(matchToken+":"+firstUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(),AcceptState.SUCCESS,roomId);
-                }else{
-                    //현재유저가 거절
-                    //SSE 전송 포인트
-                    publisher.SendMatchingAcceptNotify(matchToken+":"+firstUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(),AcceptState.REFUSED,null);
-                    inMemRepository.delete(key);
-                    resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
-                }
-            } else if (firstUsrVal.equals("N")) { //첫번째 유저의 현재 수락밸류가 거절상태
-                inMemRepository.delete(key);
-                resMatchAcceptDTO.setAcceptState(AcceptState.REFUSED);
-            }
-
+        }else{
+            throw new InternerServerException("ERR-CMN-03");
         }
 
         resMatchAcceptDTO.setDescription();
