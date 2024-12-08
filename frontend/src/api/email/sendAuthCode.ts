@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { api } from '@/api'
 
 export const useSendAuthCode = () => {
-  const queryClient = useQueryClient()
+  // const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (email: string) => {
@@ -18,7 +18,7 @@ export const useSendAuthCode = () => {
 
       return res.json()
     },
-    onMutate: async newUser => {},
+    // onMutate: async newUser => {},
     onSuccess: data => {
       console.log(data)
     },

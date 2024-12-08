@@ -4,7 +4,7 @@ import { useSendAuthCode } from '@/api/email'
 export default function Home() {
   const [email, setEmail] = useState('')
 
-  const { mutate, error, isPending, isError } = useSendAuthCode()
+  const { mutate, isPending } = useSendAuthCode()
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
