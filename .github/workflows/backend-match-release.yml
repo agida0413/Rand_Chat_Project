@@ -45,10 +45,10 @@ jobs:
       - name: Wait for DB
         run: |
           sleep 10  # 적절한 대기 시간 설정
-          
+
       - name: Run IT Tests
         run: |
-          docker-compose -f ./docker-compose-it-test.yml up -d backend_match1 --build   # 컨테이너 빌드 및 실행
+          docker-compose -f ./docker-compose-it-test.yml up -d backend_match1    # 컨테이너 빌드 및 실행
 
       - name: Extract tag name
         run: |
