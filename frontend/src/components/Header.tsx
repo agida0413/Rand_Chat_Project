@@ -1,29 +1,20 @@
 import { NavLink } from 'react-router-dom'
-import styled from 'styled-components'
 
 const navigations = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About' }
 ]
 
-export default function TheHeader() {
+export default function Header() {
   return (
     <header>
-      <StyledNav>
-        {navigations.map(nav => (
-          <NavLink
-            key={nav.to}
-            to={nav.to}>
-            {nav.label}
-          </NavLink>
-        ))}
-      </StyledNav>
+      {navigations.map(nav => (
+        <NavLink
+          key={nav.to}
+          to={nav.to}>
+          {nav.label}
+        </NavLink>
+      ))}
     </header>
   )
 }
-
-const StyledNav = styled.nav`
-  .active {
-    font-weight: bold;
-  }
-`
