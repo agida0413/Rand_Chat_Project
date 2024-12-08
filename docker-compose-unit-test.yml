@@ -1,20 +1,6 @@
 version: '3.8'
 
 services:
-  nginx:
-    build:
-      context: ./nginx/dev
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - "80:80"
-    depends_on:
-      -  backend_member
-      -  backend_match1
-      -  backend_match2
-    container_name: nginx
-    networks: 
-     - app_network
   backend_match1:
     build:
       context: ./backend
