@@ -46,7 +46,8 @@ services:
     env_file:
       - .env  # .env 파일을 로드
     environment: 
-      - INSTANCE_ID=server3  
+      - INSTANCE_ID=server3
+      - SPRING_PROFILES_ACTIVE=dev  
   backend_match1:
     build:
       context: ./backend
@@ -63,6 +64,7 @@ services:
       - .env  # .env 파일을 로드
     environment: 
       - INSTANCE_ID=server1 
+      - SPRING_PROFILES_ACTIVE=dev
   backend_match2:
     build:
       context: ./backend
@@ -79,6 +81,7 @@ services:
     - .env  # .env 파일을 로드     
     environment: 
       - INSTANCE_ID=server2  
+      - SPRING_PROFILES_ACTIVE=dev
   mysql:
     image: mysql:8.0
     container_name: mysql

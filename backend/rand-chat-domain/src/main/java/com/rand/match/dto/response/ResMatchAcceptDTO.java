@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class ResMatchAcceptDTO {
     //생성  채팅방 넘버
-    private String roomId;
+    private Long roomId;
     private AcceptState acceptState;
     private String description;
 

@@ -11,6 +11,7 @@ import com.rand.match.dto.request.MatchAcceptDTO;
 import com.rand.match.dto.response.ResMatchAcceptDTO;
 import com.rand.match.model.AcceptState;
 import com.rand.match.model.Match;
+import com.rand.match.repository.MatchingRepository;
 import com.rand.redis.InMemRepository;
 import com.rand.redis.pubsub.NotificationService;
 import com.rand.redis.pubsub.Publisher;
@@ -30,6 +31,7 @@ public class MatchAcceptServiceImpl implements MatchAcceptService {
     private final JWTUtil jwtUtil;
     private final InMemRepository inMemRepository;
     private final Publisher publisher;
+    private final MatchingRepository matchingRepository;
     //채팅 매칭 수락 , 거절
     public ResponseEntity<ResponseDTO<ResMatchAcceptDTO>> matchAccept(MatchAcceptDTO matchAcceptDTO,String matchToken){
 
@@ -115,9 +117,16 @@ public class MatchAcceptServiceImpl implements MatchAcceptService {
                             inMemRepository.delete(key);
                             resMatchAcceptDTO.setAcceptState(AcceptState.SUCCESS);
 
-                            String roomId = "";
 
                             //채팅방 생성 포인트
+                            match.setRoomMem1(Integer.parseInt(firstUsrId));
+                            match.setRoomMem2(Integer.parseInt(secondUsrId));
+                            //생성
+                            matchingRepository.chatRoomCreate(match);
+                            //채팅방 번호 반환 및 세팅
+                            Long chatRoomId= match.getChatRoomId();
+                            String roomId = String.valueOf(chatRoomId);
+                            resMatchAcceptDTO.setRoomId(chatRoomId);
 
                             //SSE 전송 포인트
                             publisher.SendMatchingAcceptNotify(matchToken + ":" + secondUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), AcceptState.SUCCESS, roomId);
@@ -163,9 +172,17 @@ public class MatchAcceptServiceImpl implements MatchAcceptService {
                             inMemRepository.delete(key);
                             resMatchAcceptDTO.setAcceptState(AcceptState.SUCCESS);
 
-                            String roomId = "";
+
 
                             //채팅방 생성 포인트
+                            match.setRoomMem1(Integer.parseInt(firstUsrId));
+                            match.setRoomMem2(Integer.parseInt(secondUsrId));
+                            //생성
+                            matchingRepository.chatRoomCreate(match);
+                            //채팅방 번호 반환 및 세팅
+                            Long chatRoomId= match.getChatRoomId();
+                            String roomId = String.valueOf(chatRoomId);
+                            resMatchAcceptDTO.setRoomId(chatRoomId);
 
                             //SSE 전송 포인트
                             publisher.SendMatchingAcceptNotify(matchToken + ":" + firstUsrId, PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), AcceptState.SUCCESS, roomId);

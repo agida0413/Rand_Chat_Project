@@ -164,7 +164,7 @@ public class SubsCriber implements MessageListener {
             try {
 
                 ResMatchAcceptDTO resMatchAcceptDTO = new ResMatchAcceptDTO();
-                resMatchAcceptDTO.setRoomId(roomId);
+                resMatchAcceptDTO.setRoomId(Long.parseLong(roomId));
                 if(state.equals(AcceptState.CLOSE.toString())){
                     resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
 

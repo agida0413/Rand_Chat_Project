@@ -10,6 +10,9 @@ import com.rand.exception.custom.BadRequestException;
 import com.rand.exception.custom.InternerServerException;
 import com.rand.jwt.JWTUtil;
 import com.rand.match.dto.request.MatchDTO;
+import com.rand.match.model.ChatRoomState;
+import com.rand.match.model.Match;
+import com.rand.match.repository.MatchingRepository;
 import com.rand.member.model.Members;
 import com.rand.member.model.cons.MembersSex;
 import com.rand.redis.InMemRepository;
@@ -22,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.Set;
@@ -36,6 +40,7 @@ public class MatchServiceImpl implements MatchService {
     private final CommonMemberService commonMemberService;
     private final Publisher publisher;
     private final JWTUtil jwtUtil;
+    private final MatchingRepository matchingRepository;
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> matchLogic(MatchDTO matchDTO) {
@@ -67,7 +72,6 @@ public class MatchServiceImpl implements MatchService {
                 }
 
 
-                log.info("usrid={}", usrId);
                 //큐 저장
                 inMemRepository.sortedSetSave(RedisKey.WAITING_QUE_KEY, usrId, timestamp);
 
@@ -148,10 +152,12 @@ public class MatchServiceImpl implements MatchService {
             nearbyUsers.retainAll(usrIds);
             // 5. 범위 내에 사용자가 있으면 두 번째 사용자와 거리 조건을 비교
             for (String secondUserId : nearbyUsers) {
+
                 if (firstUserId.equals(secondUserId)) {
                     continue;  // 자신과 비교하지 않음
                 }
-                //매칭 거절에 따른 매칭제외
+
+                //매칭 거절된 매칭에 따른 매칭제외
                 String excludeResult1 = (String)inMemRepository.getValue(RedisKey.MATCH_TEMP_DENY_KEY+firstUserId+secondUserId);
 
                 if(excludeResult1!=null){
@@ -163,6 +169,15 @@ public class MatchServiceImpl implements MatchService {
                     }
                 }
                 //매칭 거절에 따른 매칭제외  종료
+
+
+                //이미존재하는 채팅방인지
+                boolean isExistChat = isExistChatRoom(firstUserId,secondUserId);
+
+                if(isExistChat){
+                    continue;
+                }
+
 
 
                 Double secondUserDistance = (Double) inMemRepository.getHashValue(RedisKey.MEMBER_DISTANCE_COND_KEY, secondUserId);
@@ -211,9 +226,9 @@ public class MatchServiceImpl implements MatchService {
 
         //매칭 수락,거절에 대한 레디스 값 생성
         //첫번째 유저+두번째유저에 대한 고유 hashset  , firstuser 컬럼 - > wait 상태로 설정 30초 ttl
-        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,firstUserId,"WAIT",10000,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,firstUserId,"WAIT",30,TimeUnit.SECONDS);
         //첫번째 유저+두번째유저에 대한 고유 hashset  , seconduser 컬럼 - > wait 상태로 설정 30초 ttl
-        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,secondUserId,"WAIT",10000,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,secondUserId,"WAIT",30,TimeUnit.SECONDS);
 
 
         publisher.sendNotification(firstUserId,secondeMemberInfo.getNickName(),secondeMemberInfo.getProfileImg(),secondeMemberInfo.getSex().toString(),
@@ -221,6 +236,21 @@ public class MatchServiceImpl implements MatchService {
         publisher.sendNotification(secondUserId,firstMemberInfo.getNickName(),firstMemberInfo.getProfileImg(),firstMemberInfo.getSex().toString(),
                 SSETYPE.MATCHINGCOMPLETE.toString(),strDistance, PubSubChannel.MATCHING_CHANNEL.toString(),matchToken);
 
+    }
+
+    @Transactional
+    private boolean isExistChatRoom(String firstUserId,String secondUserId){
+        //이미 존재하는 채팅방인지 확인
+        Match reqMatch = new Match(Integer.parseInt(firstUserId),Integer.parseInt(secondUserId));
+        //존재값 반환
+        Match match = matchingRepository.isExistChatRoom(reqMatch);
+
+        if(match!=null){
+            //채팅방 존재(이미 매칭됌)
+            return true;
+        }
+
+        return false;
     }
 
 
