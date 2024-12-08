@@ -1,0 +1,31 @@
+name: Release Docker HUB BACK-END-MEMBER
+
+on:
+  push:
+    tags:
+      - 'bd.mem.v*.*.*'  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+ 
+      - name: Extract tag name
+        run: |
+          echo "Full reference: $GITHUB_REF"  # 전체 참조 정보 출력
+          TAG_NAME=$(echo $GITHUB_REF | sed 's/refs\/tags\///')  # "refs/tags/v1.0.0"에서 "v1.0.0" 추출
+          echo "Tag name: $TAG_NAME"  # 추출된 태그 이름 출력    
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV  # 환경 변수로 설정
+
+      - name: Login Docker
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    
+      #이미지 빌드 
+      - name: FRONT-END Image Build
+        run: |
+          docker build -f ./backend/Dockerfile-member -t kimyong120413/randchatbackendmember:$TAG_NAME .
+          docker push kimyong120413/randchatbackendmember:$TAG_NAME
+          
