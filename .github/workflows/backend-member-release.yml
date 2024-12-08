@@ -26,6 +26,6 @@ jobs:
       #이미지 빌드 
       - name: BACKEND-MEMBER Image Build
         run: |
-          docker build -f ./backend/Dockerfile-member -t kimyong120413/randchatbackendmember:$TAG_NAME .
+          docker build -f ./backend/Dockerfile-member-deploy -t kimyong120413/randchatbackendmember:$TAG_NAME .
           docker push kimyong120413/randchatbackendmember:$TAG_NAME
           
