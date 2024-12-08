@@ -34,9 +34,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
+      - name: Run mysql
+        run: |
+           docker compose -f ./docker-compose-it-test.yml up -d mysql
+
+      - name: Run Redis
+        run: |
+           docker compose -f ./docker-compose-it-test.yml up -d redis-master-1    
+
+      - name: Wait for DB
+        run: |
+          sleep 10  # 적절한 대기 시간 설정
+          
       - name: Run IT Tests
         run: |
-          docker-compose -f ./docker-compose-it-test.yml up --build   # 컨테이너 빌드 및 실행
+          docker-compose -f ./docker-compose-it-test.yml up -d backend_match1 --build   # 컨테이너 빌드 및 실행
 
       - name: Extract tag name
         run: |
@@ -49,7 +61,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
     
       # 이미지 빌드
-      - name: BACKEND-MEMBER Image Build
+      - name: BACKEND-MATCH Image Build
         run: |
           docker build -f ./backend/Dockerfile-match-deploy -t kimyong120413/randchatbackendmatch:$TAG_NAME .
           docker push kimyong120413/randchatbackendmatch:$TAG_NAME
