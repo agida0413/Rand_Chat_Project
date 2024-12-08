@@ -1,5 +1,5 @@
 
-FROM node:20-alpine
+FROM node:20-alpine AS build
 WORKDIR /project/frontend
 COPY package.json ./
 COPY package-lock.json ./
