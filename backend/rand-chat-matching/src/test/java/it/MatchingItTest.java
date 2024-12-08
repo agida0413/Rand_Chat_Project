@@ -1,6 +1,7 @@
 package it;
 
 
+import com.rand.MatchingApp;
 import com.rand.member.model.Members;
 import com.rand.member.model.cons.MembersSex;
 import com.rand.member.repository.MemberRepository;
@@ -14,7 +15,7 @@ import org.testcontainers.containers.MySQLContainer;
 
 import java.time.LocalDate;
 
-@SpringBootTest
+@SpringBootTest(classes = MatchingApp.class)
 public class MatchingItTest {
 
 
@@ -38,7 +39,9 @@ public class MatchingItTest {
 
         Members findMembers = memberRepository.findByEmail(members);
 
+
         Assertions.assertThat(findMembers.getEmail()).isEqualTo(members.getEmail());
+        Assertions.assertThat(1).isEqualTo(2);
 
     }
 }
