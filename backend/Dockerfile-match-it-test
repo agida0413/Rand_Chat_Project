@@ -23,7 +23,7 @@ COPY rand-chat-matching ./rand-chat-matching
 # gradlew 실행 권한 설정
 RUN chmod +x gradlew
 
-RUN ./gradlew :rand-chat-matching:build --refresh-dependencies --no-daemon -x test integrationTest
+RUN ./gradlew :rand-chat-matching:build --refresh-dependencies --no-daemon -x test
 
 
 ENTRYPOINT ["./gradlew", "integrationTest"]
