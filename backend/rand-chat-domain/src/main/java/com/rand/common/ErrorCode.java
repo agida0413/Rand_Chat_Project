@@ -11,7 +11,8 @@ public enum ErrorCode {
     
     COMMON_LOCK_FAIL(500, "ERR-CMN-03", "락 획득 실패(타임아웃)"),
     COMMON_SSE_SEND_FAIL(500, "ERR-CMN-04", "SSE 서버응답 실패"),
-
+    COMMON_SSE_MATCH_1MIN_TIME_OUT(500, "ERR-CMN-05", "매칭 대기열 1분 초과하여 대기열에서 제외되었음"),
+    COMMON_SSE_TIMEOUT(500, "ERR-CMN-06", "SSE 커넥션이 명시적으로 종료됌"),
     //타입에러 , 프론트엔드 측 메시징 금지 및 별도 처리 요망
     PARAMETER_TYPE_MISMATCH(400, "ERR-TYPE-01", "PARAMETER TYPE MISMATCH OR CLIENT GIVE UNPREDICTABLE"),
     JSON_PARSE_ERROR  (400, "ERR-TYPE-02", "JSON PARSE ERROR"),
@@ -108,7 +109,10 @@ public enum ErrorCode {
     SEC_NO_MATCH_TOKEN_CATEGORY(401,"ERR-SEC-08","비 정상적인 접근입니다."), //클라이언트로 부터 받은  토큰의 카테고리(액세스,리프레시)가 맞지않음
     SEC_UN_ILLEGAL_TOKEN(401,"ERR-SEC-09","비 정상적인 접근입니다."), //비정상적인 토큰임 (지워졋어야 했던 토큰이나 등등)
     SEC_MUST_REISSUE_TOKEN(410,"ERR-SEC-10","토큰을 재발행 하세요."),//엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
+    SEC_NOT_MATCH_TOKEN_WITH_INFO(401,"ERR-SEC-11","토큰과 로그인 정보가 일치하지 않음."),//엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
 
+    //매칭
+    MATCH_ACCEPT_EXPIRED(400,"ERR-MATCH-01","매칭 수락,거절 가능시간이 종료되었습니다."),
     //파일
 
     FILE_INTERNER_UPLOAD_FAIL(500,"ERR-FILE-01","새 파일 업로드 중 에러발생"),

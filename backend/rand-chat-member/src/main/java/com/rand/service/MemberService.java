@@ -5,6 +5,7 @@ import com.rand.common.ResponseDTO;
 import com.rand.member.dto.request.*;
 import com.rand.member.dto.response.ResFindIdDTO;
 import com.rand.member.dto.response.ResMemInfoDTO;
+import com.rand.member.model.Members;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -32,4 +33,5 @@ public interface MemberService {
     public ResponseEntity<ResponseDTO<Void>> updateProfileImg(UpdateProfileImgDTO updateProfileImgDTO);
 
     public ResponseEntity<ResponseDTO<ResMemInfoDTO>> getMemberInfo();
+
 }

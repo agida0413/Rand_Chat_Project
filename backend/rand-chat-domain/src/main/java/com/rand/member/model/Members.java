@@ -1,7 +1,7 @@
 package com.rand.member.model;
 
 
-import com.rand.match.dto.MatchDTO;
+import com.rand.match.dto.request.MatchDTO;
 import com.rand.member.dto.request.*;
 import com.rand.member.model.cons.MembersSex;
 import com.rand.member.model.cons.MembersState;
@@ -10,7 +10,6 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter

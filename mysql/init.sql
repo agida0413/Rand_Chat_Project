@@ -20,3 +20,19 @@ CREATE TABLE IF NOT EXISTS MEMBERS(
     UNIQUE KEY email_uk(email),
     UNIQUE KEY nick_name_uk(nick_name)
 );
+
+
+CREATE TABLE  IF NOT EXISTS CHAT_ROOM(
+chat_room_id BIGINT auto_increment,
+room_cr_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+room_state ENUM("ACTIVE","INACTIVE") NOT NULL DEFAULT "ACTIVE",
+room_mem1 INT NOT NULL,
+room_mem2 INT NOT NULL,
+room_up_date DATETIME NULL,
+exist_mem INT NULL,
+CONSTRAINT PRIMARY KEY chat_room_pk(chat_room_id),
+CONSTRAINT UNIQUE KEY chat_room_uk(room_mem1,room_mem2),
+CONSTRAINT FOREIGN KEY chat_room_fk1(room_mem1) REFERENCES MEMBERS(usr_id),
+CONSTRAINT FOREIGN KEY chat_room_fk2(room_mem2) REFERENCES MEMBERS(usr_id),
+CONSTRAINT FOREIGN KEY chat_room_fk3(exist_mem) REFERENCES MEMBERS(usr_id)
+)

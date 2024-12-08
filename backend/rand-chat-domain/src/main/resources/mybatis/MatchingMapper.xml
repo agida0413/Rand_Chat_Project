@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rand.match.mapper.MatchingMapper">
+    <insert id="chatRoomCreate" parameterType="Match" useGeneratedKeys="true" keyProperty="chatRoomId">
+        INSERT INTO CHAT_ROOM(room_mem1,room_mem2)
+        VALUES (
+                #{roomMem1}
+               ,#{roomMem2}
+        )
+    </insert>
+
+    <select id="isExistChatRoom" parameterType="Match" resultType="Match" >
+        SELECT room_state
+          FROM CHAT_ROOM
+        WHERE  room_mem1 = #{roomMem1}
+          AND  room_mem2 = #{roomMem2}
+
+        UNION
+
+        SELECT room_state
+        FROM CHAT_ROOM
+        WHERE  room_mem1 = #{roomMem2}
+          AND  room_mem2 = #{roomMem1}
+    </select>
+</mapper>

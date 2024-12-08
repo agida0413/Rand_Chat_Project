@@ -1,6 +1,7 @@
 package com.rand.service;
 
 import com.rand.common.ResponseDTO;
+import com.rand.common.service.CommonMemberService;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.lang.reflect.Member;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +40,7 @@ public class MemberServiceImpl implements MemberService{
     private final InMemRepository inMemRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final FileService fileService;
-
+    private final CommonMemberService commonMemberService;
 
 
     private static final int MAX_ATTEMPT=5;
@@ -464,8 +466,6 @@ public class MemberServiceImpl implements MemberService{
 
 
 
-
-
         //레디스 멤버정보 캐시 업데이트
         inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"profileImg",profileImg,60,TimeUnit.SECONDS);
         return  ResponseEntity.ok(new ResponseDTO<Void>());
@@ -473,65 +473,15 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public ResponseEntity<ResponseDTO<ResMemInfoDTO>> getMemberInfo(){
-        Members members = new Members();
         int usrId = SecurityContextGet.getUsrId();
-        members.setUsrId(usrId);
+        Members resultMembers = commonMemberService.memberGetInfoMethod(usrId);
 
-        Map<Object,Object> cachedMemberInfo = inMemRepository.getHashValueEntry(RedisKey.MEMBER_INFO_KEY+usrId);
-
-        if (cachedMemberInfo != null && !cachedMemberInfo.isEmpty()) {
-            // Redis에 캐시가 있는 경우 DTO로 변환
-            String name = (String) cachedMemberInfo.get("name");
-            String email = (String) cachedMemberInfo.get("email");
-            String username = (String) cachedMemberInfo.get("username");
-            String nickname = (String) cachedMemberInfo.get("nickname");
-            String profileImg = (String) cachedMemberInfo.get("profileImg");
-            String sex = (String) cachedMemberInfo.get("sex");
-
-
-            LocalDate birth = LocalDate.parse((String) cachedMemberInfo.get("birth"));
-
-            Members redisMembers = new Members();
-            redisMembers.setProfileImg(profileImg);
-            redisMembers.setName(name);
-            redisMembers.setEmail(email);
-            redisMembers.setUsername(username);
-            redisMembers.setNickName(nickname);
-            redisMembers.setBirth(birth);
-
-            redisMembers.setUsrId(usrId);
-            if(sex.equals("MAN")){
-                redisMembers.setSex(MembersSex.MAN);
-
-            }else{
-                redisMembers.setSex(MembersSex.FEMAIL);
-            }
-
-
-            ResMemInfoDTO resMemInfoDTO = new ResMemInfoDTO(redisMembers);
-            ResponseDTO<ResMemInfoDTO> responseDTO = new ResponseDTO<>(resMemInfoDTO);
-
-            return  ResponseEntity.ok(responseDTO);
-
-
-        }
-
-            Members resultMembers = memberRepository.selectMemberInfo(members);
-
+        // 회원정보가 없음
         if(resultMembers == null){
-            //회원정보가 없음
             throw new BadRequestException("ERR-EAUTH-CS-07");
         }
 
         ResMemInfoDTO memberInfo = new ResMemInfoDTO(resultMembers);
-
-        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"name",resultMembers.getName(),60,TimeUnit.SECONDS);
-        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"email",resultMembers.getEmail(),60,TimeUnit.SECONDS);
-        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"username",resultMembers.getUsername(),60,TimeUnit.SECONDS);
-        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"nickname",resultMembers.getNickName(),60,TimeUnit.SECONDS);
-        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"profileImg",resultMembers.getProfileImg(),60,TimeUnit.SECONDS);
-        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"birth",resultMembers.getBirth(),60,TimeUnit.SECONDS);
-        inMemRepository.hashSave(RedisKey.MEMBER_INFO_KEY+usrId,"sex",resultMembers.getSex(),60,TimeUnit.SECONDS);
 
 
         ResponseDTO<ResMemInfoDTO> responseDTO = new ResponseDTO<>(memberInfo);
@@ -539,4 +489,10 @@ public class MemberServiceImpl implements MemberService{
         return ResponseEntity.ok(responseDTO);
 
     }
+
+
+
+
+
+
 }

@@ -1,18 +1,23 @@
 package com.rand.service;
 
 import com.rand.common.ResponseDTO;
-import com.rand.config.redis.pubsub.Publisher;
-import com.rand.config.redis.pubsub.SseNotificationService;
-import com.rand.config.redis.pubsub.SubsCriber;
+import com.rand.common.service.CommonMemberService;
+import com.rand.config.constant.PubSubChannel;
+import com.rand.config.constant.SSETYPE;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
 import com.rand.exception.custom.InternerServerException;
-import com.rand.match.dto.MatchDTO;
+import com.rand.jwt.JWTUtil;
+import com.rand.match.dto.request.MatchDTO;
+import com.rand.match.model.ChatRoomState;
 import com.rand.match.model.Match;
+import com.rand.match.repository.MatchingRepository;
 import com.rand.member.model.Members;
+import com.rand.member.model.cons.MembersSex;
 import com.rand.redis.InMemRepository;
 
+import com.rand.redis.pubsub.Publisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
@@ -20,10 +25,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.transaction.annotation.Transactional;
 
 
-import java.awt.*;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -33,9 +37,10 @@ import java.util.concurrent.TimeUnit;
 public class MatchServiceImpl implements MatchService {
 
     private final InMemRepository inMemRepository;
-
+    private final CommonMemberService commonMemberService;
     private final Publisher publisher;
-
+    private final JWTUtil jwtUtil;
+    private final MatchingRepository matchingRepository;
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> matchLogic(MatchDTO matchDTO) {
@@ -43,7 +48,7 @@ public class MatchServiceImpl implements MatchService {
 
 
 
-        boolean acquired = lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
+        boolean acquired = inMemRepository.lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
 
         if (acquired) {
             try {
@@ -67,7 +72,6 @@ public class MatchServiceImpl implements MatchService {
                 }
 
 
-                log.info("usrid={}", usrId);
                 //큐 저장
                 inMemRepository.sortedSetSave(RedisKey.WAITING_QUE_KEY, usrId, timestamp);
 
@@ -93,10 +97,10 @@ public class MatchServiceImpl implements MatchService {
     public void removeQueue1Min(){
 
         String server = System.getenv("INSTANCE_ID");
-        if(server.equals("server1")){
+        if(!server.equals("server1")){
             return;
         }
-        boolean acquired = lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
+        boolean acquired =inMemRepository.lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
 
         if (acquired) {
             try {
@@ -113,7 +117,7 @@ public class MatchServiceImpl implements MatchService {
                     //대기 큐에서 제거
                     inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, expiredUserId);
                     //1분 경과 알람
-                    publisher.sendNotification(expiredUserId,"WAITING EXPIRED");
+                    publisher.sendNotification(expiredUserId, null,null,null,SSETYPE.MATCHINGTIMEOUT.toString(),null, PubSubChannel.MATCHING_CHANNEL.toString(),null);
                 }
             } finally {
                 inMemRepository.delete(RedisKey.MATCH_LOCK_KEY);
@@ -139,7 +143,7 @@ public class MatchServiceImpl implements MatchService {
         }
         // 3. 사용자들의 geo 정보를 가져와 거리 조건을 비교
         for (String firstUserId : usrIds) {
-            log.info(firstUserId);
+
             Double firstUserDistance = (Double) inMemRepository.getHashValue(RedisKey.MEMBER_DISTANCE_COND_KEY, firstUserId);
 
             // 4. 첫 번째 사용자와 가까운 사용자들 찾기 (GeoRadius로 범위 내 사용자 조회)
@@ -148,9 +152,33 @@ public class MatchServiceImpl implements MatchService {
             nearbyUsers.retainAll(usrIds);
             // 5. 범위 내에 사용자가 있으면 두 번째 사용자와 거리 조건을 비교
             for (String secondUserId : nearbyUsers) {
+
                 if (firstUserId.equals(secondUserId)) {
                     continue;  // 자신과 비교하지 않음
                 }
+
+                //매칭 거절된 매칭에 따른 매칭제외
+                String excludeResult1 = (String)inMemRepository.getValue(RedisKey.MATCH_TEMP_DENY_KEY+firstUserId+secondUserId);
+
+                if(excludeResult1!=null){
+                    continue;
+                }else{
+                    String excludeResult2 = (String)inMemRepository.getValue(RedisKey.MATCH_TEMP_DENY_KEY+secondUserId+firstUserId);
+                    if(excludeResult2!=null){
+                        continue;
+                    }
+                }
+                //매칭 거절에 따른 매칭제외  종료
+
+
+                //이미존재하는 채팅방인지
+                boolean isExistChat = isExistChatRoom(firstUserId,secondUserId);
+
+                if(isExistChat){
+                    continue;
+                }
+
+
 
                 Double secondUserDistance = (Double) inMemRepository.getHashValue(RedisKey.MEMBER_DISTANCE_COND_KEY, secondUserId);
 
@@ -172,7 +200,6 @@ public class MatchServiceImpl implements MatchService {
         //두사용자와의 거리
         double distance = inMemRepository.calculateDistance(firstUserId, secondUserId);
         boolean condition = false;
-        log.info("distance = {}", distance);
 
         if (distance <= firstUserDistance && distance <= secondUserDistance) {
             condition = true;
@@ -183,40 +210,48 @@ public class MatchServiceImpl implements MatchService {
 
     private void matchUsers(String firstUserId, String secondUserId) {
 
-        log.info("Matched users1 = {}", firstUserId);
-        log.info("Matched users2 = {}", secondUserId);
-
         // 매칭된 사용자 제거
         inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, firstUserId);
         inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, secondUserId);
 
         double distance = inMemRepository.calculateDistance(firstUserId, secondUserId);
+        
+        //회원정보
+        Members firstMemberInfo = commonMemberService.memberGetInfoMethod(Integer.parseInt(firstUserId));
+        Members secondeMemberInfo = commonMemberService.memberGetInfoMethod(Integer.parseInt(secondUserId));
+        String strDistance = String.valueOf(distance);
 
-        publisher.sendNotification(firstUserId,"MATCH COMPLETE["+secondUserId+","+distance+"km]");
-        publisher.sendNotification(secondUserId,"MATCH COMPLETE["+firstUserId+","+distance+"km]");
+        //매칭 수락,거절을 위한 토큰 생성
+        String matchToken = jwtUtil.createMatchingToken(firstUserId,secondUserId);
+
+        //매칭 수락,거절에 대한 레디스 값 생성
+        //첫번째 유저+두번째유저에 대한 고유 hashset  , firstuser 컬럼 - > wait 상태로 설정 30초 ttl
+        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,firstUserId,"WAIT",30,TimeUnit.SECONDS);
+        //첫번째 유저+두번째유저에 대한 고유 hashset  , seconduser 컬럼 - > wait 상태로 설정 30초 ttl
+        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,secondUserId,"WAIT",30,TimeUnit.SECONDS);
+
+
+        publisher.sendNotification(firstUserId,secondeMemberInfo.getNickName(),secondeMemberInfo.getProfileImg(),secondeMemberInfo.getSex().toString(),
+                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance, PubSubChannel.MATCHING_CHANNEL.toString(),matchToken);
+        publisher.sendNotification(secondUserId,firstMemberInfo.getNickName(),firstMemberInfo.getProfileImg(),firstMemberInfo.getSex().toString(),
+                SSETYPE.MATCHINGCOMPLETE.toString(),strDistance, PubSubChannel.MATCHING_CHANNEL.toString(),matchToken);
 
     }
 
-    private boolean lockCheck(String LOCK_KEY, long LOCK_TIMEOUT) {
-        String lockVal = String.valueOf(System.currentTimeMillis() + 10000);
-        boolean acquired = false;
-        long startTime = System.currentTimeMillis();
+    @Transactional
+    private boolean isExistChatRoom(String firstUserId,String secondUserId){
+        //이미 존재하는 채팅방인지 확인
+        Match reqMatch = new Match(Integer.parseInt(firstUserId),Integer.parseInt(secondUserId));
+        //존재값 반환
+        Match match = matchingRepository.isExistChatRoom(reqMatch);
 
-        // 락 획득 시도 (최대 10초 동안 시도)
-        while (System.currentTimeMillis() - startTime < TimeUnit.SECONDS.toMillis(LOCK_TIMEOUT)) {
-            acquired = inMemRepository.lockSetting(LOCK_KEY, lockVal, 10);
-
-            if (Boolean.TRUE.equals(acquired)) {
-                acquired = true;
-                break;  // 락 획득 성공
-            } else {
-                try {
-                    Thread.sleep(1000);  // 1초 대기 후 재시도
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();  // 인터럽트 처리
-                }
-            }
+        if(match!=null){
+            //채팅방 존재(이미 매칭됌)
+            return true;
         }
-        return acquired;
+
+        return false;
     }
+
+
 }

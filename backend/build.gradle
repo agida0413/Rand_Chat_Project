@@ -12,7 +12,9 @@ repositories {
 
 
 
-subprojects { // 각 모듈에 적용할 공통 설정
+subprojects {
+
+	// 각 모듈에 적용할 공통 설정
 	bootJar.enabled = false // 빌드시 현재 모듈(multi-module)의 .jar를 생성하지 않습니다.
 	group = 'com.rand'
 	version = '0.0.1-SNAPSHOT'
@@ -43,7 +45,8 @@ subprojects { // 각 모듈에 적용할 공통 설정
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
 		testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
 		testImplementation 'org.springframework.security:spring-security-test'
-		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+
 	}
 	repositories {
 		mavenCentral()
@@ -55,16 +58,22 @@ subprojects { // 각 모듈에 적용할 공통 설정
 				srcDirs = ['src/main/resources',"rand-chat-config/src/main/java","rand-chat-core/src/main/java","rand-chat-domain/src/main/java","rand-chat-matching/src/main/java","rand-chat-member/src/main/java"]
 			}
 		}
+
 	}
+
+
 
 
 	tasks.named('test') {
 		useJUnitPlatform()
 	}
 
+
 	configurations {
 		compileOnly {
 			extendsFrom annotationProcessor
 		}
+
 	}
+
 }
