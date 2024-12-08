@@ -38,7 +38,7 @@ public class MatchingItTest {
 
         Members findMembers = memberRepository.findByEmail(members);
 
-        Assertions.assertThat(findMembers).isNull();
+        Assertions.assertThat(findMembers.getEmail()).isEqualTo(members.getEmail());
 
     }
 }
