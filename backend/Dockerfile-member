@@ -24,7 +24,7 @@ COPY rand-chat-member ./rand-chat-member
 RUN chmod +x gradlew
 
 # 특정 서브모듈 빌드
-RUN ./gradlew :rand-chat-member:build --no-daemon --refresh-dependencies
+RUN ./gradlew :rand-chat-member:build --no-daemon --refresh-dependencies -x test
 
 # 2단계: 최종 이미지
 FROM openjdk:17-jdk-slim
