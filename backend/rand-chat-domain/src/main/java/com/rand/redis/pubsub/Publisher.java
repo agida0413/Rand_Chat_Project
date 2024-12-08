@@ -2,6 +2,7 @@ package com.rand.redis.pubsub;
 
 import com.rand.config.constant.PubSubChannel;
 import com.rand.config.constant.SSETYPE;
+import com.rand.match.model.AcceptState;
 import com.rand.member.model.cons.MembersSex;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -13,7 +14,7 @@ public class Publisher {
     private final StringRedisTemplate redisTemplate;
 
     //매칭결과
-    public void sendNotification(String userId, String nickname,String profileImg,String sex,String type,String distance,String channel) {
+    public void sendNotification(String userId, String nickname,String profileImg,String sex,String type,String distance,String channel,String matchingAcceptKey) {
         String payload = "";
         //매칭성공 시
         if(type.equals(SSETYPE.MATCHINGCOMPLETE.toString())){
@@ -27,7 +28,8 @@ public class Publisher {
         }
         // 매칭 성공 or 실패 시
         if(type.equals(SSETYPE.MATCHINGCOMPLETE.toString()) || type.equals(SSETYPE.MATCHINGTIMEOUT.toString())){
-            payload = String.format("{\"userId\":\"%s\",\"nickname\":\"%s\",\"profileImg\":\"%s\",\"sex\":\"%s\",\"type\":\"%s\",\"distance\":\"%s\",\"channel\":\"%s\"}", userId, nickname,profileImg,sex,type,distance,channel);
+            payload = String.format("{\"userId\":\"%s\",\"nickname\":\"%s\",\"profileImg\":\"%s\",\"sex\":\"%s\",\"type\":\"%s\",\"distance\":\"%s\",\"channel\":\"%s\",\"matchingAcceptKey\":\"%s\"}"
+                    , userId, nickname,profileImg,sex,type,distance,channel,matchingAcceptKey);
 
             redisTemplate.convertAndSend(PubSubChannel.MATCHING_CHANNEL.toString(), payload);
         }
@@ -36,8 +38,9 @@ public class Publisher {
     }
 
     //매칭 수락
-    public void SendMatchingAcceptNotify(String userId, String channel){
-       String payload = String.format("{\"userId\":\"%s\",\"channel\":\"%s\"}", userId,channel);
+    public void SendMatchingAcceptNotify(String userId, String channel, AcceptState acceptState,String roomId){
+       String payload = String.format("{\"userId\":\"%s\",\"channel\":\"%s\",\"state\":\"%s\",\"roomId\":\"%s\"}", userId,channel,acceptState.toString(),roomId);
         redisTemplate.convertAndSend(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), payload);
     }
+
 }

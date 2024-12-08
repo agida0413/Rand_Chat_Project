@@ -1,17 +1,18 @@
 package com.rand.controller;
 
 import com.rand.common.ResponseDTO;
+import com.rand.match.dto.request.MatchAcceptDTO;
 import com.rand.match.dto.request.MatchDTO;
+import com.rand.match.dto.response.ResMatchAcceptDTO;
+import com.rand.service.MatchAcceptService;
+import com.rand.service.MatchAcceptServiceImpl;
 import com.rand.service.MatchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
@@ -21,11 +22,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class MatchingController {
 
     private final MatchService matchService;
+    private final MatchAcceptService matchAcceptService;
 
     @GetMapping
     public ResponseEntity<ResponseDTO<Void>> matchUser(@Validated @ModelAttribute MatchDTO matchDTO){
         return  matchService.matchLogic(matchDTO);
     }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<ResponseDTO<ResMatchAcceptDTO>> matchAccept(@RequestBody MatchAcceptDTO matchAcceptDTO
+            , @RequestHeader(value = "matchToken",required = false) String matchToken){
+        return  matchAcceptService.matchAccept(matchAcceptDTO,matchToken);
+    }
+
+
 
 //    @GetMapping("/test")
 //    public String test(){

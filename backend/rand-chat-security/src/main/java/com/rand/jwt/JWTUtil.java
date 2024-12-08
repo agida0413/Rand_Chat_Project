@@ -69,6 +69,13 @@ public final class JWTUtil {
        return MembersSex.MAN;
     }
 
+    public String getFirstUserId(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("firstUsrId",String.class);
+    }
+    public String getSecondUserId(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("secondUsrId",String.class);
+    }
+
     public LocalDate getBirth(String token) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String dateStr= Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("birth",String.class);
@@ -89,6 +96,18 @@ public final class JWTUtil {
                 .claim("birth",birth)
                 .issuedAt(new Date(System.currentTimeMillis()))//만든날
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))//유효기간
+                .signWith(secretKey)//시크릿키
+                .compact();
+    }
+
+
+    //매칭수락 토큰
+    public String createMatchingToken(String firstUsrId,String secondUsrId) {
+
+        return Jwts.builder()
+                .claim("firstUsrId", firstUsrId) //refresh토큰인지 access 토큰인지
+                .claim("secondUsrId", secondUsrId) //아이디
+                .issuedAt(new Date(System.currentTimeMillis()))//만든날
                 .signWith(secretKey)//시크릿키
                 .compact();
     }
