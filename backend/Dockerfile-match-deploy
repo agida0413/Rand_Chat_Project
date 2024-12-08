@@ -8,7 +8,7 @@ WORKDIR /backend
 COPY ../backend/gradle/wrapper/gradle-wrapper.jar ./gradle/wrapper/
 COPY ../backend/gradle/wrapper/gradle-wrapper.properties ./gradle/wrapper/
 COPY ../backend/gradlew ./
-COPY ../backend/uild.gradle .
+COPY ../backend/build.gradle .
 COPY ../backend/settings.gradle .
 
 # 서브모듈 복사

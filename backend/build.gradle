@@ -45,6 +45,11 @@ subprojects {
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
 		testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
 		testImplementation 'org.springframework.security:spring-security-test'
+		testImplementation 'org.testcontainers:testcontainers:1.17.5' // 최신 버전으로 수정
+		testImplementation 'org.testcontainers:mysql:1.17.5' // MySQL 컨테이너 의존성 추가
+		// JUnit5 의존성 추가 (JUnit 5를 사용하는 경우)
+		testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
+		testImplementation("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 
 
 	}
