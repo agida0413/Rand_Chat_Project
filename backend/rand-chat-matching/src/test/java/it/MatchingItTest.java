@@ -41,7 +41,7 @@ public class MatchingItTest {
 
 
         Assertions.assertThat(findMembers.getEmail()).isEqualTo(members.getEmail());
-        Assertions.assertThat(1).isEqualTo(2);
+
 
     }
 }
