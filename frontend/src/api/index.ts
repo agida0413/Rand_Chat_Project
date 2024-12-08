@@ -1,21 +1,43 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL
-
-export const getAccessToken = () => {
-  const accessToken = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('accessToken='))
-    ?.split('=')[1]
-
-  return accessToken || ''
+export type ApiResponse<T = null> = {
+  status: number
+  code: string
+  timestamp: string
+  data: T
 }
 
-const unknownError = { message: '알 수 없는 에러 입니다.' }
+export type ApiError = {
+  status: number
+  message: string
+  code: string
+  timestamp: string
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_URL
+
+export function isApiError(response: unknown): response is ApiError {
+  return (
+    typeof response === 'object' &&
+    response !== null &&
+    'message' in response &&
+    'status' in response &&
+    'code' in response
+  )
+}
+
 const handleResponse = async (response: Response) => {
   if (!response.ok) {
-    const errorData = await response.json().catch(() => null)
+    const errorData: ApiError | null = await response.json().catch(() => null)
 
-    const error = errorData?.state ? errorData : unknownError
-    throw error
+    if (errorData && errorData.status && errorData.message) {
+      throw errorData
+    }
+
+    throw {
+      status: response.status,
+      message: response.statusText || '알 수 없는 에러 입니다.',
+      code: 'UNKNOWN_ERROR',
+      timestamp: new Date().toISOString()
+    }
   }
 
   const contentType = response.headers.get('content-type')
@@ -26,43 +48,47 @@ const handleResponse = async (response: Response) => {
   return response.text()
 }
 
-const fetchWrapper = async (url: string, options: RequestInit = {}) => {
+const fetchWrapper = async <T>(
+  url: string,
+  options: RequestInit = {}
+): Promise<T> => {
   try {
     const response = await fetch(`${API_BASE_URL}${url}`, {
       ...options,
       headers: {
         Accept: 'application/json',
-        ...options.headers,
-        Authorization: `Bearer ${getAccessToken()}`
-      },
-      credentials: 'include'
+        ...options.headers
+        // Authorization: `Bearer ${getAccessToken()}`
+      }
+      // credentials: 'include'
     })
 
-    return handleResponse(response)
+    const data = await handleResponse(response)
+
+    if (isApiError(data)) {
+      throw data
+    }
+
+    return data as T
   } catch (error) {
     console.error('API Error:', error)
     throw error
   }
 }
 
-const get = (url: string, options: RequestInit = {}) => {
-  return fetchWrapper(url, { ...options, method: 'GET' })
-}
+export const api = {
+  get: <T>(url: string, options?: RequestInit) =>
+    fetchWrapper<ApiResponse<T>>(url, { ...options, method: 'GET' }),
 
-const post = (url: string, options: RequestInit = {}) => {
-  return fetchWrapper(url, { ...options, method: 'POST' })
-}
+  post: <T>(url: string, options?: RequestInit) =>
+    fetchWrapper<ApiResponse<T>>(url, { ...options, method: 'POST' }),
 
-const put = (url: string, options: RequestInit = {}) => {
-  return fetchWrapper(url, { ...options, method: 'PUT' })
-}
+  put: <T>(url: string, options?: RequestInit) =>
+    fetchWrapper<ApiResponse<T>>(url, { ...options, method: 'PUT' }),
 
-const del = (url: string, options: RequestInit = {}) => {
-  return fetchWrapper(url, { ...options, method: 'DELETE' })
-}
+  delete: <T>(url: string, options?: RequestInit) =>
+    fetchWrapper<ApiResponse<T>>(url, { ...options, method: 'DELETE' }),
 
-const patch = (url: string, options: RequestInit = {}) => {
-  return fetchWrapper(url, { ...options, method: 'PATCH' })
+  patch: <T>(url: string, options?: RequestInit) =>
+    fetchWrapper<ApiResponse<T>>(url, { ...options, method: 'PATCH' })
 }
-
-export const api = { get, post, put, delete: del, patch }
