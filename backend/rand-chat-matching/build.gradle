@@ -15,6 +15,30 @@ dependencies {
     implementation project(':rand-chat-core')
     implementation project(':rand-chat-config')
     implementation project(':rand-chat-security')
+    // JUnit 5 의존성
+
+}
+
+task unitTest(type: Test) {
+
+    useJUnitPlatform()
+
+    filter {
+        includeTestsMatching "unit.*UnitTest"
+
+    }
+
+
+}
+
+task integrationTest(type: Test) {
+
+    useJUnitPlatform()
+
+    filter {
+        includeTestsMatching "it.*ItTest"
+
+    }
 
 }
 
