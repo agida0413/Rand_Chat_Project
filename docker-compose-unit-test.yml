@@ -13,11 +13,13 @@ services:
     container_name: backend_match1
     networks: 
      - app_network
-    env_file:
-      - .env  # .env 파일을 로드
     environment: 
       - INSTANCE_ID=server1 
       - SPRING_PROFILES_ACTIVE=dev
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
+      - S3_REGION=${S3_REGION}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
   mysql:
     image: mysql:8.0
     container_name: mysql

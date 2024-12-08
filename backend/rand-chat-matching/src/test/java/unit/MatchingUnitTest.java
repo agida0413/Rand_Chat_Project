@@ -12,6 +12,6 @@ public class MatchingUnitTest {
     @Test
     public void test(){
         int i = 1;
-        Assertions.assertThat(i).isEqualTo(1);
+        Assertions.assertThat(i).isEqualTo(2);
     }
 }
