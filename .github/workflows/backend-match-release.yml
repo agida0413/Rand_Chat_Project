@@ -1,4 +1,4 @@
-name: BEFORE MERGE DEVELOP BRANCH CONTAINS UNIT TEST [CI]
+name: BACKEND-MATCH-RELEASE
 
 on:
   push:
@@ -12,8 +12,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          
+
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
