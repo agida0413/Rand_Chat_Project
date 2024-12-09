@@ -25,4 +25,4 @@ RUN chmod +x gradlew
 
 RUN SPRING_PROFILES_ACTIVE=test ./gradlew :rand-chat-matching:build --refresh-dependencies --no-daemon -x test
 
-ENTRYPOINT ["./gradlew", "integrationTest", "--info"]
+ENTRYPOINT ["./gradlew", "integrationTest", "--quiet"]
