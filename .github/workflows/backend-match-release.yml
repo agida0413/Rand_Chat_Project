@@ -48,8 +48,12 @@ jobs:
 
       - name: Run IT Tests
         run: |
-          docker-compose -f ./docker-compose-it-test.yml up backend_match1    # 컨테이너 빌드 및 실행
-
+          docker-compose -f ./docker-compose-it-test.yml up --abort-on-container-exit backend_match1    # 컨테이너 빌드 및 실행
+          # 테스트가 실패한 경우에 워크플로우를 실패로 처리
+          if [ $? -ne 0 ]; then
+          echo "IT tests failed, stopping workflow."
+          exit 1
+          fi
       - name: Extract tag name
         run: |
           echo "Full reference: $GITHUB_REF"  # 전체 참조 정보 출력
