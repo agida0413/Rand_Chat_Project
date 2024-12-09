@@ -34,22 +34,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      # - name: Run mysql
-      #   run: |
-      #      docker compose -f ./docker-compose-it-test.yml up -d mysql
+      - name: Run mysql
+        run: |
+           docker compose -f ./docker-compose-it-test.yml up -d mysql
 
-      # - name: Run Redis
-      #   run: |
-      #      docker compose -f ./docker-compose-it-test.yml up -d redis-master-1    
+      - name: Run Redis
+        run: |
+           docker compose -f ./docker-compose-it-test.yml up -d redis-master-1    
 
-      # - name: Wait for DB
-      #   run: |
-      #     sleep 10  # 적절한 대기 시간 설정
+      - name: Wait for DB
+        run: |
+          sleep 10  # 적절한 대기 시간 설정
 
-      # - name: Run IT Tests
-      #   run: |
-      #     docker-compose -f ./docker-compose-it-test.yml up backend_match1    # 컨테이너 빌드 및 실행
-
+      - name: Run IT Tests
+        run: |
+          docker-compose -f ./docker-compose-it-test.yml up --abort-on-container-exit backend_match1    # 컨테이너 빌드 및 실행
+          # 테스트가 실패한 경우에 워크플로우를 실패로 처리
+          if [ $? -ne 0 ]; then
+          echo "IT tests failed, stopping workflow."
+          exit 1
+          fi
       - name: Extract tag name
         run: |
           echo "Full reference: $GITHUB_REF"  # 전체 참조 정보 출력
