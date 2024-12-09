@@ -18,12 +18,11 @@ COPY rand-chat-config ./rand-chat-config
 COPY rand-chat-domain ./rand-chat-domain
 
 # 소스 코드 복사
-COPY rand-chat-matching ./rand-chat-matching
+COPY /rand-chat-matching ./rand-chat-matching
 
 # gradlew 실행 권한 설정
 RUN chmod +x gradlew
 
-RUN ./gradlew :rand-chat-matching:build --refresh-dependencies --no-daemon -x test
-
+RUN SPRING_PROFILES_ACTIVE=test ./gradlew :rand-chat-matching:build --refresh-dependencies --no-daemon -x test -i
 
 ENTRYPOINT ["./gradlew", "integrationTest"]
