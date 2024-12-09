@@ -64,6 +64,6 @@ public class MatchingItTest {
         inMemRepository.save("test","1");
         String t =(String) inMemRepository.getValue("test");
 
-        Assertions.assertThat(t).isEqualTo("2");
+        Assertions.assertThat(t).isEqualTo("1");
     }
 }
