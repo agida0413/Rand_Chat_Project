@@ -46,6 +46,12 @@ subprojects {
 		testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
 		testImplementation 'org.springframework.security:spring-security-test'
 
+		testImplementation 'org.testcontainers:testcontainers:1.16.0' // TC 의존성
+		testImplementation 'org.testcontainers:junit-jupiter:1.16.2'  // TC 의존성
+		testImplementation "org.testcontainers:mysql:1.20.4"
+		testImplementation 'org.testcontainers:jdbc:1.16.0'
+
+
 
 	}
 	repositories {
@@ -55,7 +61,7 @@ subprojects {
 	sourceSets {
 		main {
 			resources {
-				srcDirs = ['src/main/resources',"rand-chat-config/src/main/java","rand-chat-core/src/main/java","rand-chat-domain/src/main/java","rand-chat-matching/src/main/java","rand-chat-member/src/main/java"]
+				srcDirs = ['src/main/resources',"rand-chat-config/src/main/java","rand-chat-core/src/main/java","rand-chat-domain/src/main/java","rand-chat-matching/src/main/java","rand-chat-member/src/main/java","rand-chat-matching/src/resources"]
 			}
 		}
 

@@ -34,7 +34,7 @@ task unitTest(type: Test) {
 task integrationTest(type: Test) {
 
     useJUnitPlatform()
-
+    environment 'SPRING_PROFILES_ACTIVE', 'test'
     filter {
         includeTestsMatching "it.*ItTest"
 
