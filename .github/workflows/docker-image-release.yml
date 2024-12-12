@@ -1,11 +1,11 @@
 name: Release Docker HUB 
 
 on:
-  push:
-    branches:
-      - release 
+  release:
+    types:
+      - published  # release가 퍼블리시될 때만 트리거
     tags:
-      - 'v*.*.*'  
+      - 'v*.*.*'  # 'v'로 시작하는 태그만 트리거
    
 jobs:
   build:
@@ -94,5 +94,5 @@ jobs:
             --build-arg BACKEND_INSTANCE_MATCH_1=${{ secrets.BACKEND_INSTANCE_MATCH_1 }} \
             --build-arg BACKEND_INSTANCE_MATCH_2=${{ secrets.BACKEND_INSTANCE_MATCH_2 }} \         
             --build-arg FRONT_END_INSTANCE_1=${{ secrets.FRONT_END_INSTANCE_1 }} \        
-          -f ./nginx/deploy/Dockerfile -t kimyong120413/randchatnginx:latest . \
+          -f ./nginx/deploy/Dockerfile -t kimyong120413/randchatnginx:latest . 
           docker push kimyong120413/randchatnginx:latest         
