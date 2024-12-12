@@ -40,9 +40,13 @@ jobs:
 
       - name: Set up SSH key
         run: |
+          # SSH 디렉토리 생성
+          mkdir -p ~/.ssh
+          
           # SSH 키를 임시 파일로 저장
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          
           # SSH를 통한 EC2 인스턴스 호스트 검증을 위해 known_hosts에 추가
           ssh-keyscan -H ${{ secrets.NGINX_INSTANCE_1 }} >> ~/.ssh/known_hosts
 
