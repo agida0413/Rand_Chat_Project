@@ -57,13 +57,9 @@ jobs:
           # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$NGINX_INSTANCE_1 << EOF
 
-          # 도커 이미지 풀
-          docker pull kimyong120413/randchatnginx:latest
-
           # 기존 컨테이너 종료 (이미 실행 중이면)
-          docker stop nginx-container || true
-          docker rm nginx-container || true
+          docker-coompose down -v
 
           # 새로운 버전으로 컨테이너 실행
-          docker run -d --name nginx-container -p 80:80 -p 443:443 kimyong120413/randchatnginx:latest
+          docker compose up --build
           EOF
