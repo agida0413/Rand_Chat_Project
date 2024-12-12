@@ -94,5 +94,5 @@ jobs:
             --build-arg BACKEND_INSTANCE_MATCH_1=${{ secrets.BACKEND_INSTANCE_MATCH_1 }} \
             --build-arg BACKEND_INSTANCE_MATCH_2=${{ secrets.BACKEND_INSTANCE_MATCH_2 }} \         
             --build-arg FRONT_END_INSTANCE_1=${{ secrets.FRONT_END_INSTANCE_1 }} \        
-          -f ./nginx/deploy/Dockerfile -t kimyong120413/randchatnginx:latest . 
+            -f ./nginx/deploy/Dockerfile -t kimyong120413/randchatnginx:latest . 
           docker push kimyong120413/randchatnginx:latest         
