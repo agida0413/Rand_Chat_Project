@@ -3,7 +3,7 @@ name: Release Docker HUB
 on:
   release:
     types:
-      - published  # release가 퍼블리시될 때만 트리거
+      - created  # release가 생성될 때
     tags:
       - 'v*.*.*'  # 'v'로 시작하는 태그만 트리거
    
