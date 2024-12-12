@@ -43,16 +43,21 @@ jobs:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}  # EC2 개인 키
           NGINX_INSTANCE_1: ${{ secrets.NGINX_INSTANCE_1 }}          # EC2 퍼블릭 IP
         run: |
-          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
-          ssh -o StrictHostKeyChecking=no -i $EC2_SSH_KEY ec2-user@$NGINX_INSTANCE_1 << EOF
-          # 도커 이미지 풀
-            docker pull kimyong120413/randchatnginx:latest
-            
-            # 기존 컨테이너 종료 (이미 실행 중이면)
-            docker stop nginx-container || true
-            docker rm nginx-container || true
-            
-            # 새로운 버전으로 컨테이너 실행
-            docker run -d --name nginx-container -p 80:80 kimyong120413/randchatnginx:latest
-          EOF
+            # SSH 개인 키를 임시 파일로 저장
+            echo "${{ secrets.EC2_SSH_KEY }}" > /tmp/ec2_private_key.pem
+            chmod 600 /tmp/ec2_private_key.pem  # 파일 권한 설정
+
+            # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+            ssh -o StrictHostKeyChecking=no -i /tmp/ec2_private_key.pem ec2-user@$NGINX_INSTANCE_1 << EOF
+              # 도커 이미지 풀
+              docker pull kimyong120413/randchatnginx:latest
+
+              # 기존 컨테이너 종료 (이미 실행 중이면)
+              docker stop nginx-container || true
+              docker rm nginx-container || true
+
+              # 새로운 버전으로 컨테이너 실행
+              docker run -d --name nginx-container -p 80:80 kimyong120413/randchatnginx:latest
+            EOF
+        shell: /usr/bin/bash -e {0}
  
