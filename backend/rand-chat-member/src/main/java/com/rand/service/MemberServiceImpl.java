@@ -2,6 +2,7 @@ package com.rand.service;
 
 import com.rand.common.ResponseDTO;
 import com.rand.common.service.CommonMemberService;
+import com.rand.config.rds.ReadOnly;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
@@ -177,6 +178,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    @ReadOnly
     public ResponseEntity<ResponseDTO<Void>> emailUnlockAccountSend(UnlockAccountDTO unlockAccountDTO) {
         Members members = new Members(unlockAccountDTO);
 
@@ -206,6 +208,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    @ReadOnly
     public ResponseEntity<ResponseDTO<ResFindIdDTO>> findId(FindIdDTO findIdDTO) {
         Members members = new Members(findIdDTO);
 
@@ -222,6 +225,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    @ReadOnly
     public ResponseEntity<ResponseDTO<Void>> emailAuthSend(EmailAuthSendDTO emailAuthDTO) {
         //dto - > entity
         Members members= new Members(emailAuthDTO);
@@ -472,6 +476,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    @ReadOnly
     public ResponseEntity<ResponseDTO<ResMemInfoDTO>> getMemberInfo(){
         int usrId = SecurityContextGet.getUsrId();
         Members resultMembers = commonMemberService.memberGetInfoMethod(usrId);
