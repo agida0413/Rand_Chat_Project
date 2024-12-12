@@ -3,7 +3,7 @@ name: DEPLOY
 on:
   release:
     types:
-      - published  # release가 퍼블리시될 때만 트리거
+      - published 
     tags:
       - 'v*.*.*'  # 'v'로 시작하는 태그만 트리거
 
@@ -65,5 +65,5 @@ jobs:
           docker rm nginx-container || true
 
           # 새로운 버전으로 컨테이너 실행
-          docker run -d --name nginx-container -p 80:80 kimyong120413/randchatnginx:latest
+          docker run -d --name nginx-container -p 80:80 -p 443:443 kimyong120413/randchatnginx:latest
           EOF
