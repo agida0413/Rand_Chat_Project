@@ -1,0 +1,24 @@
+name: NGINX RELEASE IMAGE
+on:
+  push:
+    tags:
+      - 'ngx.v*.*.*'  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+ 
+ 
+      - name: Login Docker
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    
+      #이미지 빌드 
+      - name: NGINX IMAGE BUILD
+        run: |
+          docker build -f ./nginx/deploy/Dockerfile -t kimyong120413/randchatnginx:latest .
+          docker push kimyong120413/randchatnginx:latest
+          
