@@ -1,5 +1,6 @@
 package com.rand.common.service;
 
+import com.rand.config.rds.ReadOnly;
 import com.rand.config.var.RedisKey;
 import com.rand.member.model.Members;
 import com.rand.member.model.cons.MembersSex;
@@ -13,10 +14,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
+
 public class MemberService implements CommonMemberService{
     private final InMemRepository inMemRepository;
     private final MemberRepository memberRepository;
     @Override
+
     public Members memberGetInfoMethod(int usrId) {
         //캐시 및
 

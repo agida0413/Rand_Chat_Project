@@ -1,12 +1,15 @@
-package com.rand.config.rds;
+package com.rand.config.aop;
 
+import com.rand.config.rds.DataSourceContextHolder;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 
 @Aspect
 @Profile("deploy")
+@Order(1)
 public class DataSourceAspect {
     @Before("@annotation(readOnly)")
     public void useReadDataSource() {
