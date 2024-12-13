@@ -133,17 +133,17 @@ jobs:
           docker compose up --build -d
           EOF       
 
-     - name: Connect to EC2 and deploy FRONT-END ----프론트엔드 배포----
-       env:
-          FRONTEND_INSTANCE_1: ${{ secrets.FRONT_END_INSTANCE_1 }}  # EC2 퍼블릭 IP
-        run: |
-          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$NGINX_INSTANCE_1 << EOF
-          # 기존 컨테이너 종료 (이미 실행 중이면)
-          docker stop front-end || true
-          docker rm front-end || true
-          sudo systemctl restart docker
-          docker system prune -a -f --volumes  
-          docker pull kimyong120413/randchatfrontend:$TAG_NAME
-          docker run -d --name front-end -p 8080:3000  kimyong120413/randchatfrontend:$TAG_NAME 
-          EOF                 
+    #  - name: Connect to EC2 and deploy FRONT-END ----프론트엔드 배포----
+    #    env:
+    #       FRONTEND_INSTANCE_1: ${{ secrets.FRONT_END_INSTANCE_1 }}  # EC2 퍼블릭 IP
+    #     run: |
+    #       # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+    #       ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$NGINX_INSTANCE_1 << EOF
+    #       # 기존 컨테이너 종료 (이미 실행 중이면)
+    #       docker stop front-end || true
+    #       docker rm front-end || true
+    #       sudo systemctl restart docker
+    #       docker system prune -a -f --volumes  
+    #       docker pull kimyong120413/randchatfrontend:$TAG_NAME
+    #       docker run -d --name front-end -p 8080:3000  kimyong120413/randchatfrontend:$TAG_NAME 
+    #       EOF                 
