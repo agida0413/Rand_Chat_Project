@@ -1,7 +1,7 @@
 import { getAccessToken, getUser } from '@/utils/auth'
 import { redirect } from 'react-router-dom'
 
-export async function requiresAuth({ request }: { request: Request }) {
+export async function requiresAuth() {
   const token = getAccessToken()
   if (token) {
     try {
