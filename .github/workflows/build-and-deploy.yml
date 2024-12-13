@@ -7,6 +7,7 @@ on:
       - edited
     tags:
       - 'v*.*.*'  # 'v'로 시작하는 태그만 트리거
+jobs:      
   build:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'  # main 브랜치일 경우만 실행
