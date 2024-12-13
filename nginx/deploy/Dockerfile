@@ -12,8 +12,9 @@ ENV BACKEND_INSTANCE_MATCH_1=$BACKEND_INSTANCE_MATCH_1
 ENV BACKEND_INSTANCE_MATCH_2=$BACKEND_INSTANCE_MATCH_2
 ENV FRONT_END_INSTANCE_1=$FRONT_END_INSTANCE_1
 
-COPY ../nginx/deploy/default.conf /etc/nginx/conf.d/default.conf
 
+COPY ../nginx/deploy/default.conf /etc/nginx/conf.d/default.conf
 RUN envsubst '${BACKEND_INSTANCE_MEMBER_1} ${BACKEND_INSTANCE_MATCH_1} ${BACKEND_INSTANCE_MATCH_2} ${FRONT_END_INSTANCE_1}' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80 443
+
