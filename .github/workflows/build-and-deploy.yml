@@ -131,7 +131,7 @@ jobs:
           docker system prune -a -f --volumes
           # 새로운 버전으로 컨테이너 실행
           docker compose up --build -d
-          EOF       
+          EOF
 
       - name: Connect to EC2 and deploy FRONT-END ----프론트엔드 배포----
         env:
@@ -146,4 +146,4 @@ jobs:
           docker system prune -a -f --volumes  
           docker pull kimyong120413/randchatfrontend:$TAG_NAME
           docker run -d --name front-end -p 8080:3000  kimyong120413/randchatfrontend:$TAG_NAME 
-          EOF                 
+          EOF 
