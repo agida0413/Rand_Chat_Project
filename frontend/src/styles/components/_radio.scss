@@ -1,0 +1,30 @@
+@use '@/styles/base/_typography' as *;
+@use '@/styles/base/_colors' as *;
+
+@mixin primaryRadio {
+  appearance: none;
+  width: 0.5rem;
+  height: 2.5rem;
+  border: 1px solid #e0e0e0;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    @include typography('caption', 'regular');
+    color: #e0e0e0;
+  }
+
+  &:checked {
+    background: $color-primary-200;
+    border-color: $color-primary-100;
+
+    &::before {
+      color: white;
+    }
+  }
+}
