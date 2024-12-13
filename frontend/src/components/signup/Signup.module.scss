@@ -1,0 +1,26 @@
+@use '@/styles/components/_button.scss' as *;
+
+.signupContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  gap: 3rem;
+  padding: 2rem 0;
+  height: 100vh;
+  text-align: center;
+  width: 21rem;
+
+  h1 {
+    @include typography('heading2', 'bold');
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    button {
+      @include primaryButton;
+      width: 9rem;
+    }
+  }
+}
