@@ -24,4 +24,4 @@ mysqlevn
 hs_err_pid*
 replay_pid*
 
-nginx/deploy*
+nginx/deploy
