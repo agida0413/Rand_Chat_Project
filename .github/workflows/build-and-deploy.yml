@@ -4,12 +4,16 @@ on:
   release:
     types:
       - published  # release가 생성될 때
+      - edited
     tags:
       - 'v*.*.*'  # 'v'로 시작하는 태그만 트리거
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     if: github.event.release.target_commitish == 'main'  # main 브랜치를 참조하는 Release만 실행
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
