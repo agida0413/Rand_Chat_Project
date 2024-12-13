@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
+import './main.module.scss'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -27,7 +28,7 @@ createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <ToastContainer />
         <Router />
-        {process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+        {import.meta.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
       </QueryClientProvider>
     </ErrorBoundary>
   </StrictMode>
