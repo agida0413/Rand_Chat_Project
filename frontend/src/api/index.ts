@@ -1,27 +1,12 @@
+import { ApiError, isApiError, setAccessToken } from '@/utils/auth'
+import { postReissueToken } from './login'
+const API_BASE_URL = import.meta.env.VITE_API_URL
+
 export type ApiResponse<T = null> = {
   status: number
   code: string
   timestamp: string
   data: T
-}
-
-export type ApiError = {
-  status: number
-  message: string
-  code: string
-  timestamp: string
-}
-
-const API_BASE_URL = import.meta.env.VITE_API_URL
-
-export function isApiError(response: unknown): response is ApiError {
-  return (
-    typeof response === 'object' &&
-    response !== null &&
-    'message' in response &&
-    'status' in response &&
-    'code' in response
-  )
 }
 
 const handleResponse = async (response: Response) => {
@@ -47,29 +32,46 @@ const handleResponse = async (response: Response) => {
 
   return response.text()
 }
-
 const fetchWrapper = async <T>(
   url: string,
   options: RequestInit = {}
-): Promise<T> => {
+): Promise<{ data: T; headers: Headers }> => {
   try {
     const response = await fetch(`${API_BASE_URL}${url}`, {
       ...options,
       headers: {
-        Accept: 'application/json',
         ...options.headers
-        // Authorization: `Bearer ${getAccessToken()}`
       }
-      // credentials: 'include'
     })
+    if (response.status === 410) {
+      try {
+        const reissueResponse = await postReissueToken()
+        console.log(reissueResponse)
+        const newAccessToken = reissueResponse.headers.get('access')
+        if (newAccessToken) {
+          setAccessToken(newAccessToken)
+          const retryResponse = await fetch(`${API_BASE_URL}${url}`, {
+            ...options,
+            headers: {
+              ...options.headers,
+              access: newAccessToken
+            }
+          })
+          const data = await handleResponse(retryResponse)
+          if (isApiError(data)) throw data
+          return { data: data as T, headers: retryResponse.headers }
+        }
+      } catch (error) {
+        console.error('API Error:', error)
+        throw error
+      }
+    }
 
     const data = await handleResponse(response)
 
-    if (isApiError(data)) {
-      throw data
-    }
+    if (isApiError(data)) throw data
 
-    return data as T
+    return { data: data as T, headers: response.headers }
   } catch (error) {
     console.error('API Error:', error)
     throw error
