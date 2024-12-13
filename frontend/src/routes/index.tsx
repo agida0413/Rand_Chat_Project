@@ -12,9 +12,10 @@ import NotFound from './pages/NotFound'
 import ErrorFallback from './layout/ErrorFallback'
 import { Suspense } from 'react'
 import Loading from './layout/Loading'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-import { requiresAuth } from './loaders/requiresAuth'
+
+import Login from './pages/login'
+import Signup from './pages/signup'
+import { requiresAuth, requiresLogin } from './loaders'
 
 function ErrorBoundary() {
   const error: Error = useRouteError() as Error
@@ -31,18 +32,24 @@ function ErrorBoundary() {
 const publicRoutes = [
   {
     path: '/signup',
-    element: <Signup />
+    element: <Signup />,
+    loader: requiresLogin
   },
   {
     path: '/login',
-    element: <Login />
+    element: <Login />,
+    loader: requiresLogin
   }
 ]
 
 const protectedRoutes = [
   {
     path: ':chatId',
-    element: <Chat />,
+    element: (
+      <Suspense fallback={<Loading />}>
+        <Chat />
+      </Suspense>
+    ),
     loader: requiresAuth
   },
   {
@@ -52,11 +59,19 @@ const protectedRoutes = [
     children: [
       {
         path: '/',
-        element: <Home />
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Home />
+          </Suspense>
+        )
       },
       {
         path: 'about',
-        element: <About />
+        element: (
+          <Suspense fallback={<Loading />}>
+            <About />
+          </Suspense>
+        )
       }
     ]
   }
@@ -77,9 +92,5 @@ const router = createBrowserRouter([
 ])
 
 export default function Router() {
-  return (
-    <Suspense fallback={<Loading />}>
-      <RouterProvider router={router} />
-    </Suspense>
-  )
+  return <RouterProvider router={router} />
 }
