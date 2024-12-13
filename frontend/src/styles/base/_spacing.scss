@@ -1,0 +1,42 @@
+// Spacing & Sizing
+$min-width-frame: 280px;
+$max-width-frame: 1200px;
+$max-height-frame: 100vh;
+
+// Spacing & Sizing/Spacing
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 20px;
+$spacing-6: 24px;
+$spacing-8: 32px;
+$spacing-9: 36px;
+$spacing-10: 40px;
+$spacing-12: 48px;
+$spacing-15: 60px;
+$spacing-100: 1000px;
+
+// Spacing & Sizing/Margin
+$margin-xs: $spacing-1;
+$margin-s: $spacing-2;
+$margin-s2: $spacing-3;
+$margin-m: $spacing-4;
+$margin-m2: $spacing-5;
+$margin-l: $spacing-6;
+$margin-xl: $spacing-10;
+$margin-xxl: $spacing-15;
+
+// Spacing & Sizing/Radius
+$radius-xs: $spacing-2;
+$radius-s: $spacing-3;
+$radius-m: $spacing-4;
+$radius-l: $spacing-6;
+$radius-xl: $spacing-100;
+
+// Spacing & Sizing/Padding
+$padding-xs: $spacing-2;
+$padding-s: $spacing-3;
+$padding-m: $spacing-4;
+$padding-l: $spacing-6;
+$padding-xl: $spacing-8;
