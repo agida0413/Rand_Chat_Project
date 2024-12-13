@@ -14,13 +14,11 @@ public class MybatisMatchingRepository implements MatchingRepository{
     private final MatchingMapper matchingMapper;
 
     @Override
-    @WriteOnly
     public void chatRoomCreate(Match match) {
         matchingMapper.chatRoomCreate(match);
     }
 
     @Override
-    @ReadOnly
     public Match isExistChatRoom(Match match) {
         return matchingMapper.isExistChatRoom(match);
     }

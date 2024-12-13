@@ -4,6 +4,7 @@ import com.rand.common.ResponseDTO;
 import com.rand.common.service.CommonMemberService;
 import com.rand.config.constant.PubSubChannel;
 import com.rand.config.constant.SSETYPE;
+import com.rand.config.rds.ReadOnly;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
@@ -239,6 +240,7 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Transactional
+    @ReadOnly
     private boolean isExistChatRoom(String firstUserId,String secondUserId){
         //이미 존재하는 채팅방인지 확인
         Match reqMatch = new Match(Integer.parseInt(firstUserId),Integer.parseInt(secondUserId));
