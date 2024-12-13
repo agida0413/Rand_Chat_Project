@@ -4,7 +4,6 @@ on:
   release:
     types:
       - published  # release가 생성될 때
-      - edited
     tags:
       - 'v*.*.*'  # 'v'로 시작하는 태그만 트리거
 jobs:
