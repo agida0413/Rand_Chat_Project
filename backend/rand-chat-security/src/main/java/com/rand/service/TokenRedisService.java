@@ -3,6 +3,7 @@ package com.rand.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rand.common.ResponseDTO;
 import com.rand.config.var.RedisKey;
+import com.rand.custom.SecurityContextGet;
 import com.rand.custom.SecurityResponse;
 import com.rand.exception.custom.InternerServerException;
 import com.rand.jwt.JWTUtil;
@@ -28,9 +29,8 @@ public class TokenRedisService implements TokenService{
     private final ObjectMapper objectMapper;
     @Override
     public void addRefresh(String key , String token) {
-        TimeUnit timeUnit =TimeUnit.HOURS;
-
-        long ttl = 24L;
+        TimeUnit timeUnit = TimeUnit.HOURS;
+        long ttl = 24L * 7;  // 1주일 = 168시간
         String rediskey = RedisKey.REFRESH_TOKEN_KEY +key;
         inMemRepository.save(rediskey , token,ttl,timeUnit);
     }
@@ -87,6 +87,7 @@ public class TokenRedisService implements TokenService{
             } catch (IOException e) {
                 throw new InternerServerException("ERR-CMN-01"); // 최상위 공통에러
             }
+
         }
 
 
@@ -96,6 +97,7 @@ public class TokenRedisService implements TokenService{
 
             response.addCookie(CookieUtil.deleteRefreshCookie(refresh));//refresh 쿠키제거메서드
             try {
+                inMemRepository.delete(RedisKey.REFRESH_TOKEN_KEY+ SecurityContextGet.getUsrId());
                 SecurityResponse.writeErrorRes(response,objectMapper,"ERR-SEC-07"); // 세션만료
             } catch (IOException ex) {
                 throw new InternerServerException("ERR-CMN-01"); // 최상위 공통에러
@@ -138,8 +140,8 @@ public class TokenRedisService implements TokenService{
         String strBirth = jwtUtil.getBirth(refresh).toString();
 
         //새로운 jwt 토큰 발급
-        String newAccess = jwtUtil.createJwt("access", userName, strUsrId,nickname, sex, strBirth,300000L);//엑세스 토큰
-        String newRefresh = jwtUtil.createJwt("refresh", userName, strUsrId,nickname ,sex,strBirth,86400000L); //리프레시 토큰
+        String newAccess = jwtUtil.createJwt("access", userName, strUsrId,nickname, sex, strBirth,300000L);//엑세스 토큰 5분
+        String newRefresh = jwtUtil.createJwt("refresh", userName, strUsrId,nickname ,sex,strBirth,86400000L * 7); //리프레시 토큰 1주일
 
 
 
@@ -152,7 +154,7 @@ public class TokenRedisService implements TokenService{
         //응답 설정
         response.setHeader("access", newAccess);//엑세스 토큰은 헤더에
 
-        Cookie cookie= CookieUtil.createCookie("refresh",newRefresh,300);
+        Cookie cookie= CookieUtil.createCookie("refresh",newRefresh,604800);
 
         //성공시 응답
         response.addCookie(cookie);

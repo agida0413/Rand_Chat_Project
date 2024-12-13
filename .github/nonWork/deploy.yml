@@ -58,8 +58,12 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$NGINX_INSTANCE_1 << EOF
 
           # 기존 컨테이너 종료 (이미 실행 중이면)
-          docker-coompose down -v
+          docker-compose down 
+
+          sudo systemctl restart docker
+
+          docker system prune -a -f --volumes
 
           # 새로운 버전으로 컨테이너 실행
-          docker compose up --build
+          docker compose up --build -d
           EOF

@@ -1,7 +1,6 @@
 # nginx/Dockerfile 예시
 FROM nginx:alpine
 
-# # 필요한 환경 변수 정의
 # ARG BACKEND_INSTANCE_MEMBER_1
 # ARG BACKEND_INSTANCE_MATCH_1
 # ARG BACKEND_INSTANCE_MATCH_2
@@ -12,9 +11,8 @@ FROM nginx:alpine
 # ENV BACKEND_INSTANCE_MATCH_2=$BACKEND_INSTANCE_MATCH_2
 # ENV FRONT_END_INSTANCE_1=$FRONT_END_INSTANCE_1
 
-
-COPY ../nginx/deploy/default.conf /etc/nginx/conf.d/default.conf
-# RUN envsubst '${BACKEND_INSTANCE_MEMBER_1} ${BACKEND_INSTANCE_MATCH_1} ${BACKEND_INSTANCE_MATCH_2} ${FRONT_END_INSTANCE_1}' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf
-
 EXPOSE 80 443
+COPY ../nginx/deploy/default.conf /etc/nginx/conf.d/default.conf
+
+# CMD /bin/sh -c "envsubst '\$BACKEND_INSTANCE_MEMBER_1 \$BACKEND_INSTANCE_MATCH_1 \$BACKEND_INSTANCE_MATCH_2 \$FRONT_END_INSTANCE_1' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
