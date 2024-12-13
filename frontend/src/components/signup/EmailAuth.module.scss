@@ -1,0 +1,43 @@
+@use '@/styles/components/_button.scss' as *;
+@use '@/styles/components/_input.scss' as *;
+
+.emailAuthForm {
+  overflow-y: auto;
+  display: flex;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  flex-direction: column;
+  gap: 1rem;
+
+  input:not([type='date']) {
+    @include primaryInput;
+    height: 3rem;
+  }
+
+  .parentForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    button {
+      @include primaryButton;
+      line-height: 0;
+    }
+
+    .authCheck {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      button {
+        width: 6rem;
+      }
+
+      input[type='text'],
+      input[type='email'] {
+        flex: 1;
+      }
+    }
+  }
+}
