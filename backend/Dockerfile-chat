@@ -1,0 +1,36 @@
+# 1단계: Gradle 빌드를 위한 빌드 이미지
+FROM gradle:7.6.0-jdk17 AS builder
+
+# 작업 디렉토리 설정
+WORKDIR /backend
+
+# Gradle Wrapper 파일을 먼저 복사하여 캐시 활용
+COPY gradle/wrapper/gradle-wrapper.jar ./gradle/wrapper/
+COPY gradle/wrapper/gradle-wrapper.properties ./gradle/wrapper/
+COPY gradlew ./
+COPY build.gradle .
+COPY settings.gradle .
+
+# 서브모듈 복사
+COPY rand-chat-core ./rand-chat-core
+COPY rand-chat-security ./rand-chat-security
+COPY rand-chat-config ./rand-chat-config
+COPY rand-chat-domain ./rand-chat-domain
+
+# 소스 코드 복사
+COPY rand-chat-matching ./rand-chat-matching
+
+# gradlew 실행 권한 설정
+RUN chmod +x gradlew
+
+RUN ./gradlew :rand-chat-matching:build --refresh-dependencies --no-daemon -x test
+
+
+# 2단계: 최종 이미지
+FROM openjdk:17-jdk-slim
+
+# 빌드된 JAR 파일을 /app.jar로 복사
+COPY --from=builder /backend/rand-chat-matching/build/libs/*.jar app.jar
+
+# 애플리케이션 실행
+ENTRYPOINT ["java", "-jar", "/app.jar"]
