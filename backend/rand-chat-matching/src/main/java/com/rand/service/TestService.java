@@ -22,7 +22,7 @@
 //public class TestService {
 //    // 경기도 ~ 서울 범위
 //    private static final double MIN_LAT = 37.0; // 최소 위도 (경기도 남부)
-//    private static final double MAX_LAT = 37.8; // 최대 위도 (경기도 북부, 서울과 경계)
+////    private static final double MAX_LAT = 37.8; // 최대 위도 (경기도 북부, 서울과 경계)
 //    private static final double MIN_LON = 126.6; // 최소 경도 (경기도 서부)
 //    private static final double MAX_LON = 127.5; // 최대 경도 (경기도 동부)
 //

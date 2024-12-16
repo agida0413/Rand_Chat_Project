@@ -18,19 +18,19 @@ COPY rand-chat-config ./rand-chat-config
 COPY rand-chat-domain ./rand-chat-domain
 
 # 소스 코드 복사
-COPY rand-chat-matching ./rand-chat-matching
+COPY rand-chat-main-server ./rand-chat-main-server
 
 # gradlew 실행 권한 설정
 RUN chmod +x gradlew
 
-RUN ./gradlew :rand-chat-matching:build --refresh-dependencies --no-daemon -x test
+RUN ./gradlew :rand-chat-main-server:build --refresh-dependencies --no-daemon -x test
 
 
 # 2단계: 최종 이미지
 FROM openjdk:17-jdk-slim
 
 # 빌드된 JAR 파일을 /app.jar로 복사
-COPY --from=builder /backend/rand-chat-matching/build/libs/*.jar app.jar
+COPY --from=builder /backend/rand-chat-main-server/build/libs/*.jar app.jar
 
 # 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "/app.jar"]

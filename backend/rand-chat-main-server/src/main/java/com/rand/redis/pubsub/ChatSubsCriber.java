@@ -24,11 +24,10 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
-public class SubsCriber implements MessageListener {
+public class ChatSubsCriber implements MessageListener {
 
 
-    private final NotificationService connectionService;
+
 
 
 
@@ -36,162 +35,15 @@ public class SubsCriber implements MessageListener {
     // Redis 메시지 수신 처리
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        try{
-            String payload = new String(message.getBody());
-            Map<String, String> data = null;
-
-            data = parsePayload(payload);
-            //필수 값
-            String userId = data.get("userId");
-            String channel = data.get("channel");
-
-
-            String serverInstanceId = "";
-            // 현재 서버에 연결된 클라이언트라면 메시지 전송
-
-            if(channel.equals(PubSubChannel.MATCHING_CHANNEL.toString())){
-                //매칭 채널
-                serverInstanceId = connectionService.getServerInstanceForUser(userId,PubSubChannel.MATCHING_CHANNEL.toString(), RedisKey.SSE_MATCHING_CONNECTION_KEY);
-            }
-            else if (channel.equals(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString())){
-                    serverInstanceId = connectionService.getServerInstanceForUser(userId,PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString(), RedisKey.SSE_MATCHING_ACCEPT_CONNECTION_KEY);
-            }
-
-
-
-            if (isCurrentInstance(serverInstanceId)) {
-
-                try {
-                    //분기
-                    if(channel.equals(PubSubChannel.MATCHING_CHANNEL.toString())){
-                        //매칭채널
-                        String nickname = data.get("nickname");
-                        String profileImg = data.get("profileImg");
-                        String sex = data.get("sex");
-                        String type= data.get("type");
-                        String distance = data.get("distance");
-                        String matchingAcceptKey = data.get("matchingAcceptKey");
-                        matchingResultSendToClient(userId, nickname,profileImg,sex,type,distance,matchingAcceptKey);
-
-
-                    }else if (channel.equals(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString())){
-                        //매칭 수락 채널
-                        String state = data.get("state");
-                        String roomId = data.get("roomId");
-                        matchingAcceptSendToClient(userId,state,roomId);
-                    }
-                }
-                catch (Exception e){
-                    if(e.getMessage().equals("ResponseBodyEmitter has already completed")){
-                        log.info("Success match");
-                    }
-                }
-                finally {
-                    //특정 EMITTER 가져오기
-                    SseEmitter emitter = SseConnectionRegistry.getEmitter(userId, channel);
-                    if(emitter!=null){
-
-                        emitter.complete(); // 연결 종료
-                    }
-
-                }
-
-
-
-            }
-
-        }
-        catch (Exception e){
-            throw new RuntimeException(e);
-        }
-
 
 
     }
 
-    private Map<String, String> parsePayload(String payload) throws JsonProcessingException {
-        // JSON 문자열을 Map으로 변환 (간단한 파서 사용)
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(payload, new TypeReference<>() {});
-    }
 
     private boolean isCurrentInstance(String serverInstanceId) {
         // 현재 서버 인스턴스와 비교 (로드밸런싱 환경에서 인스턴스 ID 비교)
         return getCurrentInstanceId().equals(serverInstanceId);
     }
-
-    //매칭 결과 전송
-    private void matchingResultSendToClient(String userId, String nickname,String profileImg,String sex,String type,String distance,String matchingAcceptKey) {
-        // SSE 연결된 클라이언트에게 메시지 전송
-        SseEmitter emitter = SseConnectionRegistry.getEmitter(userId,PubSubChannel.MATCHING_CHANNEL.toString());
-        if (emitter != null) {
-            try {
-                if(type.equals(SSETYPE.MATCHINGCOMPLETE.toString())){
-                    ResMatchResultDTO resMatchResultDTO = new ResMatchResultDTO();
-                    resMatchResultDTO.setNickname(nickname);
-                    resMatchResultDTO.setProfileImg(profileImg);
-                    resMatchResultDTO.setSex(sex);
-                    resMatchResultDTO.setDistance(distance);
-                    resMatchResultDTO.setMatchAcptToken(matchingAcceptKey);
-
-                    ResponseDTO<ResMatchResultDTO> responseDTO = new ResponseDTO(resMatchResultDTO);
-                    emitter.send(SseEmitter.event().name(PubSubChannel.MATCHING_CHANNEL.toString()).data(responseDTO));
-
-                }
-                else if(type.equals(SSETYPE.MATCHINGTIMEOUT.toString())){
-                    ResponseErr responseErr = new ResponseErr(ErrorCode.COMMON_SSE_MATCH_1MIN_TIME_OUT);
-                    emitter.send(SseEmitter.event().name(PubSubChannel.MATCHING_CHANNEL.toString()).data(responseErr));
-
-                }
-
-
-            } catch (Exception e) {
-                // 전송 실패 시 처리
-                log.error("err={}",e.getMessage());
-                log.error("err2={}",e.getCause());
-                SseConnectionRegistry.removeEmitter(userId,PubSubChannel.MATCHING_CHANNEL.toString());
-                log.info("test result= fail");
-            }
-
-        }
-    }
-
-    private void matchingAcceptSendToClient(String userId,String state,String roomId) {
-        // SSE 연결된 클라이언트에게 메시지 전송
-        SseEmitter emitter = SseConnectionRegistry.getEmitter(userId,PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString());
-        log.info("emmiter1={}",emitter);
-        if (emitter != null) {
-            try {
-
-                ResMatchAcceptDTO resMatchAcceptDTO = new ResMatchAcceptDTO();
-                resMatchAcceptDTO.setRoomId(Long.parseLong(roomId));
-                if(state.equals(AcceptState.CLOSE.toString())){
-                    resMatchAcceptDTO.setAcceptState(AcceptState.CLOSE);
-
-                }
-                if(state.equals(AcceptState.WAITING.toString())){
-                    resMatchAcceptDTO.setAcceptState(AcceptState.WAITING);
-                }
-                if(state.equals(AcceptState.SUCCESS.toString())){
-                    resMatchAcceptDTO.setAcceptState(AcceptState.SUCCESS);
-                }
-                if(state.equals(AcceptState.REFUSED.toString())){
-                    resMatchAcceptDTO.setAcceptState(AcceptState.REFUSED);
-                }
-                resMatchAcceptDTO.setDescription();
-
-                ResponseDTO responseDTO = new ResponseDTO(resMatchAcceptDTO);
-                    emitter.send(SseEmitter.event().name(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString()).data(responseDTO));
-
-
-            } catch (Exception e) {
-                // 전송 실패 시 처리
-                SseConnectionRegistry.removeEmitter(userId,PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString());
-                log.info("test result= fail");
-            }
-        }
-    }
-
 
 
 
