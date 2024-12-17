@@ -16,7 +16,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final WebSocketInterCeptor webSocketInterCeptor;
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chat/ws")
+        registry.addEndpoint("/api/chat/ws")
                 .addInterceptors(webSocketInterCeptor)
                 .setAllowedOrigins("*")  // 클라이언트 도메인 허용 (개발 중에는 "*" 가능)
                 .withSockJS();          // SockJS 사용
