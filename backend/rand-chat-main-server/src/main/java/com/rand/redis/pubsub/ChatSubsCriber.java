@@ -44,7 +44,7 @@ private final SimpMessagingTemplate simpMessagingTemplate;
         if(isCurrentInstance(serverInstanceId)){
          String data= new String(message.getBody());
 
-         simpMessagingTemplate.convertAndSend("/sub/chat/room",data);
+         simpMessagingTemplate.convertAndSend("/sub/chat",data);
         }
 
     }

@@ -19,7 +19,7 @@ import java.util.Map;
 public class ChatSocketController {
 
     private final RedisTemplate redisTemplate;
-    @MessageMapping("/pub/chat/room/{roomId}")
+    @MessageMapping("/room/{roomId}")
             public void test(@Payload String message, @DestinationVariable String roomId){
             log.info("room={}",roomId);
                 redisTemplate.convertAndSend(PubSubChannel.CHAT_CHANNEL.toString(),message);
