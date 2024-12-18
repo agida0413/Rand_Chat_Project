@@ -16,19 +16,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final WebSocketInterCeptor webSocketInterCeptor;
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/api/chat/ws")
+        registry.addEndpoint("/chat/ws")
                 .addInterceptors(webSocketInterCeptor)
-                .setAllowedOrigins("*")  // 클라이언트 도메인 허용 (개발 중에는 "*" 가능)
-                .withSockJS();          // SockJS 사용
+                .setAllowedOrigins("*");  // 클라이언트 도메인 허용 (개발 중에는 "*" 가능)
+//                .withSockJS();          // SockJS 사용
     }
 
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         // 클라이언트가 구독할 수 있는 경로 설정
-        registry.enableSimpleBroker("/chat");
+        registry.enableSimpleBroker("/sub/chat/room");
         // 메시지를 보낼 때 사용할 prefix 설정
-        registry.setApplicationDestinationPrefixes("/msg");
+        registry.setApplicationDestinationPrefixes("/pub/chat/room");
 
     }
 }
