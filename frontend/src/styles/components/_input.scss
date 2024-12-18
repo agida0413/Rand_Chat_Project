@@ -1,0 +1,23 @@
+@use '@/styles/base/_typography' as *;
+@use '@/styles/base/_spacing' as *;
+@use '@/styles/base/_colors' as *;
+
+@mixin primaryInput {
+  @include typography('body2', 'regular');
+  width: 100%;
+  padding: $padding-xs $padding-m;
+
+  border: 1px solid #e0e0e0;
+  border-radius: $radius-l;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary-100;
+  }
+
+  &::placeholder {
+    color: #ccc;
+  }
+}

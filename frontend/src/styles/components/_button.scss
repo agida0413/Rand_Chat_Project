@@ -1,0 +1,22 @@
+@use '@/styles/base/_typography' as *;
+@use '@/styles/base/_spacing' as *;
+@use '@/styles/base/_colors' as *;
+
+@mixin primaryButton {
+  @include typography('body2', 'regular');
+  width: 100%;
+  height: 100%;
+  padding: $padding-xs $padding-xs $padding-xs $padding-s;
+  border: 1px solid #e0e0e0;
+  border-radius: $radius-l;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  background-color: $color-primary-100;
+  color: white;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color-primary-200;
+  }
+}

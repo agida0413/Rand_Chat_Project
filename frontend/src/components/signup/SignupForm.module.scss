@@ -1,0 +1,27 @@
+@use '@/styles/components/_radio.scss' as *;
+@use '@/styles/components/_button.scss' as *;
+@use '@/styles/components/_input.scss' as *;
+@use '@/styles/components/_date.scss' as *;
+
+.flexForm {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .genderWrapper {
+    display: flex;
+    width: 100%;
+
+    label {
+      display: flex;
+      align-items: center;
+    }
+
+    input[type='radio'] {
+      @include primaryRadio;
+    }
+  }
+  input[type='date'] {
+    @include primaryDate;
+  }
+}

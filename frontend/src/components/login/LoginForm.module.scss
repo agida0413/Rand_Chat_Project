@@ -1,0 +1,60 @@
+@use '@/styles/components/_button.scss' as *;
+@use '@/styles/components/_input.scss' as *;
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  gap: 3rem;
+  text-align: center;
+
+  h1 {
+    @include typography('heading2', 'bold');
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    div {
+      input {
+        @include primaryInput;
+      }
+    }
+    button {
+      @include primaryButton;
+    }
+  }
+  footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    button {
+      @include typography('caption', 'regular');
+      color: #e0e0e0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: $color-primary-200;
+      }
+    }
+
+    p {
+      @include typography('caption', 'regular');
+      a {
+        color: $color-primary-100;
+        text-decoration: none;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: $color-primary-200;
+        }
+      }
+    }
+  }
+}

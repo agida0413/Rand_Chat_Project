@@ -1,0 +1,52 @@
+@use 'sass:map';
+
+// Font Families
+$font-regular: 'Pretendard-Regular', sans-serif;
+$font-medium: 'Pretendard-Medium', sans-serif;
+$font-bold: 'Pretendard-Bold', sans-serif;
+
+// Font Sizes
+$font-sizes: (
+  'heading1': 3.2rem,
+  'heading2': 2.4rem,
+  'heading3': 2.1rem,
+  'subheading': 1.8rem,
+  'body1': 1.6rem,
+  'body2': 1.4rem,
+  'caption': 1.2rem
+);
+
+// Line Heights
+$line-heights: (
+  'heading1': 3.8rem,
+  'heading2': 3.4rem,
+  'heading3': 3rem,
+  'subheading': 2.7rem,
+  'body1': 2.4rem,
+  'body2': 2rem,
+  'caption': 1.8rem
+);
+
+// Letter Spacing
+$letter-spacing-tight: -0.02rem;
+$letter-spacing-normal: -0.01rem;
+
+// Typography Mixins
+@mixin typography($size, $weight: 'regular', $spacing: 'normal') {
+  $font-family: $font-regular;
+
+  @if $weight == 'bold' {
+    $font-family: $font-bold;
+  } @else if $weight == 'medium' {
+    $font-family: $font-medium;
+  }
+
+  font-family: $font-family;
+  font-size: map.get($font-sizes, $size);
+  line-height: map.get($line-heights, $size);
+  letter-spacing: if(
+    $spacing == 'tight',
+    $letter-spacing-tight,
+    $letter-spacing-normal
+  );
+}

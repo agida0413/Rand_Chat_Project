@@ -1,0 +1,20 @@
+// purple color palette
+$color-purple-50: #eff6fc;
+$color-purple-100: #d9b3ff;
+$color-purple-200: #9c4dff;
+$color-purple-300: #6e00ff;
+
+// red color palette
+$color-red-100: #ff3612;
+
+// primary color palette
+$color-primary-300: $color-purple-300;
+$color-primary-200: $color-purple-200;
+$color-primary-100: $color-purple-100;
+$color-primary-50: $color-purple-50;
+
+// Error color palette
+$color-error: $color-red-100;
+
+// Components
+$color-background: $color-purple-50;
