@@ -38,13 +38,17 @@ private final SimpMessagingTemplate simpMessagingTemplate;
     @Override
     public void onMessage(Message message, byte[] pattern) {
 
-        String usrId= String.valueOf(SecurityContextGet.getUsrId());
-        String serverInstanceId = (String)inMemRepository.getValue(usrId+RedisKey.CHAT_SOCKET_KEY);
+//        String usrId= String.valueOf(SecurityContextGet.getUsrId());
+        String usrId ="1";
+        String serverInstanceId = (String)inMemRepository.getValue(RedisKey.CHAT_SOCKET_KEY+usrId+":"+PubSubChannel.CHAT_CHANNEL);
 
         if(isCurrentInstance(serverInstanceId)){
          String data= new String(message.getBody());
-
-         simpMessagingTemplate.convertAndSend("/sub/chat",data);
+        log.info("send");
+//         simpMessagingTemplate.convertAndSend("/sub/chat",data);
+            simpMessagingTemplate.convertAndSend("/sub/chat/room/1",data);
+        }else{
+            log.info("not send");
         }
 
     }
