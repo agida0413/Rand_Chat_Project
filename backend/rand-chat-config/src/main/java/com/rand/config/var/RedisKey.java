@@ -1,6 +1,8 @@
 package com.rand.config.var;
 
 public final class RedisKey {
+    //채팅 웹소켓 연결정보를 담는 키
+    public static final String CHAT_SOCKET_KEY ="chat:socket:server:";
     //매칭 sse 정보담는  키
     public static final String SSE_MATCHING_CONNECTION_KEY = "sse:match:";
     //매칭 수락 sse

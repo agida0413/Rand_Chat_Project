@@ -3,7 +3,9 @@ package com.rand.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rand.custom.SecurityResponse;
 import com.rand.entity.CustomUserDetails;
+import com.rand.exception.custom.BadRequestException;
 import com.rand.jwt.JWTUtil;
+import com.rand.jwt.JwtError;
 import com.rand.member.model.Members;
 import com.rand.member.model.cons.MembersSex;
 import com.rand.member.repository.MemberRepository;
@@ -54,18 +56,42 @@ public class JWTFilter extends OncePerRequestFilter {
 
             return;
         }
+        logger.info("테스트?");
+        logger.info(accessToken);
+        //토큰 검증
+        JwtError jwtError= jwtUtil.validate(accessToken);
 
-        // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
-        try {
-            jwtUtil.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
-
-            // 클라이언트 측에 410 에러전송 ,410 에러는 현재 서버내 유일하고 , 클라이언트 측에서는 응답 인터셉트로 받아 액세스토큰 재발급 진행
-
-
-            SecurityResponse.writeErrorRes(response,objectMapper,"ERR-SEC-10");
-            return;
+        switch (jwtError){
+            case SIGNATURE :
+                SecurityResponse.writeErrorRes(response,objectMapper,"ERR-SEC-12");
+                return;
+            case ILLEGAL:
+                SecurityResponse.writeErrorRes(response,objectMapper,"ERR-SEC-12");
+                return;
+            case MALFORM:
+                SecurityResponse.writeErrorRes(response,objectMapper,"ERR-SEC-12");
+                return;
+            case UNSUPPORT:
+                SecurityResponse.writeErrorRes(response,objectMapper,"ERR-SEC-12");
+                return;
+            case EXPIRED:
+                SecurityResponse.writeErrorRes(response,objectMapper,"ERR-SEC-10");
+                return;
         }
+//        // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
+//        try {
+//            jwtUtil.isExpired(accessToken);
+//        } catch (ExpiredJwtException e) {
+//
+//            // 클라이언트 측에 410 에러전송 ,410 에러는 현재 서버내 유일하고 , 클라이언트 측에서는 응답 인터셉트로 받아 액세스토큰 재발급 진행
+//
+//
+//            SecurityResponse.writeErrorRes(response,objectMapper,"ERR-SEC-10");
+//            return;
+//        }
+
+
+        logger.info("구간1");
 
         // 토큰이 access인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(accessToken);
@@ -75,6 +101,7 @@ public class JWTFilter extends OncePerRequestFilter {
             SecurityResponse.writeErrorRes(response,objectMapper,"ERR-SEC-08");
             return;
         }
+        logger.info("구간2");
 
 
         String username = jwtUtil.getUsername(accessToken);//이메일
@@ -90,6 +117,7 @@ public class JWTFilter extends OncePerRequestFilter {
         members.setSex(sex);
         members.setBirth(birth);
 
+        logger.info("구간3");
 
 
 
@@ -97,6 +125,8 @@ public class JWTFilter extends OncePerRequestFilter {
         //일시적으로 세션에 담기위해 (SecurityContextHolder)
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, null);
         SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        logger.info("구간4");
 
         filterChain.doFilter(request, response);
     }

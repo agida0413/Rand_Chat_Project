@@ -2,6 +2,7 @@ package com.rand.jwt;
 
 
 import java.nio.charset.StandardCharsets;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -10,11 +11,17 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.rand.member.model.cons.MembersSex;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
 
+@Slf4j
 @Component
 public final class JWTUtil {
 
@@ -38,6 +45,25 @@ public final class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
+    public JwtError validate(String token){
+        JwtError jwtError = JwtError.CORRECT;
+        try {
+            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
+            log.info("jwtCheck");
+        } catch (SignatureException e) {
+             jwtError = JwtError.SIGNATURE;
+        } catch (MalformedJwtException e) {
+             jwtError = JwtError.MALFORM;
+        } catch (ExpiredJwtException e) {
+             jwtError = JwtError.EXPIRED;
+        } catch (UnsupportedJwtException e) {
+             jwtError = JwtError.UNSUPPORT;
+        } catch (IllegalArgumentException e) {
+             jwtError = JwtError.ILLEGAL;
+        }
+
+        return jwtError;
+    }
 
     public String getCategory(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category",String.class);
@@ -111,4 +137,5 @@ public final class JWTUtil {
                 .signWith(secretKey)//시크릿키
                 .compact();
     }
+
 }
