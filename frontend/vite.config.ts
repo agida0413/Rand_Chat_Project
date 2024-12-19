@@ -23,5 +23,8 @@ export default defineConfig({
         includePaths: ['src/styles/base']
       }
     }
+  },
+  define: {
+    global: 'window'
   }
 })

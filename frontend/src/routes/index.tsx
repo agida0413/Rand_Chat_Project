@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom'
 import DefaultLayout from './layout/Default'
 import Home from './pages/Home'
-import Chat from './pages/Chat'
+import Chat from './pages/chat'
 import About from './pages/About'
 import NotFound from './pages/NotFound'
 import ErrorFallback from './layout/ErrorFallback'
