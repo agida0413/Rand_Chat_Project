@@ -1,11 +1,9 @@
 import SockJS from 'sockjs-client'
 import { CompatClient, Stomp } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
-import { getAccessToken } from '@/utils/auth'
 
 interface ChatMessage {
   type: 'TALK'
-  roomId: string
   sender: string
   message: string
 }
@@ -17,37 +15,40 @@ interface CustomError {
 
 export default function Chat() {
   const client = useRef<CompatClient>()
+  const [socketAddress, setSocketAddress] = useState('')
+  const [sendAddress, setSendAddress] = useState('')
+  const [subscribeAddress, setSubscribeAddress] = useState('')
+  const [input, setInput] = useState('')
   const [connected, setConnected] = useState(false)
-  const token = getAccessToken()
+  const [token, setToken] = useState('')
 
   const sendHandler = () => {
     if (!client.current?.connected) return
 
     const message: ChatMessage = {
       type: 'TALK',
-      roomId: '1',
-      sender: 'test',
-      message: 'input'
+      sender: '테스트유저',
+      message: input
     }
 
-    client.current.send('/pub/chat/message', {}, JSON.stringify(message))
+    client.current.send(sendAddress, {}, JSON.stringify(message))
   }
 
   const connectHandler = () => {
     if (client.current?.connected) return
 
     client.current = Stomp.over(() => {
-      const sock = new SockJS('http://localhost:8080/ws-stomp')
+      const sock = new SockJS(socketAddress)
       return sock
     })
 
     client.current.connect(
       {
-        Authorization: token
+        access: token
       },
       () => {
         setConnected(true)
-        client.current!.subscribe(`/sub/chat/room/1`, message => {
+        client.current!.subscribe(subscribeAddress, message => {
           const receivedMessage = JSON.parse(message.body)
           console.log(receivedMessage)
         })
@@ -69,17 +70,42 @@ export default function Chat() {
 
   return (
     <>
-      <div>chat</div>
+      <div>
+        <p>토큰</p>
+        <input onChange={e => setToken(e.target.value)} />
+      </div>
+      <br />
+      <div>
+        <p>구독 주소</p>
+        <input onChange={e => setSubscribeAddress(e.target.value)} />
+      </div>
+      <br />
+      <div>
+        <p>SockJS 주소 (ex ws: ~~)</p>
+        <input onChange={e => setSocketAddress(e.target.value)} />
+      </div>
+      <br />
+      <div>
+        <p>send 주소</p>
+        <input onChange={e => setSendAddress(e.target.value)} />
+      </div>
+      <br />
       <button
         onClick={connectHandler}
         disabled={connected}>
         {connected ? '연결됨' : '연결하기'}
       </button>
-      <button
-        onClick={sendHandler}
-        disabled={!connected}>
-        메시지 보내기
-      </button>
+      <br />
+      <br />
+      <div>
+        <p>메시지 보내기</p>
+        <input onChange={e => setInput(e.target.value)} />
+        <button
+          onClick={sendHandler}
+          disabled={!connected}>
+          메시지 보내기
+        </button>
+      </div>
     </>
   )
 }
