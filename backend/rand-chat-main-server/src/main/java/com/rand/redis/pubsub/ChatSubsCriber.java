@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rand.common.ErrorCode;
 import com.rand.common.ResponseDTO;
 import com.rand.common.ResponseErr;
+import com.rand.common.service.CommonMemberService;
 import com.rand.config.constant.PubSubChannel;
 import com.rand.config.constant.SSETYPE;
 import com.rand.config.var.RedisKey;
@@ -14,6 +15,7 @@ import com.rand.custom.SecurityContextGet;
 import com.rand.match.dto.response.ResMatchAcceptDTO;
 import com.rand.match.dto.response.ResMatchResultDTO;
 import com.rand.match.model.AcceptState;
+import com.rand.member.model.Members;
 import com.rand.redis.InMemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,22 +33,40 @@ import java.util.Map;
 public class ChatSubsCriber implements MessageListener {
 
  private final InMemRepository inMemRepository;
-private final SimpMessagingTemplate simpMessagingTemplate;
-
-
+ private final SimpMessagingTemplate simpMessagingTemplate;
+ private final ObjectMapper objectMapper;
+ private final CommonMemberService commonMemberService;
     // Redis 메시지 수신 처리
     @Override
     public void onMessage(Message message, byte[] pattern) {
 
-//        String usrId= String.valueOf(SecurityContextGet.getUsrId());
-        String usrId ="1";
+        String data= new String(message.getBody());
+        String usrId;
+        int roomId;
+
+        try {
+
+            Map<Object,Object> mapData = objectMapper.readValue(data,Map.class);
+            usrId=(String)mapData.get("usrId");
+            roomId=(Integer)mapData.get("roomId");
+
+
+
+            mapData.remove("usrId");
+
+            data = objectMapper.writeValueAsString(mapData);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+
         String serverInstanceId = (String)inMemRepository.getValue(RedisKey.CHAT_SOCKET_KEY+usrId+":"+PubSubChannel.CHAT_CHANNEL);
 
         if(isCurrentInstance(serverInstanceId)){
-         String data= new String(message.getBody());
-        log.info("send");
-//         simpMessagingTemplate.convertAndSend("/sub/chat",data);
-            simpMessagingTemplate.convertAndSend("/sub/chat/room/1",data);
+         log.info("sendData={}",data);
+
+
+            simpMessagingTemplate.convertAndSend("/sub/chat/room/"+roomId,data);
         }else{
             log.info("not send");
         }

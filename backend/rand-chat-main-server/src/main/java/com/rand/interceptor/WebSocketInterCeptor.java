@@ -1,4 +1,4 @@
-package com.rand.config;
+package com.rand.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rand.config.constant.PubSubChannel;
@@ -7,14 +7,13 @@ import com.rand.custom.SecurityResponse;
 import com.rand.jwt.JWTUtil;
 import com.rand.jwt.JwtError;
 import com.rand.redis.pubsub.ChatPubSubRegistry;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import java.net.URI;
 import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
@@ -26,9 +25,13 @@ public class WebSocketInterCeptor implements HandshakeInterceptor {
     private final ChatPubSubRegistry chatPubSubRegistry;
     @Override
     public boolean beforeHandshake(org.springframework.http.server.ServerHttpRequest request, org.springframework.http.server.ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        URI uri = request.getURI();
-        String accessToken = uri.getQuery() != null ? uri.getQuery().split("=")[1] : null;
 
+
+        String accessToken ="";
+        if (request instanceof ServletServerHttpRequest) {
+            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+            accessToken = servletRequest.getServletRequest().getParameter("access");
+        }
 
         JwtError jwtError= jwtUtil.validate(accessToken);
 
@@ -74,13 +77,24 @@ public class WebSocketInterCeptor implements HandshakeInterceptor {
 
     @Override
     public void afterHandshake(org.springframework.http.server.ServerHttpRequest request, org.springframework.http.server.ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-        //토큰 추출
-        URI uri = request.getURI();
-        String accessToken = uri.getQuery() != null ? uri.getQuery().split("=")[1] : null;
-        String usrId = extractUserIdFromToken(accessToken);
 
-        //채팅웹소켓연결 후 서버정보를 저장 - > pub/sub 을통해 연결된 인스턴스 찾기 위해
+        String accessToken ="";
+        String usrId="";
+
+        if (request instanceof ServletServerHttpRequest) {
+            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+            accessToken = servletRequest.getServletRequest().getParameter("access");
+        }
+
+        if (accessToken != null) {
+            usrId = extractUserIdFromToken(accessToken);
+
+        }
+        log.info("succces={}",usrId);
+
+            //채팅웹소켓연결 후 서버정보를 저장 - > pub/sub 을통해 연결된 인스턴스 찾기 위해
         chatPubSubRegistry.registerConnection(usrId, PubSubChannel.CHAT_CHANNEL.toString(), RedisKey.CHAT_SOCKET_KEY);
+        log.info("success websocket");
 
     }
 

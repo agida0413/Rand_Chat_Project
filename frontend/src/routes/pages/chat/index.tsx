@@ -19,17 +19,18 @@ export default function Chat() {
   // 메시지 전송 핸들러
   const sendHandler = () => {
     if (client.current?.connected) {
-      // const message: ChatMessage = {
-      //   type: 'TALK',
-      //   sender: '테스트유저',
-      //   message: input
-      // }
-
-      // 'client.current' is the STOMP client, use 'client.current.send()' correctly
+      const message = {
+        message: input  // Assuming 'input' is the content you want to send
+      };
+      
+      // 'client.current' is the STOMP client, use 'client.current.publish()' correctly
       client.current.publish({
         destination: sendAddress,  // The address to send the message to
-        body: input, // The message content
-      })
+        body: JSON.stringify(message), // The message content should be serialized to a JSON string
+        headers: {
+        'access':`${token}`
+        }
+      });
     }
   }
 
@@ -38,7 +39,7 @@ export default function Chat() {
     if (client.current?.connected) return
 
     // WebSocket URL에 토큰을 쿼리 파라미터로 포함
-    const socketUrl = `${socketAddress}?access_token=${token}`
+    const socketUrl = `${socketAddress}?access=${token}`
 
     client.current = new Client({
       brokerURL: socketUrl, // URL에 쿼리 파라미터로 토큰 포함
