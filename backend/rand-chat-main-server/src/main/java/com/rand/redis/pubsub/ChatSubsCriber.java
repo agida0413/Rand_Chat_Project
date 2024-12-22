@@ -11,16 +11,22 @@ import com.rand.common.service.CommonMemberService;
 import com.rand.config.constant.PubSubChannel;
 import com.rand.config.constant.SSETYPE;
 import com.rand.config.var.RedisKey;
+import com.rand.constant.ChatConst;
 import com.rand.custom.SecurityContextGet;
 import com.rand.match.dto.response.ResMatchAcceptDTO;
 import com.rand.match.dto.response.ResMatchResultDTO;
 import com.rand.match.model.AcceptState;
 import com.rand.member.model.Members;
 import com.rand.redis.InMemRepository;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -41,35 +47,57 @@ public class ChatSubsCriber implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
 
         String data= new String(message.getBody());
+
+        String pubUrl;
         String usrId;
         int roomId;
+        String principal="";
 
         try {
 
             Map<Object,Object> mapData = objectMapper.readValue(data,Map.class);
-            usrId=(String)mapData.get("usrId");
-            roomId=(Integer)mapData.get("roomId");
+
+             pubUrl = (String)mapData.get("pubUrl");
+
+             usrId=(String)mapData.get("usrId");
+             log.info("puburl={}",pubUrl);
+
+            if(pubUrl.equals(ChatConst.PUB_CHAT_ROOM_URL)){
+                roomId=(Integer)mapData.get("roomId");
+                pubUrl += roomId;
+                log.info("convertPubR={}",pubUrl);
 
 
+            }
+            else if(pubUrl.equals(ChatConst.PUB_CHAT_ERROR_URL)){
+                principal =(String) mapData.get("principal");
 
-            mapData.remove("usrId");
 
-            data = objectMapper.writeValueAsString(mapData);
+            }
+
+
+            if(pubUrl.contains(ChatConst.PUB_CHAT_ROOM_URL)){
+                mapData.remove("usrId");
+                mapData.remove("pubUrl");
+
+                data = objectMapper.writeValueAsString(mapData);
+                simpMessagingTemplate.convertAndSend(pubUrl,data);
+            }
+            else if(pubUrl.equals(ChatConst.PUB_CHAT_ERROR_URL)){
+                mapData.remove("sessionId");
+                log.info("data={}",data);
+                data = objectMapper.writeValueAsString(mapData);
+                log.info("sessionIdInSub={}",principal);
+                simpMessagingTemplate.convertAndSendToUser(principal, pubUrl, data,createHeaders(principal));
+            }
+
+
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
 
-        String serverInstanceId = (String)inMemRepository.getValue(RedisKey.CHAT_SOCKET_KEY+usrId+":"+PubSubChannel.CHAT_CHANNEL);
 
-        if(isCurrentInstance(serverInstanceId)){
-         log.info("sendData={}",data);
-
-
-            simpMessagingTemplate.convertAndSend("/sub/chat/room/"+roomId,data);
-        }else{
-            log.info("not send");
-        }
 
     }
 
@@ -87,5 +115,17 @@ public class ChatSubsCriber implements MessageListener {
         return System.getenv("INSTANCE_ID");
     }
 
+    private MessageHeaders createHeaders(@Nullable String sessionId){
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        if(sessionId!=null){
+            headerAccessor.setSessionId(sessionId);
+        }
+        else{
+            log.info("세션없음");
+        }
+        headerAccessor.setLeaveMutable(true);
+        return  headerAccessor.getMessageHeaders();
+
+    }
 
 }

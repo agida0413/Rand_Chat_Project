@@ -9,11 +9,16 @@ import com.rand.jwt.JwtError;
 import com.rand.redis.pubsub.ChatPubSubRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import java.security.Principal;
 import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
@@ -26,7 +31,6 @@ public class WebSocketInterCeptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(org.springframework.http.server.ServerHttpRequest request, org.springframework.http.server.ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
 
-
         String accessToken ="";
         if (request instanceof ServletServerHttpRequest) {
             ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
@@ -38,6 +42,7 @@ public class WebSocketInterCeptor implements HandshakeInterceptor {
         if (accessToken != null && jwtError.equals(JwtError.CORRECT)) {
             String userId = extractUserIdFromToken(accessToken);
             attributes.put("usrId", userId);  // 인증이 성공하면 userId를 WebSocket 세션에 저장
+            attributes.put("access",accessToken);
             return true;
         } else {
             if(accessToken ==null){
@@ -90,11 +95,10 @@ public class WebSocketInterCeptor implements HandshakeInterceptor {
             usrId = extractUserIdFromToken(accessToken);
 
         }
-        log.info("succces={}",usrId);
+
 
             //채팅웹소켓연결 후 서버정보를 저장 - > pub/sub 을통해 연결된 인스턴스 찾기 위해
-        chatPubSubRegistry.registerConnection(usrId, PubSubChannel.CHAT_CHANNEL.toString(), RedisKey.CHAT_SOCKET_KEY);
-        log.info("success websocket");
+//        chatPubSubRegistry.registerConnection(usrId, PubSubChannel.CHAT_CHANNEL.toString(), RedisKey.CHAT_SOCKET_KEY);
 
     }
 
