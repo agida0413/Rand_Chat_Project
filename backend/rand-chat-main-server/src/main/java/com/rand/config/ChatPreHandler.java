@@ -29,34 +29,31 @@ public class ChatPreHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+//        //연결시
+//        if (accessor.getCommand().equals(StompCommand.CONNECT)) {
+//            List<String> accessTokenList = accessor.getNativeHeader("access");
+//            String accessToken = (accessTokenList != null && !accessTokenList.isEmpty()) ? accessTokenList.get(0) : null;
+//            String usrId= extractUserIdFromToken(accessToken);
+//
+//
+//        }
 
-        if (accessor.getCommand().equals(StompCommand.CONNECT)) {
-            List<String> accessTokenList = accessor.getNativeHeader("access");
-            String accessToken = (accessTokenList != null && !accessTokenList.isEmpty()) ? accessTokenList.get(0) : null;
-            String usrId= extractUserIdFromToken(accessToken);
-
-
-        }
-
-        //토큰검증
+        //토큰검증 구독 and send
         if (StompCommand.SEND.equals(accessor.getCommand()) || StompCommand.SUBSCRIBE.equals(accessor.getCommand()) ) {
             StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
 
             List<String> accessTokenList = headerAccessor.getNativeHeader("access");
             String accessToken = (accessTokenList != null && !accessTokenList.isEmpty()) ? accessTokenList.get(0) : null;
 
-            log.info("header={}",accessToken);
+
 
             JwtError jwtError= jwtUtil.validate(accessToken);
 
-
                 if (accessToken == null) {
-                    log.info("errror1");
                     throw new MessageDeliveryException("ERR-SEC-12");
-
-
                 } else {
-                    log.info("errror2");
+
+
                     switch (jwtError) {
                         case SIGNATURE:
                             throw new MessageDeliveryException("ERR-SEC-12");
@@ -71,20 +68,22 @@ public class ChatPreHandler implements ChannelInterceptor {
                     }
 
                 }
-
                 String category = jwtUtil.getCategory(accessToken);
 
                 if (!category.equals("access")) {
                     //액세스토큰이 아닐시
                     throw new MessageDeliveryException("ERR-SEC-08");
                 }
-            log.info("pre_token={}", accessToken);
+                //세션아이디와 토큰추출아이디가 다름
+                Principal principal = accessor.getUser();
+                String sessionId=extractUserIdFromToken(principal.getName());
+                String extractId=extractUserIdFromToken(accessToken);
+
+                if(!sessionId.equals(extractId)){
+                    throw new MessageDeliveryException("ERR-SEC-13");
+                }
 
         }
-
-
-
-
 
         return message;
     }

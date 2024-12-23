@@ -6,7 +6,6 @@ import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityResponse;
 import com.rand.jwt.JWTUtil;
 import com.rand.jwt.JwtError;
-import com.rand.redis.pubsub.ChatPubSubRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,6 @@ public class WebSocketInterCeptor implements HandshakeInterceptor {
 
     private final JWTUtil jwtUtil;
     private final ObjectMapper objectMapper;
-    private final ChatPubSubRegistry chatPubSubRegistry;
     @Override
     public boolean beforeHandshake(org.springframework.http.server.ServerHttpRequest request, org.springframework.http.server.ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
 
@@ -82,23 +80,6 @@ public class WebSocketInterCeptor implements HandshakeInterceptor {
 
     @Override
     public void afterHandshake(org.springframework.http.server.ServerHttpRequest request, org.springframework.http.server.ServerHttpResponse response, WebSocketHandler wsHandler, Exception exception) {
-
-        String accessToken ="";
-        String usrId="";
-
-        if (request instanceof ServletServerHttpRequest) {
-            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-            accessToken = servletRequest.getServletRequest().getParameter("access");
-        }
-
-        if (accessToken != null) {
-            usrId = extractUserIdFromToken(accessToken);
-
-        }
-
-
-            //채팅웹소켓연결 후 서버정보를 저장 - > pub/sub 을통해 연결된 인스턴스 찾기 위해
-//        chatPubSubRegistry.registerConnection(usrId, PubSubChannel.CHAT_CHANNEL.toString(), RedisKey.CHAT_SOCKET_KEY);
 
     }
 

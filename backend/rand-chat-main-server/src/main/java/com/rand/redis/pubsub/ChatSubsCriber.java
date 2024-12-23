@@ -13,6 +13,7 @@ import com.rand.config.constant.SSETYPE;
 import com.rand.config.var.RedisKey;
 import com.rand.constant.ChatConst;
 import com.rand.custom.SecurityContextGet;
+import com.rand.jwt.JWTUtil;
 import com.rand.match.dto.response.ResMatchAcceptDTO;
 import com.rand.match.dto.response.ResMatchResultDTO;
 import com.rand.match.model.AcceptState;
@@ -28,6 +29,7 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -38,10 +40,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatSubsCriber implements MessageListener {
 
- private final InMemRepository inMemRepository;
+
  private final SimpMessagingTemplate simpMessagingTemplate;
  private final ObjectMapper objectMapper;
- private final CommonMemberService commonMemberService;
+ private final JWTUtil jwtUtil;
     // Redis 메시지 수신 처리
     @Override
     public void onMessage(Message message, byte[] pattern) {
@@ -60,37 +62,41 @@ public class ChatSubsCriber implements MessageListener {
              pubUrl = (String)mapData.get("pubUrl");
 
              usrId=(String)mapData.get("usrId");
-             log.info("puburl={}",pubUrl);
 
             if(pubUrl.equals(ChatConst.PUB_CHAT_ROOM_URL)){
                 roomId=(Integer)mapData.get("roomId");
                 pubUrl += roomId;
-                log.info("convertPubR={}",pubUrl);
-
-
             }
             else if(pubUrl.equals(ChatConst.PUB_CHAT_ERROR_URL)){
                 principal =(String) mapData.get("principal");
-
-
             }
 
-
+            //채팅전송
             if(pubUrl.contains(ChatConst.PUB_CHAT_ROOM_URL)){
-                mapData.remove("usrId");
-                mapData.remove("pubUrl");
+                //send 시에 헤더에 담은 토큰
 
-                data = objectMapper.writeValueAsString(mapData);
-                simpMessagingTemplate.convertAndSend(pubUrl,data);
+                //헤더에 담긴 고유번호와 , 세션 고유번호가 다를시에만 전송 , 즉 나한테는 전송x
+
+                    //전송을 위한 map 가공
+                    mapData.remove("usrId");
+                    mapData.remove("pubUrl");
+                    mapData.remove("accessToken");
+
+                    data = objectMapper.writeValueAsString(mapData);
+
+                    simpMessagingTemplate.convertAndSend(pubUrl,data);
+
+
             }
+            //에러응답 채널
             else if(pubUrl.equals(ChatConst.PUB_CHAT_ERROR_URL)){
                 mapData.remove("sessionId");
-                log.info("data={}",data);
+                mapData.remove("pubUrl");
+                mapData.remove("principal");
                 data = objectMapper.writeValueAsString(mapData);
-                log.info("sessionIdInSub={}",principal);
+
                 simpMessagingTemplate.convertAndSendToUser(principal, pubUrl, data,createHeaders(principal));
             }
-
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -101,19 +107,6 @@ public class ChatSubsCriber implements MessageListener {
 
     }
 
-
-    private boolean isCurrentInstance(String serverInstanceId) {
-        // 현재 서버 인스턴스와 비교 (로드밸런싱 환경에서 인스턴스 ID 비교)
-        return getCurrentInstanceId().equals(serverInstanceId);
-    }
-
-
-
-    private String getCurrentInstanceId() {
-        // 서버 인스턴스 ID 반환 (필요시 환경변수 또는 설정값 사용)
-        log.info("serverId={}",System.getenv("INSTANCE_ID"));
-        return System.getenv("INSTANCE_ID");
-    }
 
     private MessageHeaders createHeaders(@Nullable String sessionId){
         SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);

@@ -22,8 +22,6 @@ public class StompExceptionHandler extends StompSubProtocolErrorHandler {
     private static final byte[] EMPTY_PAYLOAD = new byte[0];
     @Override
     public Message<byte[]> handleClientMessageProcessingError(Message<byte[]> clientMessage, Throwable ex) {
-
-        log.info("handleClientMessageProcessingError={}",ex.getMessage());
         StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.ERROR);
 
         ErrorCode errorCode = null;
@@ -54,13 +52,11 @@ public class StompExceptionHandler extends StompSubProtocolErrorHandler {
 
     @Override
     public Message<byte[]> handleErrorMessageToClient(Message<byte[]> errorMessage) {
-        log.info("handleErrorMessageToClient={}",errorMessage);
         return super.handleErrorMessageToClient(errorMessage);
     }
 
     @Override
     protected Message<byte[]> handleInternal(StompHeaderAccessor errorHeaderAccessor, byte[] errorPayload, Throwable cause, StompHeaderAccessor clientHeaderAccessor) {
-        log.info("handleInternal={}", errorPayload);
         String newPayload = errorHeaderAccessor.getMessage();
         return MessageBuilder.createMessage(newPayload.getBytes(), errorHeaderAccessor.getMessageHeaders());
     }

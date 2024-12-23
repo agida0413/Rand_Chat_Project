@@ -59,7 +59,7 @@ public class MatchAcceptServiceImpl implements MatchAcceptService {
         }
         else{
             //매칭토큰에 포함된 유저 2명과 현재 로그인유저 정보가 일치하지않음
-            throw new BadRequestException("ERR-SEC-11"); //토큰과 로그인 정보가 일치하지 않음.
+            throw new BadRequestException("ERR-SEC-13"); //토큰과 로그인 정보가 일치하지 않음.
         }
 
 
