@@ -122,7 +122,11 @@ public enum ErrorCode {
     FILE_NO_NAME(400,"ERR-FILE-03","기본이미지가 아닌 이미지로 변경중 파일이 비어있거나 이름이 없습니다."),
     FILE_NO_EXTENSE(400,"ERR-FILE-04","기본이미지가 아닌 이미지로 변경중 파일 확장자가 없습니다"),
     FILE_NO_ALLOW_EXTENSE(400,"ERR-FILE-05","기본이미지가 아닌 이미지로 변경중 지원되는 확장자가 아닙니다.(jpg,jpeg,png만 가능)"),
-    FILE_TO_MANY_SIZE(400,"ERR-FILE-06","기본이미지가 아닌 이미지로 변경중 파일 사이즈가 너무 큽니다.(최대 5MB)");
+    FILE_TO_MANY_SIZE(400,"ERR-FILE-06","기본이미지가 아닌 이미지로 변경중 파일 사이즈가 너무 큽니다.(최대 5MB)"),
+
+
+    //채팅 웹소켓 서버 에러
+    WS_ERR_UN_AUTH_CHAT_ROOM(400,"ERR-WS-01","허용되지 않은 채팅방을 구독 시도했습니다.");
 
     private final int status;
     private final String code;

@@ -2,6 +2,7 @@ package com.rand.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rand.jwt.JWTUtil;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class ChatServiceImpl implements ChatService{
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate simpMessagingTemplate;
-    
+    private final JWTUtil jwtUtil;
     //채팅전송 서비스
     @Override
     public void pubChatMessage(Message message) {
@@ -30,10 +31,13 @@ public class ChatServiceImpl implements ChatService{
         String pubUrl = (String)mapData.get("pubUrl");
         String usrId=(String)mapData.get("usrId");
         Integer roomId=(Integer)mapData.get("roomId");
+        String nickname = jwtUtil.getNickname(usrId);
 
             //발행주소 포맷팅 /pub/chat/room/{roomId}
              pubUrl += roomId;
 
+             //닉네임 세팅
+            mapData.put("nickname",nickname);
 
             //전송을 위한 map 가공
             mapData.remove("usrId");
