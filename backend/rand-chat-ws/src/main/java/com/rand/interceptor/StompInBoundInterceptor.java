@@ -1,5 +1,6 @@
 package com.rand.interceptor;
 
+import com.rand.chat.dto.RoomValidDTO;
 import com.rand.constant.ChatConst;
 import com.rand.jwt.JWTUtil;
 import com.rand.jwt.JwtError;
@@ -82,11 +83,21 @@ public class StompInBoundInterceptor implements ChannelInterceptor {
         //채팅방이 실제로 현재 세션유저가 참여하고잇는지, 존재하는지 확인하기위해 WebFlux 서비스 호출
         if (StompCommand.SUBSCRIBE.equals(accessor.getCommand()) ){
             String destination = accessor.getDestination();
-            if (destination != null && destination.startsWith(ChatConst.PUB_CHAT_ROOM_DESTINATION)) {
-                String roomId = destination.substring(ChatConst.PUB_CHAT_ROOM_DESTINATION.length());
+            log.info("Extracted roomId: {}", destination);
+
+            if (destination != null && destination.startsWith(ChatConst.PUB_CHAT_ROOM_URL)) {
+                String roomId = destination.substring(ChatConst.PUB_CHAT_ROOM_URL.length());
                 log.info("Extracted roomId: {}", roomId);
 
-                Boolean isRealChatRoom = chatWebFluxService.isRealYourChatRoom(roomId);
+                List<String> accessTokenList = accessor.getNativeHeader("access");
+                String accessToken = (accessTokenList != null && !accessTokenList.isEmpty()) ? accessTokenList.get(0) : null;
+                String usrId=extractUserIdFromToken(accessToken);
+
+                RoomValidDTO roomValidDTO = new RoomValidDTO();
+                roomValidDTO.setChatRoomId(roomId);
+                roomValidDTO.setUsrId(usrId);
+                Boolean isRealChatRoom = chatWebFluxService.isRealYourChatRoom(roomValidDTO,accessToken);
+
                 if(isRealChatRoom==null || !isRealChatRoom){
                     throw new MessageDeliveryException("ERR-WS-01");
                 }
