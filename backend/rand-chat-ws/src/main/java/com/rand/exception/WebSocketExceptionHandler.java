@@ -21,6 +21,9 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
+
+//Stomp 통신간 에러핸들링
+
 @ControllerAdvice
 @RequiredArgsConstructor
 @Slf4j
@@ -28,33 +31,34 @@ public class WebSocketExceptionHandler {
     // 예외 발생 시 특정 사용자에게 에러 메시지 전송
     private final RedisTemplate<String,Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    
     @MessageExceptionHandler(MessagingException.class)
     public void handleException(MessagingException exception, Message<?> message) {
         // 메시지에서 세션 ID 추출
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        String sessionId = (String) accessor.getSessionAttributes().get("usrId");
+        // 세션 Principal추출
         Principal principalObj = accessor.getUser();
         String principal = principalObj.getName();
 
-        // 클라이언트에게만 에러 메시지 전송
+        // 에러메시지 결정
         ErrorCode errorCode = null;
         String errCode = exception.getMessage();
         errorCode = selectErrorCode(errCode);
-
+        
+        //에러 객체생성
         ResponseErr responseErr = new ResponseErr(errorCode);
-
+        //맵으로 변환
         Map<String,Object> map = objectMapper.convertValue(responseErr,Map.class);
-
+        //구독서비스에서 핸들링할 맵 키 밸류 (발행주소,세션)
         map.put("pubUrl",ChatConst.PUB_CHAT_ERROR_URL);
-        map.put("sessionId",sessionId);
         map.put("principal",principal);
 
-
+        //채팅채널에 발행
         redisTemplate.convertAndSend(PubSubChannel.CHAT_CHANNEL.toString(),map);
 
     }
-
+    //에러결정 메서드
     private ErrorCode selectErrorCode(String strErrorCode){
         ErrorCode selectedErrorCode = null;
         for(ErrorCode errorCode : ErrorCode.values()){

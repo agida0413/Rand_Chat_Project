@@ -59,9 +59,13 @@ export default function Chat() {
         })
       },
       onStompError: (frame) => {
-        console.error('STOMP 오류:', frame)
-        console.log(frame.code)
-        setConnected(false)
+        console.error('STOMP 오류:', frame);
+        
+        // Assuming `frame.body` contains the error response as a string
+        const response = JSON.parse(frame.body);
+        console.log(response); // Log only the message part
+        
+        setConnected(false);
       },
       onWebSocketClose: () => {
         console.log('WebSocket 연결 종료')

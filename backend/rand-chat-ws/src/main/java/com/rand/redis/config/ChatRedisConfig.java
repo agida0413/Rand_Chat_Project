@@ -18,7 +18,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-
+//채팅서버에서만 사용되는 레디스 컨피그
 @Configuration
 @Primary
 public class ChatRedisConfig {

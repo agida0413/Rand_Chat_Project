@@ -27,7 +27,7 @@ import java.security.Principal;
 public class ChatSocketController {
 
     private final RedisTemplate redisTemplate;
-
+//채팅 stomp 통신
     @MessageMapping("/room/{roomId}")
             public void test(@Payload ChatDTO message,
                              @DestinationVariable int roomId,

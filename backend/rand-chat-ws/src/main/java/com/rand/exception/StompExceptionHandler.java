@@ -13,6 +13,8 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
+
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -27,7 +29,7 @@ public class StompExceptionHandler extends StompSubProtocolErrorHandler {
         ErrorCode errorCode = null;
         String errCode = ex.getMessage();
         errorCode = selectErrorCode(errCode);
-
+    log.info(errCode);
         ResponseErr responseErr = new ResponseErr(errorCode);
         try {
             String responseErrStr = objectMapper.writeValueAsString(responseErr);

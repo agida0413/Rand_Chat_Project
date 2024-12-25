@@ -1,35 +1,36 @@
 package com.rand.config;
 
 import com.rand.exception.StompExceptionHandler;
+import com.rand.handler.CustomHandShakeHandler;
+import com.rand.interceptor.StompInBoundInterceptor;
 import com.rand.interceptor.WebSocketInterCeptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.web.socket.config.annotation.*;
 
+// Stomp 설정
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 @Slf4j
 public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
+
     private final WebSocketInterCeptor webSocketInterCeptor;
-    private final ChatPreHandler chatPreHandler;
+    private final StompInBoundInterceptor chatPreHandler;
     private final StompExceptionHandler stompExceptionHandler;
     private final CustomHandShakeHandler customHandShakeHandler;
+    // Stomp 통신간 인터셉터
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(chatPreHandler);
     }
 
+
+//Stomp 설정
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
@@ -40,6 +41,8 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
                 .setHandshakeHandler(customHandShakeHandler);
 //               .withSockJS();          // SockJS 사용
     }
+
+
 
 
     @Override

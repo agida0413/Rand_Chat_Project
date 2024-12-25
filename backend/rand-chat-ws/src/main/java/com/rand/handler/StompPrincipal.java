@@ -1,7 +1,7 @@
-package com.rand.config;
+package com.rand.handler;
 
 import java.security.Principal;
-
+//Stomp 통신에 사용되는 커스텀 Principal
 class StompPrincipal implements Principal {
     String name;
 
