@@ -3,24 +3,32 @@
 
 <mapper namespace="com.rand.match.mapper.MatchingMapper">
     <insert id="chatRoomCreate" parameterType="Match" useGeneratedKeys="true" keyProperty="chatRoomId">
-        INSERT INTO CHAT_ROOM(room_mem1,room_mem2)
-        VALUES (
-                #{roomMem1}
-               ,#{roomMem2}
-        )
+        INSERT INTO CHAT_ROOM VALUES();
     </insert>
-
+    <insert id="chatRoomMemCreate" parameterType="Match">
+        INSERT INTO CHAT_ROOM_MEMBERS(usr_id,chat_room_id)
+               VALUES(
+                      #{usrId}
+                     ,#{chatRoomId}
+                     )
+    </insert>
     <select id="isExistChatRoom" parameterType="Match" resultType="Match" >
-        SELECT room_state
-          FROM CHAT_ROOM
-        WHERE  room_mem1 = #{roomMem1}
-          AND  room_mem2 = #{roomMem2}
-
+            SELECT CR.room_state
+              FROM CHAT_ROOM CR
+        INNER JOIN CHAT_ROOM_MEMBERS CRM1
+                ON CR.chat_room_id = CRM1.chat_room_id
+        INNER JOIN CHAT_ROOM_MEMBERS CRM2
+                ON CR.chat_room_id = CRM2.chat_room_id
+             WHERE CRM1.usr_id     = #{roomMem1}
+               AND CRM2.usr_id     = #{roomMem2}
         UNION
-
-        SELECT room_state
-        FROM CHAT_ROOM
-        WHERE  room_mem1 = #{roomMem2}
-          AND  room_mem2 = #{roomMem1}
+            SELECT CR.room_state
+              FROM CHAT_ROOM CR
+        INNER JOIN CHAT_ROOM_MEMBERS CRM1
+                ON CR.chat_room_id = CRM1.chat_room_id
+        INNER JOIN CHAT_ROOM_MEMBERS CRM2
+                ON CR.chat_room_id = CRM2.chat_room_id
+             WHERE CRM1.usr_id     = #{roomMem2}
+               AND CRM2.usr_id     = #{roomMem1}
     </select>
 </mapper>

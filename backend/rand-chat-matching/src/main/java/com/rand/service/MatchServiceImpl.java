@@ -227,9 +227,9 @@ public class MatchServiceImpl implements MatchService {
 
         //매칭 수락,거절에 대한 레디스 값 생성
         //첫번째 유저+두번째유저에 대한 고유 hashset  , firstuser 컬럼 - > wait 상태로 설정 30초 ttl
-        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,firstUserId,"WAIT",30,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,firstUserId,"WAIT",1000,TimeUnit.SECONDS);
         //첫번째 유저+두번째유저에 대한 고유 hashset  , seconduser 컬럼 - > wait 상태로 설정 30초 ttl
-        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,secondUserId,"WAIT",30,TimeUnit.SECONDS);
+        inMemRepository.hashSave(RedisKey.MATCHING_ACCEPT_KEY+matchToken,secondUserId,"WAIT",1000,TimeUnit.SECONDS);
 
 
         publisher.sendNotification(firstUserId,secondeMemberInfo.getNickName(),secondeMemberInfo.getProfileImg(),secondeMemberInfo.getSex().toString(),
