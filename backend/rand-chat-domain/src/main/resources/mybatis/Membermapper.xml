@@ -125,8 +125,6 @@
              , pwd_wrong
              , state
              , profile_img
-             , locale_lat
-             , locale_lon
              , sex
              , birth
           FROM MEMBERS
@@ -157,8 +155,6 @@
               , pwd_wrong
               , state
               , profile_img
-              , locale_lat
-              , locale_lon
               , sex
               , birth
            FROM MEMBERS
@@ -177,8 +173,6 @@
              , pwd_wrong
              , state
              , profile_img
-             , locale_lat
-             , locale_lon
              , sex
              , birth
                FROM MEMBERS

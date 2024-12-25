@@ -119,12 +119,17 @@ public class MatchAcceptServiceImpl implements MatchAcceptService {
 
 
                             //채팅방 생성 포인트
-                            match.setRoomMem1(Integer.parseInt(firstUsrId));
-                            match.setRoomMem2(Integer.parseInt(secondUsrId));
+
                             //생성
                             matchingRepository.chatRoomCreate(match);
                             //채팅방 번호 반환 및 세팅
                             Long chatRoomId= match.getChatRoomId();
+                            //채팅방참여자 인서트
+                            match.setUsrId(firstUsrId);
+                            matchingRepository.chatRoomMemCreate(match);
+                            match.setUsrId(secondUsrId);
+                            matchingRepository.chatRoomMemCreate(match);
+
                             String roomId = String.valueOf(chatRoomId);
                             resMatchAcceptDTO.setRoomId(chatRoomId);
 
@@ -175,12 +180,17 @@ public class MatchAcceptServiceImpl implements MatchAcceptService {
 
 
                             //채팅방 생성 포인트
-                            match.setRoomMem1(Integer.parseInt(firstUsrId));
-                            match.setRoomMem2(Integer.parseInt(secondUsrId));
+
                             //생성
                             matchingRepository.chatRoomCreate(match);
                             //채팅방 번호 반환 및 세팅
                             Long chatRoomId= match.getChatRoomId();
+                            //채팅방참여자 인서트
+                            match.setUsrId(firstUsrId);
+                            matchingRepository.chatRoomMemCreate(match);
+                            match.setUsrId(secondUsrId);
+                            matchingRepository.chatRoomMemCreate(match);
+
                             String roomId = String.valueOf(chatRoomId);
                             resMatchAcceptDTO.setRoomId(chatRoomId);
 
