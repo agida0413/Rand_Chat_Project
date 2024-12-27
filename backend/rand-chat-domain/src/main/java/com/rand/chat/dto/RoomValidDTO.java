@@ -1,11 +1,15 @@
 package com.rand.chat.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class RoomValidDTO {
-private String usrId;
-private String chatRoomId;
+    @NotNull
+    private String usrId;
+    @Min(1)
+    private String chatRoomId;
 }
