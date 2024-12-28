@@ -40,4 +40,10 @@ public final class RedisKey {
     //멤버인포 키
     public static final String MEMBER_INFO_KEY = "memberInfo:"; // 5초 동안 대기 후 재시도
 
+
+
+    //채팅
+
+    //진입된 채팅방 키
+    public static final String CUR_ENTER_ROOM_KEY = "member:room:enter:";
 }

@@ -1,42 +1,40 @@
-package com.rand.redis.config;
-
+package com.rand.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.rand.config.constant.PubSubChannel;
-import com.rand.redis.pubsub.ChatSubsCriber;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.PatternTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-//채팅서버에서만 사용되는 레디스 컨피그
+import java.time.Duration;
+
+
 @Configuration
-@Primary
-public class ChatRedisConfig {
+@EnableCaching
+public class ChatAPIRedisConfig {
 
     @Bean
-    @Primary
-    public RedisMessageListenerContainer redischatContainer(
-            RedisConnectionFactory connectionFactory, ChatSubsCriber subscriber) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        // 매칭 채널
-        container.addMessageListener(subscriber, new PatternTopic(PubSubChannel.CHAT_CHANNEL.toString()));
-
-        return container;
+    public CacheManager redisChatApiCacheManager(RedisConnectionFactory redisConnectionFactory) {
+        RedisCacheConfiguration cacheConfig = RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofMinutes(1))  // 캐시 유효시간 설정 (1분)
+                .disableCachingNullValues();  // null 값 캐시 방지
+        return RedisCacheManager.builder(redisConnectionFactory)
+                .cacheDefaults(cacheConfig)
+                .build();
     }
+
     @Bean
     @Primary
-    public RedisTemplate<String, Object> redisChatTemplate(RedisConnectionFactory connectionFactory) {
+    public RedisTemplate<String, Object> redisChatApiTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
@@ -52,8 +50,6 @@ public class ChatRedisConfig {
         template.afterPropertiesSet();
 
         return template;
+
     }
-
-
-
 }

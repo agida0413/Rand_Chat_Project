@@ -37,4 +37,14 @@ public class ChatRoomController {
         return chatRoomService.selectMemberInfoInChatRoom(chatRoomId);
     }
 
+    @GetMapping("/enter/{chatRoomId}")
+    public ResponseEntity<ResponseDTO<Void>> enterRoomUpdateInfo(@PathVariable  Integer chatRoomId){
+        boolean validation = PathVarValidationService.mustOverZero(chatRoomId);
+
+        if(!validation){
+            throw new BadRequestException("ERR-CHAT-API-VALI-01");
+        }
+        return chatRoomService.enterRoomUpdateInfo(chatRoomId);
+    }
+
 }

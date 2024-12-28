@@ -8,13 +8,16 @@ import com.rand.chat.model.RoomValid;
 import com.rand.chat.repository.ChatRoomRepository;
 import com.rand.common.ResponseDTO;
 import com.rand.common.service.CommonMemberService;
+import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
 import com.rand.member.dto.response.ResMemInfoDTO;
 import com.rand.member.model.Members;
+import com.rand.redis.InMemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,6 +30,7 @@ public class ChatRoomServiceImpl implements ChatRoomService{
     private final ChatRoomRepository chatRoomRepository;
     private final CommonMemberService commonMemberService;
     private final ChatWfxApiService chatWfxApiService;
+    private final InMemRepository inMemRepository;
     //회원의 참여중인 채팅방리스트를 조회하는 서비스
     @Override
     public ResponseEntity<ResponseDTO<List<ResChatRoomListDTO>>> selectChatRoomList(){
@@ -91,5 +95,34 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         .ok()
         .body(new ResponseDTO<>(membersList));
     }
+
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> enterRoomUpdateInfo(Integer chatRoomId){
+        int usrId= SecurityContextGet.getUsrId();
+
+        //실제 참여중인 채팅방인지 확인
+        RoomValidDTO roomValidDTO = new RoomValidDTO();
+
+
+        roomValidDTO.setUsrId(String.valueOf(usrId));
+        roomValidDTO.setChatRoomId(String.valueOf(chatRoomId));
+
+        Boolean checkIsRealRoom = chatWfxApiService.isRealYourRoom(roomValidDTO);
+        if(checkIsRealRoom ==null || checkIsRealRoom.equals(Boolean.FALSE)){
+            throw new BadRequestException("ERR-CHAT-API-03");
+        }
+        //비동기 업무수행
+        asyncEnterRoomUpdateInfo(usrId,chatRoomId);
+
+        return ResponseEntity
+                .ok()
+                .body(new ResponseDTO<Void>());
+    }
+
+    @Async
+    private void asyncEnterRoomUpdateInfo(int usrId,Integer chatRoomId){
+        inMemRepository.save(RedisKey.CUR_ENTER_ROOM_KEY+usrId,chatRoomId);
+    }
+
 
 }
