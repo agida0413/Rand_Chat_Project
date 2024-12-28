@@ -1,6 +1,6 @@
 @use '@/styles/components/_button.scss' as *;
 @use '@/styles/components/_input.scss' as *;
-
+@use '@/styles/components/_checkBox.scss' as *;
 .emailAuthForm {
   overflow-y: auto;
   display: flex;
@@ -12,7 +12,8 @@
 
   input:not([type='date']) {
     @include primaryInput;
-    height: 3rem;
+    @include typography('xxs');
+    height: 5rem;
   }
 
   .parentForm {
@@ -22,20 +23,22 @@
 
     button {
       @include primaryButton;
-      line-height: 0;
+      @include typography('xxs');
     }
 
     .authCheck {
       display: flex;
-      gap: 0.5rem;
+      gap: 1rem;
       align-items: center;
 
       button {
-        width: 6rem;
+        width: 10rem;
       }
 
       input[type='text'],
       input[type='email'] {
+        @include typography('xxs');
+        height: 5rem;
         flex: 1;
       }
     }

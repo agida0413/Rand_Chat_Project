@@ -1,7 +1,7 @@
 .brandSection {
   display: flex;
   background-image: linear-gradient(180deg, $color-primary-100, royalblue);
-  color: white;
+  color: $color-background;
   align-items: center;
   width: 100%;
   padding: 0 $padding-l;
@@ -13,10 +13,10 @@
     margin: 0 auto;
 
     h1 {
-      @include typography('heading1', 'bold');
+      @include typography('xxl', 'bold');
     }
     p {
-      @include typography('subheading', 'medium');
+      @include typography('md', 'medium');
     }
   }
 }

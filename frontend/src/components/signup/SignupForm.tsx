@@ -10,6 +10,7 @@ export default function SignupForm() {
     <>
       <div className={styles.flexForm}>
         <div className={styles.genderWrapper}>
+          성별
           {GENDER_DATA.map(({ label, value }) => (
             <label key={value}>
               <input
@@ -24,11 +25,14 @@ export default function SignupForm() {
             </label>
           ))}
         </div>
-        <input
-          type="date"
-          value={user.birthDay}
-          onChange={e => setUser({ birthDay: e.target.value })}
-        />
+        <div className={styles.birthDayWrapper}>
+          생년월일
+          <input
+            type="date"
+            value={user.birthDay}
+            onChange={e => setUser({ birthDay: e.target.value })}
+          />
+        </div>
       </div>
 
       {SIGN_INPUT_LIST.map(({ key, placeholder, type }: SignInputListProps) => (

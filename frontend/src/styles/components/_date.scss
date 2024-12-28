@@ -3,9 +3,9 @@
 @use '@/styles/base/_colors' as *;
 
 @mixin primaryDate {
-  @include typography('caption', 'regular');
   padding: 0.2rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid $color-border;
+  height: 4rem;
   border-radius: $radius-xs;
   text-align: center;
   cursor: pointer;

@@ -1,13 +1,33 @@
-// purple color palette
-$color-purple-50: #eff6fc;
-$color-purple-100: #d9b3ff;
-$color-purple-200: #9c4dff;
-$color-purple-300: #6e00ff;
+// Purple color palette (Primary)
+$color-purple-50: #f7faff;
+$color-purple-100: #eff6fc;
+$color-purple-200: #d8c4f2;
+$color-purple-300: #d9b3ff;
+$color-purple-400: #9c4dff;
+$color-purple-500: #8739ff;
+$color-purple-600: #6e00ff;
+$color-purple-700: #5900cc;
+$color-purple-800: #450099;
+$color-purple-900: #320066;
 
-// red color palette
+// Purple transparent palette (Primary)
+$color-purple-transparent-100: rgba(110, 0, 255, 0.1);
+$color-purple-transparent-200: rgba(110, 0, 255, 0.2);
+$color-purple-transparent-300: rgba(110, 0, 255, 0.3);
+$color-purple-transparent-400: rgba(110, 0, 255, 0.4);
+$color-purple-transparent-500: rgba(110, 0, 255, 0.5);
+$color-purple-transparent-600: rgba(110, 0, 255, 0.6);
+
+// Red color palette (Error)
 $color-red-100: #ff3612;
 
-// primary color palette
+// Primary color palette
+$color-primary-900: $color-purple-900;
+$color-primary-800: $color-purple-800;
+$color-primary-700: $color-purple-700;
+$color-primary-600: $color-purple-600;
+$color-primary-500: $color-purple-500;
+$color-primary-400: $color-purple-400;
 $color-primary-300: $color-purple-300;
 $color-primary-200: $color-purple-200;
 $color-primary-100: $color-purple-100;
@@ -16,5 +36,10 @@ $color-primary-50: $color-purple-50;
 // Error color palette
 $color-error: $color-red-100;
 
-// Components
-$color-background: $color-purple-50;
+$color-background: $color-primary-50;
+$color-placeholder: #ccc;
+$color-surface: $color-primary-200;
+$color-border: $color-primary-300;
+$color-hover: $color-primary-400;
+$color-dropdown-shadow: rgba($color-primary-300, 0.2);
+$color-focus-ring: rgba($color-primary-300, 0.4);

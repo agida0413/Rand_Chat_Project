@@ -10,29 +10,31 @@
   text-align: center;
 
   h1 {
-    @include typography('heading2', 'bold');
+    @include typography('lg', 'bold');
   }
 
   form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     div {
       input {
         @include primaryInput;
+        @include typography('xs');
       }
     }
     button {
       @include primaryButton;
+      @include typography('sm');
     }
   }
   footer {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 1rem;
     button {
-      @include typography('caption', 'regular');
-      color: #e0e0e0;
+      @include typography('xs');
+      color: $color-surface;
       background: none;
       border: none;
       cursor: pointer;
@@ -40,19 +42,19 @@
       transition: color 0.3s ease;
 
       &:hover {
-        color: $color-primary-200;
+        color: $color-hover;
       }
     }
 
     p {
-      @include typography('caption', 'regular');
+      @include typography('xs');
       a {
-        color: $color-primary-100;
+        color: $color-primary-300;
         text-decoration: none;
         transition: color 0.3s ease;
 
         &:hover {
-          color: $color-primary-200;
+          color: $color-hover;
         }
       }
     }
