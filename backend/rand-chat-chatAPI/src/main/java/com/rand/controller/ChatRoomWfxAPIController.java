@@ -1,7 +1,7 @@
 package com.rand.controller;
 
-import com.rand.chat.dto.RoomValidDTO;
-import com.rand.service.ChatApiService;
+import com.rand.chat.dto.request.RoomValidDTO;
+import com.rand.service.ChatWfxApiService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/chat/api/v1/room")
-public class ChatRoomApiController {
-    private final ChatApiService chatApiService;
+@RequestMapping("/chat/api/v1/wx/room")
+public class ChatRoomWfxAPIController {
+    private final ChatWfxApiService chatApiService;
 
     @GetMapping
     public Boolean isRealYourRoom(@Valid  RoomValidDTO roomValidDTO){

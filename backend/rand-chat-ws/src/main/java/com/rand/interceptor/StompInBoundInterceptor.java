@@ -1,6 +1,6 @@
 package com.rand.interceptor;
 
-import com.rand.chat.dto.RoomValidDTO;
+import com.rand.chat.dto.request.RoomValidDTO;
 import com.rand.constant.ChatConst;
 import com.rand.jwt.JWTUtil;
 import com.rand.jwt.JwtError;
@@ -14,11 +14,9 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component

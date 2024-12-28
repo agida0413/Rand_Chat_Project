@@ -2,14 +2,11 @@ package com.rand.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rand.chat.dto.RoomValidDTO;
+import com.rand.chat.dto.request.RoomValidDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +19,7 @@ public class ChatWebFluxServiceImpl implements ChatWebFluxService{
     @Override
     public Boolean isRealYourChatRoom(RoomValidDTO roomValidDTO,String accessToken) {
         Boolean block = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/chat/api/v1/room")
+                .uri(uriBuilder -> uriBuilder.path("/chat/api/v1/wx/room")
                         .queryParam("chatRoomId", roomValidDTO.getChatRoomId())  // chatRoomId를 쿼리 파라미터로 추가
                         .queryParam("usrId", roomValidDTO.getUsrId()) // usrId를 쿼리 파라미터로 추가
                         .build()) // URL 빌더를 사용하여 URI 구성

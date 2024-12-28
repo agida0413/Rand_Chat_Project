@@ -1,7 +1,7 @@
 package com.rand.service;
 
-import com.rand.chat.dto.RoomValidDTO;
+import com.rand.chat.dto.request.RoomValidDTO;
 
-public interface ChatApiService {
+public interface ChatWfxApiService {
     public Boolean isRealYourRoom(RoomValidDTO roomValidDTO);
 }

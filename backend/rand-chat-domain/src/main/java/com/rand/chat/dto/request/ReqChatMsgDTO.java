@@ -1,11 +1,11 @@
-package com.rand.chat.dto;
+package com.rand.chat.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ChatDTO {
+public class ReqChatMsgDTO {
 
     private String message;
 }

@@ -1,7 +1,6 @@
 package com.rand.service;
 
-import com.rand.chat.dto.RoomValidDTO;
-import reactor.core.publisher.Mono;
+import com.rand.chat.dto.request.RoomValidDTO;
 
 public interface ChatWebFluxService {
 

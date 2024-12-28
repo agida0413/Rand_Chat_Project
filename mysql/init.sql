@@ -59,3 +59,8 @@ CONSTRAINT PRIMARY KEY chat_msg_pk(chat_id),
 CONSTRAINT FOREIGN KEY chat_msg_id_fk(usr_id) REFERENCES MEMBERS(usr_id) ON DELETE CASCADE ,
 CONSTRAINT FOREIGN KEY chat_msg_room_id_fk(chat_room_id) REFERENCES CHAT_ROOM(chat_room_id) ON DELETE CASCADE
 );
+
+-- 인덱스 생성
+CREATE INDEX idx_chat_message_room_date ON CHAT_MESSAGE (chat_room_id, msg_cr_date DESC);
+CREATE INDEX idx_chat_message_unread ON CHAT_MESSAGE (usr_id, is_read);
+CREATE INDEX idx_chat_room_members ON CHAT_ROOM_MEMBERS (chat_room_id, usr_id);

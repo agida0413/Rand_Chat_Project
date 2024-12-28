@@ -1,6 +1,6 @@
 package com.rand.chat.model;
 
-import com.rand.chat.dto.ChatDTO;
+import com.rand.chat.dto.request.ReqChatMsgDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +12,7 @@ public class ChatMessage {
     private int roomId;
     private String pubUrl;
 
-    public ChatMessage(ChatDTO chatDTO){
+    public ChatMessage(ReqChatMsgDTO chatDTO){
         this.message=chatDTO.getMessage();
     }
 }
