@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 @Service
 @RequiredArgsConstructor
-
 public class MemberService implements CommonMemberService{
     private final InMemRepository inMemRepository;
     private final MemberRepository memberRepository;

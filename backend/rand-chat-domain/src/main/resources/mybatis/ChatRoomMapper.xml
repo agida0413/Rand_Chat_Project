@@ -8,7 +8,8 @@
                 FROM CHAT_ROOM CR
           INNER JOIN CHAT_ROOM_MEMBERS CRM
              ON CRM.usr_id = #{usrId}
-          WHERE CR.chat_room_id =#{chatRoomId}
+            AND CRM.chat_room_id = CR.chat_room_id
+          WHERE CRM.chat_room_id = #{chatRoomId}
    </select>
 
     <select id="selectChatRoomList" parameterType="ChatRoom" resultType="ResChatRoomListDTO">
@@ -59,7 +60,22 @@
          LEFT JOIN OpsInfo OPS_INFO
                 ON CR.chat_room_id = OPS_INFO.chat_room_id
          LEFT JOIN UnreadCount UC
-                ON CR.chat_room_id = UC.chat_room_id;
+                ON CR.chat_room_id = UC.chat_room_id
+          ORDER BY
+              CASE
+                   WHEN CM.message IS NULL THEN 0  /* 새로 생성된 채팅방 이거나 상대방이 탈퇴한 채팅방은 상위에 표시 */
+                   ELSE 1
+               END ASC,
+              CASE
+                   WHEN CM.message IS NULL THEN CR.room_cr_date
+                   ELSE CM.msg_cr_date
+               END DESC /* 최근 메시지가 있는 경우 최신 순서로 정렬 */
+    </select>
+
+    <select id="selectUsrIdInChatRoom" parameterType="Integer" resultType="Members">
+        SELECT usr_id
+          FROM CHAT_ROOM_MEMBERS CRM
+         WHERE chat_room_id = #{chatRoomId}
     </select>
 
 </mapper>

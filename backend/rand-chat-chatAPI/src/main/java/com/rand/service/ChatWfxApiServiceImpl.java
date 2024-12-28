@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatWfxApiServiceImpl implements ChatWfxApiService {
     private final ChatRoomRepository chatRepository;
+    //실제 채팅방에 참여중인지 검증하는 서비스 
     @Override
     public Boolean isRealYourRoom(RoomValidDTO roomValidDTO) {
         RoomValid roomValid = chatRepository.isRealYourRoom(roomValidDTO);

@@ -7,4 +7,7 @@ import lombok.Setter;
 @Setter
 public class ChatRoom {
     private String usrId;
+    private String chatRoomId;
+
+
 }
