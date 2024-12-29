@@ -20,7 +20,6 @@ public class ChatUtil {
             chatMessage.setUsrId(usrId);
             chatMessage.setRoomId(roomId);
             chatMessage.setPubUrl(pubUrl);
-
         }
         return object;
     }

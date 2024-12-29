@@ -14,4 +14,18 @@ public class PathVarValidationService {
         return res;
 
     }
+
+    public static boolean mustNotNull(Object obj){
+        boolean res = true;
+        if(obj ==null || obj.equals("")){
+            res = false;
+        }
+        if(obj instanceof String){
+            String str = ((String) obj).trim(); // 공백 제거
+            if (str.isEmpty()) { // 비어 있는지 확인
+                return false;
+            }
+        }
+        return res;
+    }
 }

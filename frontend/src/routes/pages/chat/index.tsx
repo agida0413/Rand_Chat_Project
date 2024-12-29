@@ -15,11 +15,13 @@ export default function Chat() {
   const [input, setInput] = useState('')
   const [connected, setConnected] = useState(false)
   const [token, setToken] = useState('')
+  const [chatType, setType] = useState('TEXT') // 기본값 "TALK"
 
   // 메시지 전송 핸들러
   const sendHandler = () => {
     if (client.current?.connected) {
       const message = {
+        chatType, // type 값 추가
         message: input  // Assuming 'input' is the content you want to send
       };
 
@@ -125,6 +127,15 @@ export default function Chat() {
       </div>
       <br />
       <div>
+      <div>
+        <p>메시지 타입</p>
+        <input
+          onChange={(e) => setType(e.target.value)}
+          value={chatType}
+          placeholder="메시지 타입 입력 (예: TALK)"
+        />
+      </div>
+      <br />
         <p>send 주소</p>
         <input
           onChange={(e) => setSendAddress(e.target.value)}

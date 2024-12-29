@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class WebClientConfig {
-    @Value("web.nginx.url")
+    @Value("${web.nginx.url}")
     private String url;
 
     @Bean(name = "webCl")

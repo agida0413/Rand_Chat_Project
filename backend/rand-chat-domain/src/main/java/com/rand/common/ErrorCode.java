@@ -127,6 +127,7 @@ public enum ErrorCode {
 
     //채팅 웹소켓 서버 에러
     WS_ERR_UN_AUTH_CHAT_ROOM(400,"ERR-WS-01","허용되지 않은 채팅방을 구독 시도했습니다."),
+    WS_ERR_MESSAGE_NULL(400,"ERR-WS-02","빈 채팅메시지는 전송할 수 없습니다."),
 
     //채팅 i/o api 에러
     NO_DATA_CHAT_LIST(400,"ERR-CHAT-API-01","참여중인 채팅방이 없습니다."),
