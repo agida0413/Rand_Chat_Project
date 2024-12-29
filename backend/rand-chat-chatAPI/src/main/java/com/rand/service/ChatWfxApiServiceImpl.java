@@ -57,8 +57,7 @@ public class ChatWfxApiServiceImpl implements ChatWfxApiService {
     public Members getOpsMem(@PathVariable Integer chatRoomId) {
         List<Members> list = chatRepository.selectUsrIdInChatRoom(chatRoomId);
         int myUsrId = SecurityContextGet.getUsrId();
-        System.out.println(myUsrId);
-        System.out.println(list.size());
+
        Members memberInfo = new Members();
         for(Members members : list){
             if(members.getUsrId()== myUsrId){
