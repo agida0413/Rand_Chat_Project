@@ -5,7 +5,7 @@ import {
   useNavigate
 } from 'react-router-dom'
 import DefaultLayout from './layout/Default'
-import Home from './pages/Home'
+import Home from './pages/home'
 import Chat from './pages/chat'
 import About from './pages/About'
 import NotFound from './pages/NotFound'

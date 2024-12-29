@@ -1,0 +1,9 @@
+.headerContainer {
+  min-width: 13rem;
+  height: 100%;
+  background-color: $color-primary-400;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  align-items: center;
+}

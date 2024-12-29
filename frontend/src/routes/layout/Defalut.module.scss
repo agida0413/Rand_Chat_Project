@@ -1,0 +1,7 @@
+.mainContainer {
+  min-width: $min-width-frame;
+  max-width: $max-width-frame;
+  height: $max-height-frame;
+  margin: 0 auto;
+  display: flex;
+}
