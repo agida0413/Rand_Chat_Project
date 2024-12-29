@@ -73,7 +73,15 @@ public class ChatRoomServiceImpl implements ChatRoomService{
          throw new BadRequestException("ERR-CHAT-API-02");
         }
 
+        double betweenDistance =0.0;
+        if(usrList.size()>1){
+            //두사용자 간 거리계산
+        betweenDistance =   inMemRepository.calculateDistance(String.valueOf(usrList.get(0).getUsrId())
+                    ,String.valueOf(usrList.get(1).getUsrId()));
+        }
+
         List<ResChatMember> membersList = new ArrayList<>();
+
 
         for(Members members : usrList){
            int usrId = members.getUsrId();
@@ -87,7 +95,8 @@ public class ChatRoomServiceImpl implements ChatRoomService{
                 itsMe = true;
             }
 
-            ResChatMember resChatMember = new ResChatMember(resMemInfoDTO,itsMe,0.0);
+
+            ResChatMember resChatMember = new ResChatMember(resMemInfoDTO,itsMe,betweenDistance);
            membersList.add(resChatMember);
         }
 
@@ -121,7 +130,7 @@ public class ChatRoomServiceImpl implements ChatRoomService{
 
     @Async
     private void asyncEnterRoomUpdateInfo(int usrId,Integer chatRoomId){
-        inMemRepository.save(RedisKey.CUR_ENTER_ROOM_KEY+usrId,chatRoomId);
+        inMemRepository.save(RedisKey.CUR_ENTER_ROOM_KEY+usrId,String.valueOf(chatRoomId));
     }
 
 
