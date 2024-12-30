@@ -2,16 +2,15 @@ package com.rand.controller;
 
 import com.rand.chat.dto.request.RoomValidDTO;
 import com.rand.common.ResponseDTO;
+import com.rand.custom.SecurityContextGet;
 import com.rand.member.model.Members;
 import com.rand.service.ChatWfxApiService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +28,11 @@ public class ChatRoomWfxAPIController {
     public Members getOpsMem(@PathVariable Integer chatRoomId){
         return chatApiService.getOpsMem(chatRoomId);
     }
+    @PutMapping("/enter/{chatRoomId}")
+    public ResponseEntity<ResponseDTO<Void>> asyncEnterRoomUpdateInfo(@PathVariable Integer chatRoomId){
+        return chatApiService.asyncEnterRoomUpdateInfo(
+                SecurityContextGet.getUsrId(),chatRoomId);
+    }
+
 
 }

@@ -48,7 +48,17 @@ private final ObjectMapper objectMapper;
             log.info(pubUrl);
              //만약 채팅방에대한 발행메시지일시
             if(pubUrl.equals(ChatConst.PUB_CHAT_ROOM_URL)){
-                chatService.pubChatMessage(message);
+                //읽기 알람을 위한 convertandsend
+
+                Integer readFlag=(Integer)mapData.get("readFlag");
+
+                if(readFlag!=null){
+
+                    chatService.pubIsRead(message);
+                }else{
+                    chatService.pubChatMessage(message);
+                }
+
             }
             //만약 에러전송을 위한 발행메시지일시
             else if(pubUrl.equals(ChatConst.PUB_CHAT_ERROR_URL)){

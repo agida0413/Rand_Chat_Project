@@ -11,4 +11,5 @@ public interface ChatWfxApiService {
     public Boolean isRealYourRoom(RoomValidDTO roomValidDTO);
     public ResponseEntity<Void> asyncSaveChatMsg(ReqChatMsgSaveDTO reqChatMsgSaveDTO);
     public Members getOpsMem(@PathVariable Integer chatRoomId);
+    public ResponseEntity<ResponseDTO<Void>> asyncEnterRoomUpdateInfo(int usrId,Integer chatRoomId);
 }

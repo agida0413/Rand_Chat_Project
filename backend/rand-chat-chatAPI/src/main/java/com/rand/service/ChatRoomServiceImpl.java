@@ -105,33 +105,8 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         .body(new ResponseDTO<>(membersList));
     }
 
-    @Override
-    public ResponseEntity<ResponseDTO<Void>> enterRoomUpdateInfo(Integer chatRoomId){
-        int usrId= SecurityContextGet.getUsrId();
-
-        //실제 참여중인 채팅방인지 확인
-        RoomValidDTO roomValidDTO = new RoomValidDTO();
 
 
-        roomValidDTO.setUsrId(String.valueOf(usrId));
-        roomValidDTO.setChatRoomId(String.valueOf(chatRoomId));
-
-        Boolean checkIsRealRoom = chatWfxApiService.isRealYourRoom(roomValidDTO);
-        if(checkIsRealRoom ==null || checkIsRealRoom.equals(Boolean.FALSE)){
-            throw new BadRequestException("ERR-CHAT-API-03");
-        }
-        //비동기 업무수행
-        asyncEnterRoomUpdateInfo(usrId,chatRoomId);
-
-        return ResponseEntity
-                .ok()
-                .body(new ResponseDTO<Void>());
-    }
-
-    @Async
-    private void asyncEnterRoomUpdateInfo(int usrId,Integer chatRoomId){
-        inMemRepository.save(RedisKey.CUR_ENTER_ROOM_KEY+usrId,String.valueOf(chatRoomId));
-    }
 
 
 }

@@ -14,6 +14,7 @@ import com.rand.member.model.Members;
 import com.rand.redis.InMemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -23,8 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatWfxApiServiceImpl implements ChatWfxApiService {
     private final ChatRoomRepository chatRepository;
-    private final InMemRepository inMemRepository;
     private final CommonMemberService commonMemberService;
+    private final InMemRepository inMemRepository;
     //채팅방 메시지 저장
     @Override
     public ResponseEntity<Void> asyncSaveChatMsg(ReqChatMsgSaveDTO reqChatMsgSaveDTO) {
@@ -69,5 +70,11 @@ public class ChatWfxApiServiceImpl implements ChatWfxApiService {
         }
 
         return memberInfo;
+    }
+
+
+    public ResponseEntity<ResponseDTO<Void>> asyncEnterRoomUpdateInfo(int usrId,Integer chatRoomId){
+        inMemRepository.save(RedisKey.CUR_ENTER_ROOM_KEY+usrId,String.valueOf(chatRoomId));
+        return ResponseEntity.ok().body(new ResponseDTO<>());
     }
 }
