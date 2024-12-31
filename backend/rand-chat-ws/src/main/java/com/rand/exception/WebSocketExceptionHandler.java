@@ -22,8 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-//Stomp 통신간 에러핸들링
-
+//Stomp 통신간 에러핸들링(연결 후 )
 @ControllerAdvice
 @RequiredArgsConstructor
 @Slf4j

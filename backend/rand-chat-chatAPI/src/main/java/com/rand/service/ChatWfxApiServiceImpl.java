@@ -20,12 +20,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+//WebClient를 통해 호출되는 api
 @Service
 @RequiredArgsConstructor
 public class ChatWfxApiServiceImpl implements ChatWfxApiService {
     private final ChatRoomRepository chatRepository;
     private final CommonMemberService commonMemberService;
     private final InMemRepository inMemRepository;
+
     //채팅방 메시지 저장
     @Override
     public ResponseEntity<Void> asyncSaveChatMsg(ReqChatMsgSaveDTO reqChatMsgSaveDTO) {
@@ -41,6 +43,7 @@ public class ChatWfxApiServiceImpl implements ChatWfxApiService {
         return null;
     }
 
+
     //실제 채팅방에 참여중인지 검증하는 서비스
     @Override
     public Boolean isRealYourRoom(RoomValidDTO roomValidDTO) {
@@ -54,12 +57,16 @@ public class ChatWfxApiServiceImpl implements ChatWfxApiService {
 
         return result;
     }
+    //내가 아닌 상대방의 정보를 얻기위한 api
     @Override
     public Members getOpsMem(@PathVariable Integer chatRoomId) {
+        //채팅방 참여자 리스트 조회
         List<Members> list = chatRepository.selectUsrIdInChatRoom(chatRoomId);
         int myUsrId = SecurityContextGet.getUsrId();
 
        Members memberInfo = new Members();
+
+       //본인 필터링
         for(Members members : list){
             if(members.getUsrId()== myUsrId){
                 continue;
@@ -72,7 +79,7 @@ public class ChatWfxApiServiceImpl implements ChatWfxApiService {
         return memberInfo;
     }
 
-
+    // 채팅방에 입장플래그를 업데이트하는 api
     public ResponseEntity<ResponseDTO<Void>> asyncEnterRoomUpdateInfo(int usrId,Integer chatRoomId){
         inMemRepository.save(RedisKey.CUR_ENTER_ROOM_KEY+usrId,String.valueOf(chatRoomId));
         return ResponseEntity.ok().body(new ResponseDTO<>());

@@ -14,19 +14,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
+//I/O API
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/chat/api/v1/room")
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
-
+    //채팅방 리스트 API
     @GetMapping
     public ResponseEntity<ResponseDTO<List<ResChatRoomListDTO>>> selectChatRoomList(){
         return chatRoomService.selectChatRoomList();
     }
 
+    //채팅방 참여자 정보 리스트 API
     @GetMapping("/{chatRoomId}")
     public ResponseEntity<ResponseDTO<List<ResChatMember>>> selectMemberInfoInChatRoom(@PathVariable  Integer chatRoomId){
         boolean validation = PathVarValidationService.mustOverZero(chatRoomId);
