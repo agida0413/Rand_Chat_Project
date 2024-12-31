@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rand.chat.mapper.ChatMsgMapper">
+    <insert id="chatMsgSave">
+        INSERT INTO CHAT_MESSAGE(usr_id,chat_room_id,message,msg_cr_date,msg_cr_date_ms,is_read,chat_type)
+               VALUES(
+                       #{usrId}
+                     , #{chatRoomId}
+                     , #{message}
+                     , #{msgCrDate}
+                     , #{msgCrDateMs}
+                     , #{read}
+                     , #{chatType}
+               )
+    </insert>
+
+</mapper>

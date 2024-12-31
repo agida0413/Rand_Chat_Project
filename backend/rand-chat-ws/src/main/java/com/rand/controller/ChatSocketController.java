@@ -35,16 +35,20 @@ public class ChatSocketController {
         ChatMessage chatMessage = new ChatMessage(message);
 
        boolean validation =  PathVarValidationService.mustNotNull(chatMessage.getMessage());
+
        if(!validation){
            throw new MessageDeliveryException("ERR-WS-02");
        }
+
         ChatUtil.concatMessage(incomingMessage,chatMessage,roomId, ChatConst.PUB_CHAT_ROOM_URL);
 
-        //메시지 전송시 상대방과 내가 해당방에 참여하는지 체크 후 읽음여부를 업데이트 및 웹소켓으로 읽음 플래그를 전송
-        chatIOService.updateIsReadOfSend(roomId,chatMessage.getUsrId());
-
-
         ReqChatMsgSaveDTO reqChatMsgSaveDTO  = new ReqChatMsgSaveDTO(chatMessage);
+        //메시지 전송시 상대방과 내가 해당방에 참여하는지 체크 후 읽음여부를 업데이트 및 웹소켓으로 읽음 플래그를 전송 + 메시지저장 I/O저장
+        String accessToken = chatMessage.getUsrId();
+        chatIOService.updateOfSend(roomId,accessToken,reqChatMsgSaveDTO);
+
+
+
         //비동기 api(webClient) 호출 - > 영구저장
         
         //메시지 전송

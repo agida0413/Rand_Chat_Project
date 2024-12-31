@@ -43,7 +43,10 @@ public final class RedisKey {
 
 
     //채팅
-
+    //채팅 메시지 리스트 키
+    public static final String CHAT_MESSAGE_LIST_KEY = "chat:message:list:";
+    //채팅 메시지 리스트 락 키
+    public static final String CHAT_MESSAGE_LIST_LOCK_KEY="chat:message:list:lock:";
     //진입된 채팅방 키
     public static final String CUR_ENTER_ROOM_KEY = "member:room:enter:";
 }

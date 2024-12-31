@@ -20,12 +20,7 @@ public class SimpIoApiController {
     //채팅방 입장시 수행해야할 API
     @GetMapping("/enter/{chatRoomId}")
     public ResponseEntity<ResponseDTO<Void>> enterRoomUpdateInfo(@PathVariable Integer chatRoomId, @RequestHeader("access") String accessToken){
-       //유효성 검증
-        boolean validation = PathVarValidationService.mustOverZero(chatRoomId);
-
-        if(!validation){
-            throw new BadRequestException("ERR-CHAT-API-VALI-01");
-        }
+    
         return chatWebFluxService.updateIsReadOfEnter(chatRoomId,accessToken);
     }
 }

@@ -12,16 +12,18 @@ public class ChatMessageSave {
 private String usrId;
 private String chatRoomId;
 private String message;
+private LocalDateTime msgCrDateMs;
 private LocalDateTime msgCrDate;
-private boolean isRead;
+private boolean read;
 private ChatType chatType;
 
-    public ChatMessageSave(ReqChatMsgSaveDTO reqChatMsgSaveDTO,String usrId,boolean isRead){
+    public ChatMessageSave(ReqChatMsgSaveDTO reqChatMsgSaveDTO,String usrId){
         this.usrId = usrId;
         this.chatRoomId =String.valueOf(reqChatMsgSaveDTO.getChatRoomId());
         this.message = reqChatMsgSaveDTO.getMessage();
+        this.msgCrDateMs = reqChatMsgSaveDTO.getMsgCrDateMs();
         this.msgCrDate = reqChatMsgSaveDTO.getMsgCrDate();
-        this.isRead = isRead;
+        this.read = reqChatMsgSaveDTO.isRead();
         this.chatType = reqChatMsgSaveDTO.getChatType();
     }
 }

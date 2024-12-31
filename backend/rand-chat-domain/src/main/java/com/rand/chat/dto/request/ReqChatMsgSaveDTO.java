@@ -17,11 +17,11 @@ public class ReqChatMsgSaveDTO {
     @Size(min = 1)
     private String message;
     @NotNull
-    @FutureOrPresent(message = "Message creation date must be the current time or a future time.")
+    @FutureOrPresent()
+    private LocalDateTime msgCrDateMs;
+    @NotNull
+    @FutureOrPresent()
     private LocalDateTime msgCrDate;
-    @Min(1)
-    private String accessToken;
-
     @Min(1)
     @NotNull
     @NotBlank
@@ -29,11 +29,17 @@ public class ReqChatMsgSaveDTO {
     @NotNull
     private ChatType chatType;
 
+    private boolean read;
+
     public ReqChatMsgSaveDTO(ChatMessage chatMessage){
         this.message = chatMessage.getMessage();
+        this.msgCrDateMs =chatMessage.getMsgCrDateMs();
         this.msgCrDate = chatMessage.getMsgCrDate();
-        this.accessToken = chatMessage.getUsrId();
         this.chatRoomId = chatMessage.getRoomId();
         this.chatType = chatMessage.getChatType();
+        this.read = false;
+    }
+    public ReqChatMsgSaveDTO(){
+
     }
 }

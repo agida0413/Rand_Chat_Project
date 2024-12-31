@@ -2,11 +2,13 @@ package com.rand.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rand.chat.dto.request.ReqChatMsgSaveDTO;
 import com.rand.chat.dto.request.RoomValidDTO;
 import com.rand.common.ResponseDTO;
 import com.rand.config.constant.PubSubChannel;
 import com.rand.config.var.RedisKey;
 import com.rand.constant.ChatConst;
+import com.rand.exception.custom.BadRequestException;
 import com.rand.io.ChatOpServerApiCall;
 import com.rand.jwt.JWTUtil;
 import com.rand.member.model.Members;
@@ -44,45 +46,59 @@ public class ChatIOServiceImpl implements ChatIOService {
     @Override
     @Async
     //채팅메시지를 보낼 시 Reactive 및 비동기 업데이트 처리를 하는 서비스
-    public void updateIsReadOfSend(Integer chatRoomId, String accessToken) {
-        //상대방이 입장했는지 확인하는 api
-       chatOpServerApiCall.chkOpsMemIsEnter(chatRoomId, accessToken)
-                .doOnNext(member -> {
-                    //입장해있다면
-                    if (member.getNickName() != null) {
-                        // 읽음 여부 업데이트 로직*******************
+    public void updateOfSend(Integer chatRoomId, String accessToken,ReqChatMsgSaveDTO reqChatMsgSaveDTO) {
+        //비동기 메시지 I/O 업데이트
+        chatOpServerApiCall.asyncChatMsgSave(reqChatMsgSaveDTO,accessToken)
+                    .doOnNext(result -> log.info("updateOfSendResult: {}", result))
+                    .filter(Boolean::booleanValue)
+                    .doOnNext(result -> {
+                        //성공적으로 메시지 저장햇을시 읽음 여부를 업데이트
 
-                        Integer usrId = jwtUtil.getUsrId(accessToken);
+                        //상대방이 입장했는지 확인하는 api
+                        chatOpServerApiCall.chkOpsMemIsEnter(chatRoomId, accessToken)
+                                .doOnNext(member -> {
+                                    //입장해있다면
 
-                        //내가 입장해있는지 확인 (ver 1 에서는 보낼시무조건 입장해있겠지만 , 추후 확장을 고려한다. [ 채팅방 미입장 빠른전송 ])
-                        boolean isIamEnterRoom;
-                        Integer roomId=(Integer) inMemRepository.getValue(RedisKey.CUR_ENTER_ROOM_KEY+String.valueOf(usrId));
+                                    if (member.getNickName() != null) {
+                                        // 읽음 여부 업데이트 로직*******************
 
-                        if(roomId.equals(chatRoomId)){
-                            isIamEnterRoom=true;
-                        } else {
-                            isIamEnterRoom = false;
-                        }
+                                        Integer usrId = jwtUtil.getUsrId(accessToken);
 
-                        //내가 입장해있다면
-                        if(isIamEnterRoom){
+                                        //내가 입장해있는지 확인 (내가 입장해 있지않으면 , optimistic update를 할필요가 없으므로 이벤트 전송이 불필요하다.)
+                                        boolean isIamEnterRoom;
+                                        Integer roomId=(Integer) inMemRepository.getValue(RedisKey.CUR_ENTER_ROOM_KEY+String.valueOf(usrId));
 
-                            Map<String,Object> map = new HashMap<>();
-                            //읽음 플래그를 전송할 데이터생성
-                            map.put("chatRoomId",chatRoomId);
-                            map.put("reader",member.getNickName());
-                            map.put("readFlag",1);
-                            map.put("pubUrl",ChatConst.PUB_CHAT_ROOM_URL);
-                            //pub
-                            redisTemplate.convertAndSend(PubSubChannel.CHAT_CHANNEL.toString(),map);
-                        }
-                    }
-                })
-                .doOnError(error ->{
-                    //메시지 전송 익셉션
-                    throw new MessageDeliveryException("");
-                })
-                .subscribe(); // 비동기 실행
+                                        if(roomId.equals(chatRoomId)){
+                                            isIamEnterRoom=true;
+                                        } else {
+                                            isIamEnterRoom = false;
+                                        }
+
+                                        //내가 입장해있다면
+                                        if(isIamEnterRoom){
+
+                                            Map<String,Object> map = new HashMap<>();
+                                            //읽음 플래그를 전송할 데이터생성
+                                            map.put("chatRoomId",chatRoomId);
+                                            map.put("reader",member.getNickName());
+                                            map.put("readFlag",1);
+                                            map.put("pubUrl",ChatConst.PUB_CHAT_ROOM_URL);
+                                            //pub
+                                            redisTemplate.convertAndSend(PubSubChannel.CHAT_CHANNEL.toString(),map);
+                                        }
+                                    }
+                                })
+                                .doOnError(error ->{
+                                    //메시지 전송 익셉션
+                                    throw new MessageDeliveryException("");
+                                })
+                                .subscribe(); // 비동기 실행
+                    })
+                    .onErrorResume(error -> {
+                        throw new BadRequestException("");
+                    })
+                    .subscribe(); // WebClient 결과를 비동기로
+
     }
 
 
@@ -98,7 +114,7 @@ public class ChatIOServiceImpl implements ChatIOService {
                    chatOpServerApiCall.updateIsReadOfEnterAndPub(chatRoomId, access);
                 })
                 .onErrorResume(error -> {
-                   throw new MessageDeliveryException("ERR-WS-03");
+                    throw new BadRequestException("ERR-CHAT-API-03");
                 })
                 .subscribe(); // WebClient 결과를 비동기로
 

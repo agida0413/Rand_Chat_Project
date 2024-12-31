@@ -2,16 +2,21 @@ package com.rand.io;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rand.chat.dto.request.ReqChatMsgSaveDTO;
 import com.rand.chat.dto.request.RoomValidDTO;
+import com.rand.common.ResponseDTO;
 import com.rand.config.constant.PubSubChannel;
 import com.rand.config.var.RedisKey;
 import com.rand.constant.ChatConst;
+import com.rand.exception.custom.BadRequestException;
 import com.rand.jwt.JWTUtil;
 import com.rand.member.model.Members;
 import com.rand.redis.InMemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -116,7 +121,7 @@ public class ChatOpServerApiCallDo implements ChatOpServerApiCall{
         Boolean checkIsRealRoom = isRealYourChatRoom(roomValidDTO,accessToken);
 
         if(checkIsRealRoom ==null || checkIsRealRoom.equals(Boolean.FALSE)){
-            throw new MessageDeliveryException("ERR-CHAT-API-03");
+            throw new BadRequestException("ERR-CHAT-API-03");
         }
         return webClient.put()
                 .uri(uriBuilder -> uriBuilder
@@ -132,7 +137,24 @@ public class ChatOpServerApiCallDo implements ChatOpServerApiCall{
     }
 
 
-
+    @Override
+    public Mono<Boolean> asyncChatMsgSave(ReqChatMsgSaveDTO reqChatMsgSaveDTO,String accessToken) {
+        return webClient.post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/chat/api/v1/wx/chat")
+                        .build())
+                .headers(headers ->{
+                    headers.set("access", accessToken);
+                    headers.setContentType(MediaType.APPLICATION_JSON);
+                } )
+                .bodyValue(reqChatMsgSaveDTO)  // JSON 데이터를 요청 본문에 포함
+                .retrieve()
+                .toBodilessEntity()  // 응답 본문을 읽지 않고 상태만 확인
+                .map(response -> response.getStatusCode().is2xxSuccessful())  // HTTP 상태가 2xx면 성공
+                .onErrorResume(error -> {
+                    return Mono.just(false);  // 오류 발생 시 실패 반환
+                });
+    }
 
     // 응답 파싱 및 Members 변환 로직
     private Mono<Members> parseResponse(String response, Integer chatRoomId) {
@@ -150,4 +172,6 @@ public class ChatOpServerApiCallDo implements ChatOpServerApiCall{
             return Mono.empty(); // 파싱 실패 시 빈 Mono 반환
         }
     }
+
+
 }

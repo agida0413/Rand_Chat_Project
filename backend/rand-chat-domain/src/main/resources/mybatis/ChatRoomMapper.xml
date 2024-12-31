@@ -16,7 +16,7 @@
         /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomList 회원이 참여하고있는 채팅방 리스트 (채팅방은 수만개 되지않으니 별도의 성능개선 페이징은 필요없어보임 )*/
         WITH LatestMessage AS (
                 SELECT chat_room_id,
-                       MAX(msg_cr_date) AS latest_msg_date
+                       MAX(msg_cr_date_ms) AS latest_msg_date_ms
                        FROM CHAT_MESSAGE
               GROUP BY chat_room_id
         ),
@@ -56,7 +56,7 @@
                 ON CR.chat_room_id = LM.chat_room_id
          LEFT JOIN CHAT_MESSAGE CM
                 ON CR.chat_room_id = CM.chat_room_id
-               AND CM.msg_cr_date = LM.latest_msg_date
+               AND CM.msg_cr_date_ms = LM.latest_msg_date_ms
          LEFT JOIN OpsInfo OPS_INFO
                 ON CR.chat_room_id = OPS_INFO.chat_room_id
          LEFT JOIN UnreadCount UC
@@ -68,7 +68,7 @@
                END ASC,
               CASE
                    WHEN CM.message IS NULL THEN CR.room_cr_date
-                   ELSE CM.msg_cr_date
+                   ELSE CM.msg_cr_date_ms
                END DESC /* 최근 메시지가 있는 경우 최신 순서로 정렬 */
     </select>
 

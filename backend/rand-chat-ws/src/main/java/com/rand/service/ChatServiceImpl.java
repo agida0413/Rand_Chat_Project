@@ -51,13 +51,7 @@ public class ChatServiceImpl implements ChatService{
             mapData.remove("usrId");
             mapData.remove("pubUrl");
 
-            // 분까지만 표시되는 포매터 생성
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            // 분까지 포매팅된 문자열
-            // msgCrDate를 LocalDateTime으로 변환 후 포매팅
-            LocalDateTime parsedDate = LocalDateTime.parse(msgCrDate, DateTimeFormatter.ISO_DATE_TIME); // assuming ISO format
-            String formattedDate = parsedDate.format(formatter);
-            mapData.put("msgCrDate",formattedDate);
+
 
             data = objectMapper.writeValueAsString(mapData);
             //해당 발행주소로 메시지 발행(Stomp)
