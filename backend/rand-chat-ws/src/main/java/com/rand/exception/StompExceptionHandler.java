@@ -22,6 +22,7 @@ public class StompExceptionHandler extends StompSubProtocolErrorHandler {
 
     private final ObjectMapper objectMapper;
     private static final byte[] EMPTY_PAYLOAD = new byte[0];
+    //웹소켓 에러 핸들러
     @Override
     public Message<byte[]> handleClientMessageProcessingError(Message<byte[]> clientMessage, Throwable ex) {
         StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.ERROR);

@@ -1,10 +1,10 @@
 package com.rand.interceptor;
 
-import com.rand.chat.dto.RoomValidDTO;
+import com.rand.chat.dto.request.RoomValidDTO;
 import com.rand.constant.ChatConst;
 import com.rand.jwt.JWTUtil;
 import com.rand.jwt.JwtError;
-import com.rand.service.ChatWebFluxService;
+import com.rand.service.ChatIOService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -14,18 +14,17 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
+//STOMP 통신 인터셉터
 public class StompInBoundInterceptor implements ChannelInterceptor {
     private final JWTUtil jwtUtil;
-    private final ChatWebFluxService chatWebFluxService;
+    private final ChatIOService chatWebFluxService;
 
 //메시지 전송전 실행되어 핸들링
     @Override

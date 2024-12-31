@@ -7,4 +7,6 @@ include 'rand-chat-core'
 include 'rand-chat-member'
 include 'rand-chat-ws'
 include 'rand-chat-chatAPI'
+include 'rand-chat-matching:src:test:untitled'
+findProject(':rand-chat-matching:src:test:untitled')?.name = 'untitled'
 

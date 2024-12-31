@@ -13,9 +13,12 @@ import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -150,7 +153,6 @@ public class RedisRepositroy  implements InMemRepository  {
 
 
         Distance distance = redisTemplate.opsForGeo().distance(RedisKey.GEO_KEY ,usrId1 ,usrId2, RedisGeoCommands.DistanceUnit.METERS);
-
         // distance가 null인 경우 (두 사용자 간에 거리가 계산되지 않음)
         if (distance == null) {
             return -1; // -1로 반환하여 거리 계산이 실패했음을 나타낼 수 있습니다.
@@ -317,4 +319,9 @@ public class RedisRepositroy  implements InMemRepository  {
 
         return  map;
     }
+
+
+
+
+
 }

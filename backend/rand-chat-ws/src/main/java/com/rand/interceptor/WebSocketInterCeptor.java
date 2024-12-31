@@ -24,6 +24,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @Component
+//웹소켓 연결확립 인터셉터
 public class WebSocketInterCeptor implements HandshakeInterceptor {
 
     private final JWTUtil jwtUtil;
