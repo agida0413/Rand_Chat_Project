@@ -1,9 +1,62 @@
 .headerContainer {
-  min-width: 13rem;
+  flex: 2;
+  min-width: 7rem;
+  max-width: 13rem;
   height: 100%;
-  background-color: $color-primary-400;
+  background-color: $color-primary-500;
   display: flex;
   flex-direction: column;
-  gap: 4rem;
   align-items: center;
+  text-align: center;
+  border-radius: $radius-l;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+
+  > * {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .profileContainer {
+    margin-bottom: 5rem;
+    span {
+      overflow: hidden;
+      display: flex;
+      width: 5rem;
+      height: 5rem;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  a {
+    width: 100%;
+    color: white;
+
+    &.active {
+      background-color: $color-primary-600;
+      border-right: 4px solid $color-purple-200;
+    }
+
+    &:hover:not(.active) {
+      color: $color-primary-900;
+    }
+  }
+
+  .logoutButton {
+    width: 100%;
+    cursor: pointer;
+    color: white;
+    margin-top: auto;
+
+    &:hover {
+      color: $color-primary-900;
+    }
+
+    svg {
+      width: 3.6rem;
+      height: 3.6rem;
+    }
+  }
 }

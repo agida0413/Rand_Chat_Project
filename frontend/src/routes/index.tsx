@@ -7,7 +7,7 @@ import {
 import DefaultLayout from './layout/Default'
 import Home from './pages/home'
 import Chat from './pages/chat'
-import About from './pages/About'
+import Setting from './pages/setting'
 import NotFound from './pages/NotFound'
 import ErrorFallback from './layout/ErrorFallback'
 import { Suspense } from 'react'
@@ -44,15 +44,6 @@ const publicRoutes = [
 
 const protectedRoutes = [
   {
-    path: ':chatId',
-    element: (
-      <Suspense fallback={<Loading />}>
-        <Chat />
-      </Suspense>
-    ),
-    loader: requiresAuth
-  },
-  {
     path: '/',
     element: <DefaultLayout />,
     loader: requiresAuth,
@@ -66,10 +57,28 @@ const protectedRoutes = [
         )
       },
       {
-        path: 'about',
+        path: 'chat',
         element: (
           <Suspense fallback={<Loading />}>
-            <About />
+            <Chat />
+          </Suspense>
+        ),
+        children: [
+          {
+            path: ':chatId',
+            element: (
+              <Suspense fallback={<Loading />}>
+                <Chat />
+              </Suspense>
+            )
+          }
+        ]
+      },
+      {
+        path: 'setting',
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Setting />
           </Suspense>
         )
       }

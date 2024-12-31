@@ -1,0 +1,42 @@
+// @use '@/styles/base/_mixin' as *;
+
+.chatListContainer {
+  flex: 3;
+  min-width: 5rem;
+  gap: 2rem;
+  display: flex;
+  flex-direction: column;
+
+  .inputContainer {
+    background-color: #f0f0f0;
+    border-radius: $radius-l;
+    padding: $padding-l;
+    display: flex;
+    gap: 1rem;
+
+    svg {
+      min-width: 3rem;
+    }
+
+    input {
+      background-color: transparent;
+      outline: none;
+      border: none;
+      @include typography('sm');
+    }
+  }
+
+  .peopleList {
+    background-color: #f0f0f0;
+    border-radius: $radius-l;
+    padding: $padding-l;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    @include customScroll;
+
+    .peopleName {
+      @include typography('sm', 'bold');
+    }
+  }
+}

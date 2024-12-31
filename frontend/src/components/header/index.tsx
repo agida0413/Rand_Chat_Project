@@ -1,25 +1,64 @@
 import { NavLink } from 'react-router-dom'
 import styles from './Header.module.scss'
-import { HiOutlineHome } from 'react-icons/hi2'
-import { BsChatDots } from 'react-icons/bs'
+import {
+  IoHomeOutline,
+  IoHomeSharp,
+  IoChatbubbleEllipsesSharp,
+  IoChatbubbleEllipsesOutline,
+  IoSettings,
+  IoSettingsOutline,
+  IoExit
+} from 'react-icons/io5'
+import ProfileImage from '../profileImage'
 
 const navigations = [
-  { to: '/', label: 'Home', icon: <HiOutlineHome /> },
-  { to: '/about', label: 'About', icon: <BsChatDots /> }
+  {
+    to: '/',
+    label: 'Home',
+    activeIcon: <IoHomeSharp />,
+    defaultIcon: <IoHomeOutline />
+  },
+  {
+    to: '/chat',
+    label: 'Chat',
+    activeIcon: <IoChatbubbleEllipsesSharp />,
+    defaultIcon: <IoChatbubbleEllipsesOutline />
+  },
+  {
+    to: '/setting',
+    label: 'Setting',
+    activeIcon: <IoSettings />,
+    defaultIcon: <IoSettingsOutline />
+  }
 ]
 
 export default function Header() {
+  const handleLogout = () => {
+    console.log('Logging out...')
+  }
+
   return (
     <header className={styles.headerContainer}>
+      <div className={styles.profileContainer}>
+        <span>
+          <ProfileImage src="" />
+        </span>
+      </div>
+
       {navigations.map(nav => (
         <NavLink
           key={nav.to}
           to={nav.to}
-          className={styles.navLink}>
-          <span className={styles.icon}>{nav.icon}</span>
-          {nav.label}
+          className={({ isActive }) => `${isActive ? styles.active : ''}`}>
+          {({ isActive }) => (isActive ? nav.activeIcon : nav.defaultIcon)}
         </NavLink>
       ))}
+
+      <button
+        onClick={handleLogout}
+        className={styles.logoutButton}>
+        <IoExit />
+      </button>
     </header>
   )
 }
