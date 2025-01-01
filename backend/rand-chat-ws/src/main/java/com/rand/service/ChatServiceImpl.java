@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.data.redis.connection.Message;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -36,8 +37,8 @@ public class ChatServiceImpl implements ChatService{
         String pubUrl = (String)mapData.get("pubUrl");
         String sessionToken=(String)mapData.get("usrId");
         Integer roomId=(Integer)mapData.get("roomId");
+        log.info("하={}",sessionToken);
         String nickname = jwtUtil.getNickname(sessionToken);
-        String msgCrDate = (String)mapData.get("msgCrDate");
 
 
             //발행주소 포맷팅 /pub/chat/room/{roomId}

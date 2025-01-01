@@ -49,7 +49,6 @@ public final class JWTUtil {
         JwtError jwtError = JwtError.CORRECT;
         try {
             Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-            log.info("jwtCheck");
         } catch (SignatureException e) {
              jwtError = JwtError.SIGNATURE;
         } catch (MalformedJwtException e) {

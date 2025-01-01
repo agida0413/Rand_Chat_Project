@@ -1,11 +1,11 @@
-package com.rand.controller;
+package com.rand.controller.api;
 
 import com.rand.chat.dto.response.ResChatMember;
 import com.rand.chat.dto.response.ResChatRoomListDTO;
 import com.rand.common.ResponseDTO;
 import com.rand.common.service.PathVarValidationService;
 import com.rand.exception.custom.BadRequestException;
-import com.rand.service.ChatRoomService;
+import com.rand.service.api.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

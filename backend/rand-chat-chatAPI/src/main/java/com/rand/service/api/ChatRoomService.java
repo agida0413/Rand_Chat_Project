@@ -1,9 +1,8 @@
-package com.rand.service;
+package com.rand.service.api;
 
 import com.rand.chat.dto.response.ResChatMember;
 import com.rand.chat.dto.response.ResChatRoomListDTO;
 import com.rand.common.ResponseDTO;
-import com.rand.member.model.Members;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

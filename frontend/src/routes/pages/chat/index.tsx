@@ -14,7 +14,8 @@ export default function Chat() {
   const [subscribeAddresses, setSubscribeAddresses] = useState<string[]>([''])  // 여러 구독 주소를 배열로 관리
   const [input, setInput] = useState('')
   const [connected, setConnected] = useState(false)
-  const [token, setToken] = useState('')
+  const [connectionToken, setConnectionToken] = useState('')  // WebSocket 연결 시 사용할 토큰
+  const [messageToken, setMessageToken] = useState('')  // 메시지 전송 시 사용할 토큰
   const [chatType, setType] = useState('TEXT') // 기본값 "TALK"
 
   // 메시지 전송 핸들러
@@ -30,7 +31,7 @@ export default function Chat() {
         destination: sendAddress,  // The address to send the message to
         body: JSON.stringify(message), // The message content should be serialized to a JSON string
         headers: {
-          'access': `${token}`
+          'access': `${messageToken}` // 메시지 전송 시 사용하는 토큰
         }
       });
     }
@@ -41,12 +42,12 @@ export default function Chat() {
     if (client.current?.connected) return
 
     // WebSocket URL에 토큰을 쿼리 파라미터로 포함
-    const socketUrl = `${socketAddress}?access=${token}`
+    const socketUrl = `${socketAddress}?access=${connectionToken}`
 
     client.current = new Client({
       brokerURL: socketUrl, // URL에 쿼리 파라미터로 토큰 포함
       connectHeaders: {
-        access: token, // 연결 시 헤더에 토큰 추가
+        access: connectionToken, // 연결 시 헤더에 토큰 추가
       },
       onConnect: () => {
         setConnected(true)
@@ -56,7 +57,7 @@ export default function Chat() {
             const receivedMessage = JSON.parse(message.body)
             console.log(`수신된 메시지 (${address}):`, receivedMessage) // 메시지 수신 시 콘솔에 출력
           }, {
-            'access': `${token}`
+            'access': `${connectionToken}`
           })
         })
       },
@@ -111,10 +112,10 @@ export default function Chat() {
   return (
     <>
       <div>
-        <p>토큰</p>
+        <p>연결 토큰</p>
         <input
-          onChange={(e) => setToken(e.target.value)}
-          value={token}
+          onChange={(e) => setConnectionToken(e.target.value)}
+          value={connectionToken}
         />
       </div>
       <br />
@@ -127,7 +128,6 @@ export default function Chat() {
       </div>
       <br />
       <div>
-      <div>
         <p>메시지 타입</p>
         <input
           onChange={(e) => setType(e.target.value)}
@@ -136,6 +136,15 @@ export default function Chat() {
         />
       </div>
       <br />
+      <div>
+        <p>메시지 전송 토큰</p>
+        <input
+          onChange={(e) => setMessageToken(e.target.value)}
+          value={messageToken}
+        />
+      </div>
+      <br />
+      <div>
         <p>send 주소</p>
         <input
           onChange={(e) => setSendAddress(e.target.value)}

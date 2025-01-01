@@ -1,15 +1,14 @@
-package com.rand.controller;
+package com.rand.controller.wfx;
 
 import com.rand.chat.dto.request.RoomValidDTO;
 import com.rand.common.ResponseDTO;
 import com.rand.custom.SecurityContextGet;
 import com.rand.member.model.Members;
-import com.rand.service.ChatWfxApiService;
+import com.rand.service.wfx.ChatWfxApiService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.*;
 
 //WebClient api

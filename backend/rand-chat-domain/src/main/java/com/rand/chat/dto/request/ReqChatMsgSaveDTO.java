@@ -20,11 +20,9 @@ public class ReqChatMsgSaveDTO {
     @FutureOrPresent()
     private LocalDateTime msgCrDateMs;
     @NotNull
-    @FutureOrPresent()
-    private LocalDateTime msgCrDate;
-    @Min(1)
+    private String msgCrDate;
+
     @NotNull
-    @NotBlank
     private Integer chatRoomId;
     @NotNull
     private ChatType chatType;

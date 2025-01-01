@@ -61,6 +61,7 @@ public class WebSocketInterCeptor implements HandshakeInterceptor {
                     case UNSUPPORT:
                         throw new MessageDeliveryException("ERR-SEC-12");
                     case EXPIRED:
+                        log.info("저기서 터짐");
                         throw new MessageDeliveryException("ERR-SEC-10");
                 }
             }

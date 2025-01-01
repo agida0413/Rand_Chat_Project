@@ -30,7 +30,7 @@ public class StompExceptionHandler extends StompSubProtocolErrorHandler {
         ErrorCode errorCode = null;
         String errCode = ex.getMessage();
         errorCode = selectErrorCode(errCode);
-    log.info(errCode);
+
         ResponseErr responseErr = new ResponseErr(errorCode);
         try {
             String responseErrStr = objectMapper.writeValueAsString(responseErr);
