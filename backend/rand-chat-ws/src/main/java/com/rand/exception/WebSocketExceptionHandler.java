@@ -33,6 +33,7 @@ public class WebSocketExceptionHandler {
     
     @MessageExceptionHandler(MessagingException.class)
     public void handleException(MessagingException exception, Message<?> message) {
+        log.info("핸들러 호출 ");
         // 메시지에서 세션 ID 추출
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 

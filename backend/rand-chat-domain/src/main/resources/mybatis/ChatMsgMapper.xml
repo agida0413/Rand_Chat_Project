@@ -15,4 +15,12 @@
                )
     </insert>
 
+    <update id="chatMsgIsReadUpdate" parameterType="ChatMessageUpdate">
+        UPDATE CHAT_MESSAGE SET
+               is_read = 1
+         WHERE usr_id = #{usrId}                                    /* 업데이트할 메시지의 발신자 */
+           AND chat_room_id = #{chatRoomId}
+           AND msg_cr_date_ms <![CDATA[ <= ]]> #{readDate}          /* 읽은 시간 이하 */
+    </update>
+
 </mapper>

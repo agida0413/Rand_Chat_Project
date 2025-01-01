@@ -8,21 +8,22 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class ChatMessageSave {
-    private String usrId;
-private String chatRoomId;
-private String message;
-private LocalDateTime msgCrDateMs;
-private String msgCrDate;
-private boolean read;
-private ChatType chatType;
-    public ChatMessageSave(String usrId,ReqChatMsgSaveDTO reqChatMsgSaveDTO){
-        this.usrId = usrId;
+public class ChatMessageSaveRedis {
+
+    private String chatRoomId;
+    private String message;
+    private LocalDateTime msgCrDateMs;
+    private String msgCrDate;
+    private boolean read;
+    private ChatType chatType;
+    private String nickName;
+    public ChatMessageSaveRedis(String nickName,ReqChatMsgSaveDTO reqChatMsgSaveDTO){
         this.chatRoomId =String.valueOf(reqChatMsgSaveDTO.getChatRoomId());
         this.message = reqChatMsgSaveDTO.getMessage();
         this.msgCrDateMs = reqChatMsgSaveDTO.getMsgCrDateMs();
         this.msgCrDate = reqChatMsgSaveDTO.getMsgCrDate();
         this.read = reqChatMsgSaveDTO.isRead();
         this.chatType = reqChatMsgSaveDTO.getChatType();
+        this.nickName=nickName;
     }
 }

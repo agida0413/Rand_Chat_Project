@@ -3,7 +3,9 @@ package com.rand.io;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rand.chat.dto.request.ReqChatMsgSaveDTO;
+import com.rand.chat.dto.request.ReqChatMsgUptDTO;
 import com.rand.chat.dto.request.RoomValidDTO;
+import com.rand.chat.model.ChatType;
 import com.rand.common.ResponseDTO;
 import com.rand.config.constant.PubSubChannel;
 import com.rand.config.var.RedisKey;
@@ -87,6 +89,16 @@ public class ChatOpServerApiCallDo implements ChatOpServerApiCall{
         //상대방이 들어와 있을경우에만 pub할것이기 때문 ( pub의 목적은 프론트에서의 optimistic update)
         chkOpsMemIsEnter(chatRoomId, accessToken)
                 .doOnNext(member -> {
+
+                    // 읽음 여부 업데이트 로직*******************
+                    int usrId = member.getUsrId();
+                    String nickNmae= member.getNickName();
+                    ReqChatMsgUptDTO reqChatMsgUptDTO = new ReqChatMsgUptDTO(usrId,nickNmae,chatRoomId);
+
+                    asyncChatMsgIsReadUpt(reqChatMsgUptDTO, accessToken)
+                            .doOnNext(updateResult -> log.info("읽음 상태 업데이트 결과: {}", updateResult))
+                            .subscribe();
+
                     if (member.getNickName() != null) {
 
                         Map<String,Object> map = new HashMap<>();
@@ -136,9 +148,14 @@ public class ChatOpServerApiCallDo implements ChatOpServerApiCall{
                 });
     }
 
-
+    //메시지 저장
     @Override
-    public Mono<Boolean> asyncChatMsgSave(ReqChatMsgSaveDTO reqChatMsgSaveDTO,String accessToken) {
+    public Mono<Boolean> asyncChatMsgSaveTxt(ReqChatMsgSaveDTO reqChatMsgSaveDTO,String accessToken) {
+
+        if(!reqChatMsgSaveDTO.getChatType().equals(ChatType.TEXT)){
+          return null;
+        }
+
         return webClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path("/chat/api/v1/wx/chat")
@@ -173,5 +190,28 @@ public class ChatOpServerApiCallDo implements ChatOpServerApiCall{
         }
     }
 
+    //메시지 읽음여부를 업데이트하는 서비스
+    public Mono<Boolean> asyncChatMsgIsReadUpt(ReqChatMsgUptDTO reqChatMsgUptDTO, String accessToken) {
+        return webClient.put()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/chat/api/v1/wx/chat")
+                        .build())
+                .headers(headers -> {
+                    headers.set("access", accessToken);
+                    headers.setContentType(MediaType.APPLICATION_JSON);
+                })
+                .bodyValue(reqChatMsgUptDTO)
+                .retrieve()
+                .toBodilessEntity()
+                .map(response -> {
+                    boolean isSuccess = response.getStatusCode().is2xxSuccessful();
+                    log.info("HTTP 호출 결과: {}, 상태 코드: {}", isSuccess, response.getStatusCode());
+                    return isSuccess;
+                })
+                .onErrorResume(error -> {
+                    log.error("HTTP 호출 중 오류 발생: {}", error.getMessage(), error);
+                    return Mono.just(false);
+                });
+    }
 
 }

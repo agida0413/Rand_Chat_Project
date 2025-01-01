@@ -1,23 +1,21 @@
-package com.rand.service;
+package com.rand.service.api;
 
 import com.rand.chat.dto.request.RoomValidDTO;
 import com.rand.chat.dto.response.ResChatMember;
 import com.rand.chat.dto.response.ResChatRoomListDTO;
 import com.rand.chat.model.ChatRoom;
-import com.rand.chat.model.RoomValid;
 import com.rand.chat.repository.ChatRoomRepository;
 import com.rand.common.ResponseDTO;
 import com.rand.common.service.CommonMemberService;
-import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
 import com.rand.member.dto.response.ResMemInfoDTO;
 import com.rand.member.model.Members;
 import com.rand.redis.InMemRepository;
+import com.rand.service.wfx.ChatWfxApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
