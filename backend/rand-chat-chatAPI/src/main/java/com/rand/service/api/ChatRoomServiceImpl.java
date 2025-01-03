@@ -103,8 +103,14 @@ public class ChatRoomServiceImpl implements ChatRoomService{
         .body(new ResponseDTO<>(membersList));
     }
 
-
-
-
-
+    //채팅방 입장정보 초기화
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> enterRoomDeleteInfo(Integer chatRoomId) {
+        return null;
+    }
+    //채팅방 떠나기 (영구)
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> leaveChatRoom(Integer chatRoomId) {
+        return null;
+    }
 }

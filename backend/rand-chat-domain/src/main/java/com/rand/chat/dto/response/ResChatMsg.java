@@ -1,12 +1,15 @@
-package com.rand.chat.model;
+package com.rand.chat.dto.response;
 
+import com.rand.chat.model.ChatMessageData;
+import com.rand.chat.model.ChatType;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
-public class ChatMessageData {
+public class ResChatMsg {
     private String chatRoomId;
     private String message;
     private String msgCrDateMs;
@@ -15,5 +18,8 @@ public class ChatMessageData {
     private ChatType chatType;
     private String nickName;
 
+    public ResChatMsg(){
+
+    }
 
 }
