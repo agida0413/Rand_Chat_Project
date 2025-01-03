@@ -16,6 +16,12 @@ import Loading from './layout/Loading'
 import Login from './pages/login'
 import Signup from './pages/signup'
 import { requiresAuth, requiresLogin } from './loaders'
+import Profile from './pages/updateProfile'
+import UpdatePassword from './pages/updatePassword'
+import UpdateProfile from './pages/updateProfile'
+import SettingDefaultLayout from './layout/SettingDefault'
+import ChatTest from './pages/chat/chatTest'
+import ChatDefaultLayout from './layout/ChatDefault'
 
 function ErrorBoundary() {
   const error: Error = useRouteError() as Error
@@ -46,7 +52,7 @@ const protectedRoutes = [
   {
     path: '/',
     element: <DefaultLayout />,
-    loader: requiresAuth,
+    // loader: requiresAuth,
     children: [
       {
         path: '/',
@@ -58,11 +64,7 @@ const protectedRoutes = [
       },
       {
         path: 'chat',
-        element: (
-          <Suspense fallback={<Loading />}>
-            <Chat />
-          </Suspense>
-        ),
+        element: <ChatDefaultLayout />,
         children: [
           {
             path: ':chatId',
@@ -76,13 +78,31 @@ const protectedRoutes = [
       },
       {
         path: 'setting',
-        element: (
-          <Suspense fallback={<Loading />}>
-            <Setting />
-          </Suspense>
-        )
+        element: <SettingDefaultLayout />,
+        children: [
+          {
+            path: 'update-profile',
+            element: (
+              <Suspense fallback={<Loading />}>
+                <UpdateProfile />
+              </Suspense>
+            )
+          },
+          {
+            path: 'update-password',
+            element: (
+              <Suspense fallback={<Loading />}>
+                <UpdatePassword />
+              </Suspense>
+            )
+          }
+        ]
       }
     ]
+  },
+  {
+    path: '/chattest',
+    element: <ChatTest />
   }
 ]
 

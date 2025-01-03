@@ -1,0 +1,42 @@
+.settingWrapper {
+  flex: 3;
+  min-width: 5rem;
+  gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  background-color: $color-background;
+  border-radius: $radius-l;
+  padding: $padding-l;
+
+  a {
+    text-decoration: none;
+    color: black;
+  }
+
+  .settingTitle {
+    @include typography('sm', 'bold');
+  }
+  .settingItem {
+    @include typography('sm');
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+    padding-right: 1rem;
+    border-radius: $radius-s;
+
+    p {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding: 1rem;
+    }
+
+    &:hover {
+      background-color: $color-hover;
+      color: white;
+    }
+  }
+}

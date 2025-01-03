@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Client } from '@stomp/stompjs'
+import { getAccessToken } from '@/utils/auth'
 
 interface ChatMessage {
   type: 'TALK'
@@ -7,19 +8,27 @@ interface ChatMessage {
   message: string
 }
 
-export default function Chat() {
+export default function ChatTest() {
   const client = useRef<Client | null>(null)
-  const [socketAddress, setSocketAddress] = useState('')
-  const [sendAddress, setSendAddress] = useState('')
-  const [subscribeAddresses, setSubscribeAddresses] = useState<string[]>(['']) // 여러 구독 주소를 배열로 관리
+  const [socketAddress, setSocketAddress] = useState(
+    'ws://localhost:80/chat/ws'
+  )
+  const [sendAddress, setSendAddress] = useState('/pub/chat/room/{chatRoomId}')
+  const [subscribeAddresses, setSubscribeAddresses] = useState<string[]>([
+    `/queue/${getAccessToken()}/error`,
+    '/sub/chat/room/{chatRoomId}'
+  ]) // 여러 구독 주소를 배열로 관리
   const [input, setInput] = useState('')
   const [connected, setConnected] = useState(false)
-  const [token, setToken] = useState('')
+  const [connectionToken, setConnectionToken] = useState(getAccessToken()) // WebSocket 연결 시 사용할 토큰
+  const [messageToken, setMessageToken] = useState(getAccessToken()) // 메시지 전송 시 사용할 토큰
+  const [chatType, setType] = useState('TEXT') // 기본값 "TALK"
 
   // 메시지 전송 핸들러
   const sendHandler = () => {
     if (client.current?.connected) {
       const message = {
+        chatType, // type 값 추가
         message: input // Assuming 'input' is the content you want to send
       }
 
@@ -28,7 +37,7 @@ export default function Chat() {
         destination: sendAddress, // The address to send the message to
         body: JSON.stringify(message), // The message content should be serialized to a JSON string
         headers: {
-          access: `${token}`
+          access: `${messageToken}` // 메시지 전송 시 사용하는 토큰
         }
       })
     }
@@ -39,12 +48,12 @@ export default function Chat() {
     if (client.current?.connected) return
 
     // WebSocket URL에 토큰을 쿼리 파라미터로 포함
-    const socketUrl = `${socketAddress}?access=${token}`
+    const socketUrl = `${socketAddress}?access=${connectionToken}`
 
     client.current = new Client({
       brokerURL: socketUrl, // URL에 쿼리 파라미터로 토큰 포함
       connectHeaders: {
-        access: token // 연결 시 헤더에 토큰 추가
+        access: connectionToken // 연결 시 헤더에 토큰 추가
       },
       onConnect: () => {
         setConnected(true)
@@ -57,7 +66,7 @@ export default function Chat() {
               console.log(`수신된 메시지 (${address}):`, receivedMessage) // 메시지 수신 시 콘솔에 출력
             },
             {
-              access: `${token}`
+              access: `${connectionToken}`
             }
           )
         })
@@ -113,10 +122,10 @@ export default function Chat() {
   return (
     <>
       <div>
-        <p>토큰</p>
+        <p>연결 토큰</p>
         <input
-          onChange={e => setToken(e.target.value)}
-          value={token}
+          onChange={e => setConnectionToken(e.target.value)}
+          value={connectionToken}
         />
       </div>
       <br />
@@ -125,6 +134,23 @@ export default function Chat() {
         <input
           onChange={e => setSocketAddress(e.target.value)}
           value={socketAddress}
+        />
+      </div>
+      <br />
+      <div>
+        <p>메시지 타입</p>
+        <input
+          onChange={e => setType(e.target.value)}
+          value={chatType}
+          placeholder="메시지 타입 입력 (예: TALK)"
+        />
+      </div>
+      <br />
+      <div>
+        <p>메시지 전송 토큰</p>
+        <input
+          onChange={e => setMessageToken(e.target.value)}
+          value={messageToken}
         />
       </div>
       <br />

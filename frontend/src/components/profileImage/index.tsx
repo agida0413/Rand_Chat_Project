@@ -3,7 +3,7 @@ import defaultImg from '@/assets/images/default-profile.webp'
 import styles from './profileImage.module.scss'
 
 interface ProfileImageProps {
-  src: string
+  src?: string
   alt?: string
 }
 
@@ -19,7 +19,7 @@ export default function ProfileImage({
   return (
     <img
       className={styles.imageContainer}
-      src={src}
+      src={src || defaultImg}
       alt={alt}
       onError={onErrorImg}
     />

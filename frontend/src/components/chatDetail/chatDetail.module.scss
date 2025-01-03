@@ -2,7 +2,7 @@
 
 .chatDetailContainer {
   flex: 5;
-  background-color: #e0e0e0;
+  background-color: $color-background;
   border-radius: $radius-l;
   padding: $padding-l;
   max-width: 100%;
@@ -59,12 +59,13 @@
 
     .in {
       text-align: left;
-      background-color: $color-primary-50;
+      background-color: #e7e7e7;
     }
 
     .out {
       align-self: self-end;
       background-color: $color-primary-400;
+      color: white;
     }
   }
   .chatInputContainer {

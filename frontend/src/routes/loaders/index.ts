@@ -30,9 +30,9 @@ export async function requiresAuth() {
 
 export const requiresLogin = async () => {
   const token = getAccessToken()
-  if (token) {
-    return redirect('/')
-  }
+  // if (token) {
+  //   return redirect('/')
+  // }
   // try {
   //   await refreshAccessToken()
   // } catch (error) {
