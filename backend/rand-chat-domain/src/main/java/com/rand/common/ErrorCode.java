@@ -134,6 +134,7 @@ public enum ErrorCode {
     NO_DATA_CHAT_LIST(400,"ERR-CHAT-API-01","참여중인 채팅방이 없습니다."),
     NO_DATA_CHAT_ROOM_MEMBER_INFO(400,"ERR-CHAT-API-02","참여중인 채팅방에 존재하는 회원정보가 없습니다."),
     UN_AUTH_CHAT_ROOM(400,"ERR-CHAT-API-03","허용되지 않은 채팅방에 접근하였습니다."),
+    NO_DATA_CHAT_MSG(400,"ERR-CHAT-API-04","채팅방의 채팅메시지 데이터가 존재하지 않습니다."),
 
     //채팅 i/o api 정합성 오류
     CHAT_ROOM_MUST_OVER_ZERO(400,"ERR-CHAT-API-VALI-01","채팅방 고유번호는 정수, 1이상이여야 합니다.");

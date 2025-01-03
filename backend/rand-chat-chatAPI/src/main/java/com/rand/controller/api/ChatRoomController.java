@@ -8,10 +8,7 @@ import com.rand.exception.custom.BadRequestException;
 import com.rand.service.api.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 //I/O API
@@ -37,6 +34,17 @@ public class ChatRoomController {
         }
         return chatRoomService.selectMemberInfoInChatRoom(chatRoomId);
     }
+    //채팅방 입장정보 초기화
+    @PostMapping("/{chatRoomId}")
+    public ResponseEntity<ResponseDTO<Void>> enterRoomDeleteInfo(@PathVariable Integer chatRoomId){
+        return chatRoomService.enterRoomDeleteInfo(chatRoomId);
+    }
+    //채팅방 떠나기 (영구)
+    @DeleteMapping("/{chatRoomId}")
+    ResponseEntity<ResponseDTO<Void>> leaveChatRoom(@PathVariable Integer chatRoomId){
+        return chatRoomService.leaveChatRoom(chatRoomId);
+    }
+
 
 
 

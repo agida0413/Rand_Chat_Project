@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
@@ -111,6 +112,7 @@ public class ChatWfxApiServiceImpl implements ChatWfxApiService {
         ChatMessageSave chatMessageSave = new ChatMessageSave(usrId,reqChatMsgSaveDTO);
         //redis엔티티변환
         ChatMessageSaveRedis chatMessageSaveRedis = new ChatMessageSaveRedis(nickName,reqChatMsgSaveDTO);
+
         //  ZSetOperations
         ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
         //레디스 키
