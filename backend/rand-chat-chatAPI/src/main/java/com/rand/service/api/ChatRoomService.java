@@ -11,5 +11,7 @@ public interface ChatRoomService {
 
     public ResponseEntity<ResponseDTO<List<ResChatRoomListDTO>>> selectChatRoomList();
     public ResponseEntity<ResponseDTO<List<ResChatMember>>> selectMemberInfoInChatRoom(Integer chatRoomId);
+    public ResponseEntity<ResponseDTO<Void>> enterRoomDeleteInfo(Integer chatRoomId);
+    public ResponseEntity<ResponseDTO<Void>> leaveChatRoom(Integer chatRoomId);
 
 }

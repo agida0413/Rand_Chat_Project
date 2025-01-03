@@ -23,6 +23,7 @@ public class ReqChatMsgUptDTO {
     private LocalDateTime readDate;
     @NotNull
     private String nickName;
+
     //api서버에서 받는 생성자
     public ReqChatMsgUptDTO(){
 

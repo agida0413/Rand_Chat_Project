@@ -28,4 +28,5 @@ public class MyBatisChatRoomRepository implements ChatRoomRepository {
     public List<Members> selectUsrIdInChatRoom(Integer chatRoomId){
         return chatMapper.selectUsrIdInChatRoom(chatRoomId);
     }
+
 }

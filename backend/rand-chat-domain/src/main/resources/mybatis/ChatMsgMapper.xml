@@ -23,4 +23,19 @@
            AND msg_cr_date_ms <![CDATA[ <= ]]> #{readDate}          /* 읽은 시간 이하 */
     </update>
 
+    <select id="selectChatMsgList" parameterType="ChatMsgList" resultType="ResChatMsg">
+            SELECT CM.chat_room_id       AS chatRoomId
+                 , CM.message            AS message
+                 , CM.msg_cr_date        AS msgCrDate
+                 , CM.msg_cr_date_ms     AS msgCrDateMs
+                 , CM.is_read            AS `read`
+                 , CM.chat_type          AS chatType
+                 , USR.nick_name         AS nickName
+              FROM MEMBERS USR
+        INNER JOIN CHAT_MESSAGE CM
+                ON CM.usr_id = USR.usr_id
+             WHERE CM.chat_room_id = #{chatRoomId}
+        ORDER BY CM.msg_cr_date_ms DESC
+        LIMIT #{rowSize} OFFSET #{offset}
+    </select>
 </mapper>
