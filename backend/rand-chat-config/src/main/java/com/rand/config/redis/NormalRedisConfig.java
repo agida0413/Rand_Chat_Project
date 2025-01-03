@@ -1,19 +1,15 @@
-package com.rand.redis.config;
+package com.rand.config.redis;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.rand.config.constant.PubSubChannel;
-import com.rand.redis.pubsub.SubsCriber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.PatternTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -49,18 +45,7 @@ public class NormalRedisConfig {
         // Redis 서버 호스트와 포트를 설정
         return new LettuceConnectionFactory(host, port); // Docker 환경에서는 Redis 컨테이너 이름 사용
     }
-    @Bean
-    public RedisMessageListenerContainer redisContainer(
-            RedisConnectionFactory connectionFactory, SubsCriber subscriber) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        // 매칭 채널
-        container.addMessageListener(subscriber, new PatternTopic(PubSubChannel.MATCHING_CHANNEL.toString()));
-        container.addMessageListener(subscriber, new PatternTopic(PubSubChannel.MATCHING_ACCEPT_CHANNEL.toString()));
 
-
-        return container;
-    }
 
 //    @Bean
 //    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {

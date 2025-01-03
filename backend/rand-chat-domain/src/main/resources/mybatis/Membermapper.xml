@@ -200,7 +200,8 @@
     </update>
     
     <select id="selectMemberInfo" parameterType="Members" resultType="Members">
-        SELECT <include refid="maskedUsername"/> AS username
+        SELECT usr_id                           AS usrId
+             , <include refid="maskedUsername"/> AS username
              , <include refid="maskedEmail"/> AS email
              , nick_name
              , name

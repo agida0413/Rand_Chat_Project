@@ -24,6 +24,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @Component
+//웹소켓 연결확립 인터셉터
 public class WebSocketInterCeptor implements HandshakeInterceptor {
 
     private final JWTUtil jwtUtil;
@@ -60,6 +61,7 @@ public class WebSocketInterCeptor implements HandshakeInterceptor {
                     case UNSUPPORT:
                         throw new MessageDeliveryException("ERR-SEC-12");
                     case EXPIRED:
+                        log.info("저기서 터짐");
                         throw new MessageDeliveryException("ERR-SEC-10");
                 }
             }

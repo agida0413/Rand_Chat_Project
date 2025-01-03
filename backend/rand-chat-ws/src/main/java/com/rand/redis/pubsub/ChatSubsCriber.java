@@ -29,12 +29,12 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+// Redis Pub/Sub 메시지 수신 처리
 public class ChatSubsCriber implements MessageListener {
 
+    private final ChatService chatService;
+    private final ObjectMapper objectMapper;
 
-private final ChatService chatService;
-private final ObjectMapper objectMapper;
-    // Redis Pub/Sub 메시지 수신 처리
     @Override
     public void onMessage(Message message, byte[] pattern) {
         //데이터변환
@@ -45,10 +45,18 @@ private final ObjectMapper objectMapper;
 
             //발행주소
             String  pubUrl = (String)mapData.get("pubUrl");
-            log.info(pubUrl);
              //만약 채팅방에대한 발행메시지일시
             if(pubUrl.equals(ChatConst.PUB_CHAT_ROOM_URL)){
-                chatService.pubChatMessage(message);
+                //읽기 알람을 위한 convertandsend
+                Integer readFlag=(Integer)mapData.get("readFlag");
+                //읽기 플래그가 널이아니면 읽음 알람전송
+                if(readFlag!=null){
+                    chatService.pubIsRead(message);
+                }else{
+                    //그 외 채팅메시지 PUB
+                    chatService.pubChatMessage(message);
+                }
+
             }
             //만약 에러전송을 위한 발행메시지일시
             else if(pubUrl.equals(ChatConst.PUB_CHAT_ERROR_URL)){
