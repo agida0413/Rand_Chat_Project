@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import './main.module.scss'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import styles from './main.module.scss'
 
 import Router from './routes'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
@@ -26,7 +27,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary FallbackComponent={fallbackRender}>
       <QueryClientProvider client={queryClient}>
-        <ToastContainer />
+        <ToastContainer className={styles.toastContainer} />
         <Router />
         {import.meta.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
       </QueryClientProvider>

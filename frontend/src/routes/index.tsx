@@ -5,9 +5,9 @@ import {
   useNavigate
 } from 'react-router-dom'
 import DefaultLayout from './layout/Default'
-import Home from './pages/Home'
+import Home from './pages/home'
 import Chat from './pages/chat'
-import About from './pages/About'
+import Setting from './pages/setting'
 import NotFound from './pages/NotFound'
 import ErrorFallback from './layout/ErrorFallback'
 import { Suspense } from 'react'
@@ -16,6 +16,12 @@ import Loading from './layout/Loading'
 import Login from './pages/login'
 import Signup from './pages/signup'
 import { requiresAuth, requiresLogin } from './loaders'
+import Profile from './pages/updateProfile'
+import UpdatePassword from './pages/updatePassword'
+import UpdateProfile from './pages/updateProfile'
+import SettingDefaultLayout from './layout/SettingDefault'
+import ChatTest from './pages/chat/chatTest'
+import ChatDefaultLayout from './layout/ChatDefault'
 
 function ErrorBoundary() {
   const error: Error = useRouteError() as Error
@@ -44,18 +50,9 @@ const publicRoutes = [
 
 const protectedRoutes = [
   {
-    path: ':chatId',
-    element: (
-      <Suspense fallback={<Loading />}>
-        <Chat />
-      </Suspense>
-    ),
-    loader: requiresAuth
-  },
-  {
     path: '/',
     element: <DefaultLayout />,
-    loader: requiresAuth,
+    // loader: requiresAuth,
     children: [
       {
         path: '/',
@@ -66,14 +63,46 @@ const protectedRoutes = [
         )
       },
       {
-        path: 'about',
-        element: (
-          <Suspense fallback={<Loading />}>
-            <About />
-          </Suspense>
-        )
+        path: 'chat',
+        element: <ChatDefaultLayout />,
+        children: [
+          {
+            path: ':chatId',
+            element: (
+              <Suspense fallback={<Loading />}>
+                <Chat />
+              </Suspense>
+            )
+          }
+        ]
+      },
+      {
+        path: 'setting',
+        element: <SettingDefaultLayout />,
+        children: [
+          {
+            path: 'update-profile',
+            element: (
+              <Suspense fallback={<Loading />}>
+                <UpdateProfile />
+              </Suspense>
+            )
+          },
+          {
+            path: 'update-password',
+            element: (
+              <Suspense fallback={<Loading />}>
+                <UpdatePassword />
+              </Suspense>
+            )
+          }
+        ]
       }
     ]
+  },
+  {
+    path: '/chattest',
+    element: <ChatTest />
   }
 ]
 

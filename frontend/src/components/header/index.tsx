@@ -1,20 +1,64 @@
 import { NavLink } from 'react-router-dom'
+import styles from './Header.module.scss'
+import {
+  IoHomeOutline,
+  IoHomeSharp,
+  IoChatbubbleEllipsesSharp,
+  IoChatbubbleEllipsesOutline,
+  IoSettings,
+  IoSettingsOutline,
+  IoExit
+} from 'react-icons/io5'
+import ProfileImage from '../profileImage'
 
 const navigations = [
-  { to: '/', label: 'Home' },
-  { to: '/about', label: 'About' }
+  {
+    to: '/',
+    label: 'Home',
+    activeIcon: <IoHomeSharp />,
+    defaultIcon: <IoHomeOutline />
+  },
+  {
+    to: '/chat',
+    label: 'Chat',
+    activeIcon: <IoChatbubbleEllipsesSharp />,
+    defaultIcon: <IoChatbubbleEllipsesOutline />
+  },
+  {
+    to: '/setting',
+    label: 'Setting',
+    activeIcon: <IoSettings />,
+    defaultIcon: <IoSettingsOutline />
+  }
 ]
 
 export default function Header() {
+  const handleLogout = () => {
+    console.log('Logging out...')
+  }
+
   return (
-    <header>
+    <header className={styles.headerContainer}>
+      <div className={styles.profileContainer}>
+        <span>
+          <ProfileImage src="" />
+        </span>
+      </div>
+
       {navigations.map(nav => (
         <NavLink
           key={nav.to}
-          to={nav.to}>
-          {nav.label}
+          to={nav.to}
+          className={({ isActive }) => `${isActive ? styles.active : ''}`}>
+          {({ isActive }) => (isActive ? nav.activeIcon : nav.defaultIcon)}
         </NavLink>
       ))}
+
+      <button
+        onClick={handleLogout}
+        className={styles.logoutButton}>
+        <IoExit />
+      </button>
     </header>
   )
 }

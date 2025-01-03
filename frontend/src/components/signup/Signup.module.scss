@@ -9,10 +9,10 @@
   padding: 2rem 0;
   height: $max-height-frame;
   text-align: center;
-  width: 21rem;
+  width: 50rem;
 
   h1 {
-    @include typography('heading2', 'bold');
+    @include typography('lg', 'bold');
   }
 
   .buttons {
@@ -20,7 +20,9 @@
     justify-content: space-between;
     button {
       @include primaryButton;
-      width: 9rem;
+      @include typography('xs');
+      width: 12.5rem;
+      height: 5rem;
     }
   }
 }

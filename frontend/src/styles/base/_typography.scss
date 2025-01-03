@@ -1,30 +1,29 @@
 @use 'sass:map';
 
 // Font Families
-$font-regular: 'Pretendard-Regular', sans-serif;
-$font-medium: 'Pretendard-Medium', sans-serif;
 $font-bold: 'Pretendard-Bold', sans-serif;
+$font-medium: 'Pretendard-Medium', sans-serif;
+$font-Light: 'Pretendard-Light', sans-serif;
 
 // Font Sizes
 $font-sizes: (
-  'heading1': 3.2rem,
-  'heading2': 2.4rem,
-  'heading3': 2.1rem,
-  'subheading': 1.8rem,
-  'body1': 1.6rem,
-  'body2': 1.4rem,
-  'caption': 1.2rem
+  'xxl': 6rem,
+  'xl': 4.8rem,
+  'lg': 3.6rem,
+  'md': 2.8rem,
+  'sm': 2.2rem,
+  'xs': 2rem,
+  'xxs': 1.6rem
 );
 
-// Line Heights
 $line-heights: (
-  'heading1': 3.8rem,
-  'heading2': 3.4rem,
-  'heading3': 3rem,
-  'subheading': 2.7rem,
-  'body1': 2.4rem,
-  'body2': 2rem,
-  'caption': 1.8rem
+  'xl': 5.6rem,
+  'lg': 4.4rem,
+  'md': 3.4rem,
+  'sm': 3rem,
+  'xs': 2.4rem,
+  'xxs': 2rem,
+  'micro': 1.6rem
 );
 
 // Letter Spacing
@@ -32,8 +31,8 @@ $letter-spacing-tight: -0.02rem;
 $letter-spacing-normal: -0.01rem;
 
 // Typography Mixins
-@mixin typography($size, $weight: 'regular', $spacing: 'normal') {
-  $font-family: $font-regular;
+@mixin typography($size, $weight: 'Light', $spacing: 'normal') {
+  $font-family: $font-Light;
 
   @if $weight == 'bold' {
     $font-family: $font-bold;

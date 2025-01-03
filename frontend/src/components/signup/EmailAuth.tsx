@@ -44,7 +44,7 @@ export default function EmailAuth() {
           </button>
         </div>
       </span>
-      {isAuthCodeVerified && <SignupForm />}
+      <SignupForm />
     </div>
   )
 }
