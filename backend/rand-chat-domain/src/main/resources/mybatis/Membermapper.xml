@@ -187,11 +187,16 @@
         WHERE  usr_id   = #{usrId}
     </update>
 
-    <update id="memberDel" parameterType="Members">
-        UPDATE MEMBERS SET
-        state = #{state}
-        WHERE  usr_id   = #{usrId}
-    </update>
+<!--    <update id="memberDel" parameterType="Members">-->
+<!--        UPDATE MEMBERS SET-->
+<!--        state = #{state}-->
+<!--        WHERE  usr_id   = #{usrId}-->
+<!--    </update>-->
+
+    <delete id="memberDel" parameterType="Members">
+      DELETE FROM MEMBERS
+        WHERE usr_id = #{usrId}
+    </delete>
 
     <update id="updateProfileImg" parameterType="Members">
         UPDATE MEMBERS SET

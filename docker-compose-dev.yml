@@ -131,7 +131,7 @@ services:
       - .env  # .env 파일을 로드
     environment: 
       - INSTANCE_ID=chat-api-1 
-      - SPRING_PROFILES_ACTIVE=dev                     
+      - SPRING_PROFILES_ACTIVE=dev                      
   mysql:
     image: mysql:8.0
     container_name: mysql

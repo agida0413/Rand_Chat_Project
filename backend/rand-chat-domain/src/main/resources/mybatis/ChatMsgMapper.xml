@@ -3,6 +3,7 @@
 
 <mapper namespace="com.rand.chat.mapper.ChatMsgMapper">
     <insert id="chatMsgSave">
+        /* com.rand.chat.mapper.ChatMsgMapper.chatMsgSave 채팅방 메시지 저장 */
         INSERT INTO CHAT_MESSAGE(usr_id,chat_room_id,message,msg_cr_date,msg_cr_date_ms,is_read,chat_type)
                VALUES(
                        #{usrId}
@@ -16,6 +17,7 @@
     </insert>
 
     <update id="chatMsgIsReadUpdate" parameterType="ChatMessageUpdate">
+        /* com.rand.chat.mapper.ChatMsgMapper.chatMsgIsReadUpdate 채팅방 메시지 읽음여부 업데이트 */
         UPDATE CHAT_MESSAGE SET
                is_read = 1
          WHERE usr_id = #{usrId}                                    /* 업데이트할 메시지의 발신자 */
@@ -24,7 +26,8 @@
     </update>
 
     <select id="selectChatMsgList" parameterType="ChatMsgList" resultType="ResChatMsg">
-            SELECT CM.chat_room_id       AS chatRoomId
+        /* com.rand.chat.mapper.ChatMsgMapper.selectChatMsgList 채팅방 메시지 리스트 조회 */
+        SELECT CM.chat_room_id       AS chatRoomId
                  , CM.message            AS message
                  , CM.msg_cr_date        AS msgCrDate
                  , CM.msg_cr_date_ms     AS msgCrDateMs

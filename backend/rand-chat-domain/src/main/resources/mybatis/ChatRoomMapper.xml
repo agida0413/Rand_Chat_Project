@@ -73,9 +73,40 @@
     </select>
 
     <select id="selectUsrIdInChatRoom" parameterType="Integer" resultType="Members">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectUsrIdInChatRoom 채팅방에 참여하고 있는 회원고유번호 */
         SELECT usr_id
           FROM CHAT_ROOM_MEMBERS CRM
          WHERE chat_room_id = #{chatRoomId}
     </select>
 
+    <select id="selectChatRoomInfoForDelete" parameterType="ChatRoomForDelete" resultType="ChatRoomForDelete">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomInfoForDelete 채팅방에 영구떠나기에 따른 정보 GET */
+            SELECT room_state                  AS roomState         /* 채팅방 상태 */
+                 , COUNT(CR.chat_room_id)      AS participantCnt    /* 참여중인 회원수 */
+              FROM CHAT_ROOM CR
+        INNER JOIN CHAT_ROOM_MEMBERS CRM
+                ON CR.chat_room_id = CRM.chat_room_id
+             WHERE CR.chat_room_id = #{chatRoomId}
+    </select>
+    
+    
+    <delete id="chatRoomPycDel" parameterType="ChatRoomForDelete">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomInfoForDelete 채팅방에 영구떠나기 CHAT_ROOM 물리삭제 */
+        DELETE FROM CHAT_ROOM
+              WHERE chat_room_id = #{chatRoomId}
+    </delete>
+
+    <update id="chatRoomLgcDel" parameterType="ChatRoomForDelete">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomInfoForDelete 채팅방에 영구떠나기 CHAT_ROOM 논리삭제 */
+        UPDATE CHAT_ROOM SET
+               room_state = 'INACTIVE'
+         WHERE chat_room_id = #{chatRoomId}
+    </update>
+
+    <delete id="chatRoomMemDel" parameterType="ChatRoomForDelete">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomInfoForDelete 채팅방에 영구떠나기 CHAT_ROOM 물리삭제 */
+        DELETE FROM CHAT_ROOM_MEMBERS
+        WHERE chat_room_id = #{chatRoomId}
+          AND usr_id       = #{usrId}
+    </delete>
 </mapper>
