@@ -4,6 +4,7 @@ import com.rand.chat.dto.request.RoomValidDTO;
 import com.rand.chat.dto.response.ResChatRoomListDTO;
 import com.rand.chat.mapper.ChatRoomMapper;
 import com.rand.chat.model.ChatRoom;
+import com.rand.chat.model.ChatRoomForDelete;
 import com.rand.chat.model.RoomValid;
 import com.rand.member.model.Members;
 import lombok.RequiredArgsConstructor;
@@ -29,4 +30,23 @@ public class MyBatisChatRoomRepository implements ChatRoomRepository {
         return chatMapper.selectUsrIdInChatRoom(chatRoomId);
     }
 
+    @Override
+    public ChatRoomForDelete selectChatRoomInfoForDelete(ChatRoomForDelete chatRoomForDelete) {
+        return chatMapper.selectChatRoomInfoForDelete(chatRoomForDelete);
+    }
+
+    @Override
+    public void chatRoomPycDel(ChatRoomForDelete chatRoomForDelete) {
+        chatMapper.chatRoomPycDel(chatRoomForDelete);
+    }
+
+    @Override
+    public void chatRoomLgcDel(ChatRoomForDelete chatRoomForDelete) {
+        chatMapper.chatRoomLgcDel(chatRoomForDelete);
+    }
+
+    @Override
+    public void chatRoomMemDel(ChatRoomForDelete chatRoomForDelete) {
+        chatMapper.chatRoomMemDel(chatRoomForDelete);
+    }
 }

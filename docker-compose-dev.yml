@@ -129,9 +129,14 @@ services:
      - app_network
     env_file:
       - .env  # .env 파일을 로드
+    volumes:
+      - ./backend/rand-chat-chatAPI/src:/backend/rand-chat-chatAPI/src
+      - ./backend/rand-chat-chatAPI/build:/backend/rand-chat-chatAPI/build      
     environment: 
       - INSTANCE_ID=chat-api-1 
-      - SPRING_PROFILES_ACTIVE=dev                     
+      - SPRING_PROFILES_ACTIVE=dev     
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_REMOTE_SECRET=my-secret-key                      
   mysql:
     image: mysql:8.0
     container_name: mysql

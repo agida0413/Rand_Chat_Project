@@ -35,9 +35,9 @@ public class ChatRoomController {
         return chatRoomService.selectMemberInfoInChatRoom(chatRoomId);
     }
     //채팅방 입장정보 초기화
-    @PostMapping("/{chatRoomId}")
-    public ResponseEntity<ResponseDTO<Void>> enterRoomDeleteInfo(@PathVariable Integer chatRoomId){
-        return chatRoomService.enterRoomDeleteInfo(chatRoomId);
+    @DeleteMapping
+    public ResponseEntity<ResponseDTO<Void>> enterRoomDeleteInfo(){
+        return chatRoomService.enterRoomDeleteInfo();
     }
     //채팅방 떠나기 (영구)
     @DeleteMapping("/{chatRoomId}")
