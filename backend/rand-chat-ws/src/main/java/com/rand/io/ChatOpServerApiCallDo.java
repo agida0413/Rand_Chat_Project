@@ -150,11 +150,7 @@ public class ChatOpServerApiCallDo implements ChatOpServerApiCall{
 
     //메시지 저장
     @Override
-    public Mono<Boolean> asyncChatMsgSaveTxt(ReqChatMsgSaveDTO reqChatMsgSaveDTO,String accessToken) {
-
-        if(!reqChatMsgSaveDTO.getChatType().equals(ChatType.TEXT)){
-          return null;
-        }
+    public Mono<Boolean> asyncChatMsgSave(ReqChatMsgSaveDTO reqChatMsgSaveDTO,String accessToken) {
 
         return webClient.post()
                 .uri(uriBuilder -> uriBuilder
@@ -213,5 +209,6 @@ public class ChatOpServerApiCallDo implements ChatOpServerApiCall{
                     return Mono.just(false);
                 });
     }
+
 
 }

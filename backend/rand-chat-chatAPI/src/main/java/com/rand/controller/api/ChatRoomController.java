@@ -2,6 +2,7 @@ package com.rand.controller.api;
 
 import com.rand.chat.dto.response.ResChatMember;
 import com.rand.chat.dto.response.ResChatRoomListDTO;
+import com.rand.common.ErrorCode;
 import com.rand.common.ResponseDTO;
 import com.rand.common.service.PathVarValidationService;
 import com.rand.exception.custom.BadRequestException;
@@ -44,8 +45,6 @@ public class ChatRoomController {
     ResponseEntity<ResponseDTO<Void>> leaveChatRoom(@PathVariable Integer chatRoomId){
         return chatRoomService.leaveChatRoom(chatRoomId);
     }
-
-
 
 
 }

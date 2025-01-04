@@ -13,6 +13,7 @@ import com.rand.common.service.CommonMemberService;
 import com.rand.config.var.RedisKey;
 import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
+import com.rand.exception.custom.InternerServerException;
 import com.rand.member.dto.response.ResMemInfoDTO;
 import com.rand.member.model.Members;
 import com.rand.redis.InMemRepository;
@@ -126,56 +127,69 @@ public class ChatRoomServiceImpl implements ChatRoomService{
     @Override
     @Transactional
     public ResponseEntity<ResponseDTO<Void>> leaveChatRoom(Integer chatRoomId) {
-        //회원 고유번호
-        int usrId = SecurityContextGet.getUsrId();
-        //데이터베이스 INPUT 엔티티 채팅방 아이디,회원 고유번호
-        ChatRoomForDelete chatRoomForDelete = new ChatRoomForDelete(chatRoomId,usrId);
-        //데이터베이스 OUTPUT 엔티티 채팅방 상태값 , 참여자 수
-        ChatRoomForDelete chatRoomForDeleteResult = chatRoomRepository.selectChatRoomInfoForDelete(chatRoomForDelete);
-        //채팅방이 존재하지 않음
-        if(chatRoomForDeleteResult ==null || chatRoomForDeleteResult.getRoomState()==null){
-            throw new BadRequestException("ERR-CHAT-API-05");
-        }
-        //채팅방 활성화 ACTIVE
-        //내가 먼저 떠나는 경우(상대방은 입장해 있음)- 논리삭제
-        if(chatRoomForDeleteResult.getRoomState().equals(RoomState.ACTIVE)){
+        //분산락
+        String lockKey = RedisKey.CHAT_LEAVE_LOCK_KEY+chatRoomId;
+        boolean acquired = inMemRepository.lockCheck(lockKey,RedisKey.MATCH_LOCK_TIMEOUT);
 
-            // 업데이트 전 ACTIVE 인데 상대방이 회원탈퇴로 인한 비정상 채팅방 인지 확인
-            if(chatRoomForDeleteResult.getParticipantCnt()<2){
-                //맞다면 물리삭제
-                //채팅방 삭제 CASCADE 전부 삭제
-                chatRoomRepository.chatRoomPycDel(chatRoomForDelete);
+        if(acquired){
+            try {
+                //회원 고유번호
+                int usrId = SecurityContextGet.getUsrId();
+                //데이터베이스 INPUT 엔티티 채팅방 아이디,회원 고유번호
+                ChatRoomForDelete chatRoomForDelete = new ChatRoomForDelete(chatRoomId,usrId);
+                //데이터베이스 OUTPUT 엔티티 채팅방 상태값 , 참여자 수
+                ChatRoomForDelete chatRoomForDeleteResult = chatRoomRepository.selectChatRoomInfoForDelete(chatRoomForDelete);
+                //채팅방이 존재하지 않음
+                if(chatRoomForDeleteResult ==null || chatRoomForDeleteResult.getRoomState()==null){
+                    throw new BadRequestException("ERR-CHAT-API-05");
+                }
+                //채팅방 활성화 ACTIVE
+                //내가 먼저 떠나는 경우(상대방은 입장해 있음)- 논리삭제
+                if(chatRoomForDeleteResult.getRoomState().equals(RoomState.ACTIVE)){
 
-                //레디스 채팅정보 삭제
-                inMemRepository.delete(RedisKey.CHAT_MESSAGE_LIST_KEY+chatRoomId);
-            }else{
-                //아니면 논리삭제
-                //CHAT_ROOM_MEMBER 삭제
-                chatRoomRepository.chatRoomMemDel(chatRoomForDelete);
-                //CHAT_ROOM 채팅방 상태 업데이트
-                chatRoomRepository.chatRoomLgcDel(chatRoomForDelete);
+                    // 업데이트 전 ACTIVE 인데 상대방이 회원탈퇴로 인한 비정상 채팅방 인지 확인
+                    if(chatRoomForDeleteResult.getParticipantCnt()<2){
+                        //맞다면 물리삭제
+                        //채팅방 삭제 CASCADE 전부 삭제
+                        chatRoomRepository.chatRoomPycDel(chatRoomForDelete);
+
+                        //레디스 채팅정보 삭제
+                        inMemRepository.delete(RedisKey.CHAT_MESSAGE_LIST_KEY+chatRoomId);
+                    }else{
+                        //아니면 논리삭제
+                        //CHAT_ROOM_MEMBER 삭제
+                        chatRoomRepository.chatRoomMemDel(chatRoomForDelete);
+                        //CHAT_ROOM 채팅방 상태 업데이트
+                        chatRoomRepository.chatRoomLgcDel(chatRoomForDelete);
+                    }
+
+                }
+                else{
+                    //채팅방 활성화 INACTIVE
+                    //상대방이 이미 떠났고 , 나도 떠나는경우(물리삭제)
+                    //채팅방 삭제 CASCADE 전부 삭제
+                    chatRoomRepository.chatRoomPycDel(chatRoomForDelete);
+
+                    //레디스 채팅정보 삭제
+                    inMemRepository.delete(RedisKey.CHAT_MESSAGE_LIST_KEY+chatRoomId);
+
+                }
+
+                //현재 입장정보가 나가려는 채팅방일 시
+                String curChatRoomId = (String) inMemRepository.getValue(RedisKey.CUR_ENTER_ROOM_KEY+usrId);
+
+                if(curChatRoomId!= null && curChatRoomId.equals(String.valueOf(chatRoomId))){
+                    //입장 정보 삭제
+                    inMemRepository.delete(RedisKey.CUR_ENTER_ROOM_KEY+usrId);
+                }
             }
-
+            finally {
+                inMemRepository.delete(lockKey);
+            }
+        }else{
+            //락획득 실패
+            throw new InternerServerException("ERR-CMN-03");
         }
-        else{
-            //채팅방 활성화 INACTIVE
-            //상대방이 이미 떠났고 , 나도 떠나는경우(물리삭제)
-            //채팅방 삭제 CASCADE 전부 삭제
-            chatRoomRepository.chatRoomPycDel(chatRoomForDelete);
-
-            //레디스 채팅정보 삭제
-            inMemRepository.delete(RedisKey.CHAT_MESSAGE_LIST_KEY+chatRoomId);
-
-        }
-
-        //현재 입장정보가 나가려는 채팅방일 시
-        String curChatRoomId = (String) inMemRepository.getValue(RedisKey.CUR_ENTER_ROOM_KEY+usrId);
-
-        if(curChatRoomId!= null && curChatRoomId.equals(String.valueOf(chatRoomId))){
-            //입장 정보 삭제
-            inMemRepository.delete(RedisKey.CUR_ENTER_ROOM_KEY+usrId);
-        }
-
 
 
         return ResponseEntity

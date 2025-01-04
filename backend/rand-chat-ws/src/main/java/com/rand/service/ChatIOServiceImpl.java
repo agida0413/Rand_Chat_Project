@@ -49,12 +49,8 @@ public class ChatIOServiceImpl implements ChatIOService {
     @Async
     //채팅메시지를 보낼 시 Reactive 및 비동기 업데이트 처리를 하는 서비스
     public void updateOfSend(Integer chatRoomId, String accessToken,ReqChatMsgSaveDTO reqChatMsgSaveDTO) {
-        //텍스트 타입의 메시지 서비스
-        if(reqChatMsgSaveDTO.getChatType().equals(ChatType.TEXT)){
 
-            updateOfSendTxt(chatRoomId,accessToken,reqChatMsgSaveDTO);
-        }
-
+            updateOfSendDo(chatRoomId,accessToken,reqChatMsgSaveDTO);
 
     }
 
@@ -80,10 +76,10 @@ public class ChatIOServiceImpl implements ChatIOService {
                 .body(new ResponseDTO<Void>());
     }
 
-    //텍스트 타입의 메시지 서비스
-    private void updateOfSendTxt(Integer chatRoomId, String accessToken,ReqChatMsgSaveDTO reqChatMsgSaveDTO){
+    //메시지 전송
+    private void updateOfSendDo(Integer chatRoomId, String accessToken,ReqChatMsgSaveDTO reqChatMsgSaveDTO){
         //비동기 메시지 I/O 업데이트
-        chatOpServerApiCall.asyncChatMsgSaveTxt(reqChatMsgSaveDTO,accessToken)
+        chatOpServerApiCall.asyncChatMsgSave(reqChatMsgSaveDTO,accessToken)
                 .doOnNext(result -> log.info("updateOfSendResult: {}", result))
                 .filter(Boolean::booleanValue)
                 .doOnNext(result -> {
@@ -137,5 +133,7 @@ public class ChatIOServiceImpl implements ChatIOService {
                 })
                 .subscribe(); // WebClient 결과를 비동기로
     }
+
+
 
 }
