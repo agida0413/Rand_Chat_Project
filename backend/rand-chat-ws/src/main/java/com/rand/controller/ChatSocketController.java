@@ -53,10 +53,9 @@ public class ChatSocketController {
         String accessToken = ChatUtil.getStompHeaderAccessToken(incomingMessage);
         chatIOService.updateOfSend(roomId,accessToken,reqChatMsgSaveDTO);
         
-        //메시지 전송(이미지가 아닐경우 곧바로 실시간 전송) 이미지는 s3로부터 반환받은 다음 전송
-        if(!chatMessage.getChatType().equals(ChatType.IMG)){
-            redisTemplate.convertAndSend(PubSubChannel.CHAT_CHANNEL.toString(),chatMessage);
-        }
+
+        redisTemplate.convertAndSend(PubSubChannel.CHAT_CHANNEL.toString(),chatMessage);
+
 
     }
 

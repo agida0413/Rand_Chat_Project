@@ -49,4 +49,8 @@ public final class RedisKey {
     public static final String CHAT_MESSAGE_LIST_LOCK_KEY="chat:message:list:lock:";
     //진입된 채팅방 키
     public static final String CUR_ENTER_ROOM_KEY = "member:room:enter:";
+
+    //채팅 영구떠나기 락 키
+    public static final String CHAT_LEAVE_LOCK_KEY="chat:room:leave:lock:";
+
 }

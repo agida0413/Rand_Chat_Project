@@ -5,6 +5,7 @@ import com.rand.chat.mapper.ChatMsgMapper;
 import com.rand.chat.model.ChatMessageSave;
 import com.rand.chat.model.ChatMessageUpdate;
 import com.rand.chat.model.ChatMsgList;
+import com.rand.chat.model.ImgSave;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,5 +24,8 @@ public class MyBatisChatRepository implements ChatMsgRepository{
     }
     public List<ResChatMsg> selectChatMsgList(ChatMsgList chatMsgList){
         return chatMsgMapper.selectChatMsgList(chatMsgList);
+    }
+    public void chatRoomImgSave(ImgSave imgSave){
+        chatMsgMapper.chatRoomImgSave(imgSave);
     }
 }
