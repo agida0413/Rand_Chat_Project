@@ -41,4 +41,15 @@
         ORDER BY CM.msg_cr_date_ms DESC
         LIMIT #{rowSize} OFFSET #{offset}
     </select>
+
+
+    <insert id="chatRoomImgSave" parameterType="ImgSave">
+        INSERT INTO CHAT_ROOM_IMG (chat_room_id,usr_id,img_url)
+        VALUES(
+                #{chatRoomId}
+              , #{usrId}
+              , #{imgUrl}
+        )
+
+    </insert>
 </mapper>

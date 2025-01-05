@@ -38,9 +38,12 @@ public class ChatMsgController {
         return chatMsgService.selectChatMsgListRDBMS(chatRoomId,page);
     }
     //사진 전송전 url get
-    @PostMapping(value = "/img",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDTO<ResImgSave>> getSendImgUrl(@ModelAttribute ReqImgSave reqImgSave){
-
-        return chatMsgService.getSendImgUrl(reqImgSave);
+    @PostMapping(value = "/{chatRoomId}/img",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseDTO<ResImgSave>> getSendImgUrl(@PathVariable Integer chatRoomId,@ModelAttribute ReqImgSave reqImgSave){
+        //valication
+        if(chatRoomId ==null ||chatRoomId== 0){
+            throw new BadRequestException("ERR-CHAT-API-VALI-01");
+        }
+        return chatMsgService.getSendImgUrl(reqImgSave,chatRoomId);
     }
 }

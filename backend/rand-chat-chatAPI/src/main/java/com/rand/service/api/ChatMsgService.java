@@ -13,5 +13,5 @@ public interface ChatMsgService {
 
     public ResponseEntity<ResponseDTO<List<ResChatMsg>>> selectChatMsgListInMemory(Integer chatRoomId);
     public ResponseEntity<ResponseDTO<List<ResChatMsg>>> selectChatMsgListRDBMS(Integer chatRoomId,Integer page);
-    public ResponseEntity<ResponseDTO<ResImgSave>> getSendImgUrl(ReqImgSave reqImgSave);
+    public ResponseEntity<ResponseDTO<ResImgSave>> getSendImgUrl(ReqImgSave reqImgSave,Integer chatRoomId);
 }

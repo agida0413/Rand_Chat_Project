@@ -7,10 +7,12 @@ import com.rand.chat.dto.response.ResImgSave;
 import com.rand.chat.model.ChatMessage;
 import com.rand.chat.model.ChatMessageData;
 import com.rand.chat.model.ChatMsgList;
+import com.rand.chat.model.ImgSave;
 import com.rand.chat.repository.ChatMsgRepository;
 import com.rand.common.ErrorCode;
 import com.rand.common.ResponseDTO;
 import com.rand.config.var.RedisKey;
+import com.rand.custom.SecurityContextGet;
 import com.rand.exception.custom.BadRequestException;
 import com.rand.exception.custom.InternerServerException;
 import com.rand.service.file.FileService;
@@ -120,14 +122,29 @@ public class ChatMsgServiceImpl implements ChatMsgService{
                 .ok()
                 .body(new ResponseDTO<List<ResChatMsg>>(list) );
     }
-    //파일업로드
+    //파일업로드 (메시지 전송을 위한)
     @Override
-    public ResponseEntity<ResponseDTO<ResImgSave>> getSendImgUrl(ReqImgSave reqImgSave) {
+    public ResponseEntity<ResponseDTO<ResImgSave>> getSendImgUrl(ReqImgSave reqImgSave,Integer chatRoomId) {
         String saveUrl="";
         try {
            saveUrl= fileService.upload(reqImgSave.getImg());
         }
         catch (Exception e){
+            throw new BadRequestException("ERR-CHAT-API-06");
+        }
+        //데이터베이스 저장을 위한 객체
+        ImgSave imgSave = new ImgSave();
+        imgSave.setChatRoomId(chatRoomId);
+        imgSave.setImgUrl(saveUrl);
+        imgSave.setUsrId(SecurityContextGet.getUsrId());
+
+        try {
+            //이미지 테이블 저장
+            chatMsgRepository.chatRoomImgSave(imgSave);
+        }
+        catch (Exception e){
+            //s3저장 롤백
+            fileService.deleteImage(saveUrl);
             throw new BadRequestException("ERR-CHAT-API-06");
         }
 
