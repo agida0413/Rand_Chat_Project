@@ -35,16 +35,18 @@ chat_room_id BIGINT NOT NULL,
 cr_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 CONSTRAINT PRIMARY KEY chat_room_mem_pk(usr_id,chat_room_id),
 CONSTRAINT FOREIGN KEY usr_id_chat_room_mem_fk(usr_id) REFERENCES MEMBERS(usr_id) ON DELETE CASCADE ,
-CONSTRAINT FOREIGN KEY chat_room_id_chat_room_mem_fk(chat_room_id) REFERENCES CHAT_ROOM(chat_room_id) ON DELETE CASCADE 
+CONSTRAINT FOREIGN KEY chat_room_id_chat_room_mem_fk(chat_room_id) REFERENCES CHAT_ROOM(chat_room_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS CHAT_ROOM_IMG(
 img_list_id BIGINT NOT NULL auto_increment,
 chat_room_id BIGINT NOT NULL,
+usr_id INT NOT NULL,
 img_url VARCHAR(200) NOT NULL,
 cr_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 CONSTRAINT PRIMARY KEY img_list_pk(img_list_id),
-CONSTRAINT FOREIGN KEY img_room_id_fk(chat_room_id) REFERENCES CHAT_ROOM(chat_room_id) ON DELETE CASCADE
+CONSTRAINT FOREIGN KEY img_room_id_fk(chat_room_id) REFERENCES CHAT_ROOM(chat_room_id) ON DELETE CASCADE,
+CONSTRAINT FOREIGN KEY img_usr_id_fk(usr_id) REFERENCES MEMBERS(usr_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS CHAT_MESSAGE (
