@@ -189,3 +189,65 @@ jobs:
           docker pull kimyong120413/randchatbackendmatch:$TAG_NAME
           docker run -d --name back-end-match2 -p 8080:8080 --env-file .env -e INSTANCE_ID=server2 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendmatch:$TAG_NAME \
           EOF
+
+  #채팅 웹소켓 ,i/o서버 추가 
+
+     - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 1배포----
+        env:
+          BACKEND_INSTANCE_CHAT_WS_1: ${{ secrets.BACKEND_INSTANCE_CHAT_WS_1 }}  # EC2 퍼블릭 IP
+        run: |
+          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$BACKEND_INSTANCE_CHAT_WS_1 << EOF
+          # 기존 컨테이너 종료 (이미 실행 중이면)
+          docker stop back-end-chat-ws || true
+          docker rm back-end-chat-ws || true
+          sudo systemctl restart docker
+          docker system prune -a -f --volumes
+          docker pull kimyong120413/randchatbackendchatws:$TAG_NAME
+          docker run -d --name back-end-chat-ws -p 8080:8080 --env-file .env -e INSTANCE_ID=ws-server-1 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatws:$TAG_NAME \
+          EOF
+ 
+     - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 2배포----
+        env:
+          BACKEND_INSTANCE_CHAT_WS_2: ${{ secrets.BACKEND_INSTANCE_CHAT_WS_2 }}  # EC2 퍼블릭 IP
+        run: |
+          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$BACKEND_INSTANCE_CHAT_WS_2 << EOF
+          # 기존 컨테이너 종료 (이미 실행 중이면)
+          docker stop back-end-chat-ws || true
+          docker rm back-end-chat-ws || true
+          sudo systemctl restart docker
+          docker system prune -a -f --volumes
+          docker pull kimyong120413/randchatbackendchatws:$TAG_NAME
+          docker run -d --name back-end-chat-ws -p 8080:8080 --env-file .env -e INSTANCE_ID=ws-server-2 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatws:$TAG_NAME \
+          EOF
+ 
+      - name: Connect to EC2 and deploy BACK-END-CHAT-I/O 1  ----채팅 I/O 서버 1배포----
+        env:
+          BACKEND_INSTANCE_CHAT_IO_1: ${{ secrets.BACKEND_INSTANCE_CHAT_IO_1 }}  # EC2 퍼블릭 IP
+        run: |
+          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$BACKEND_INSTANCE_CHAT_IO_1 << EOF
+          # 기존 컨테이너 종료 (이미 실행 중이면)
+          docker stop back-end-chat-io || true
+          docker rm back-end-chat-io || true
+          sudo systemctl restart docker
+          docker system prune -a -f --volumes
+          docker pull kimyong120413/randchatbackendchatio:$TAG_NAME
+          docker run -d --name back-end-chat-io -p 8080:8080 --env-file .env -e INSTANCE_ID=chat-io-1 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatio:$TAG_NAME \
+          EOF
+
+      - name: Connect to EC2 and deploy BACK-END-CHAT-I/O 2  ----채팅 I/O 서버 2 배포----
+        env:
+          BACKEND_INSTANCE_CHAT_IO_2: ${{ secrets.BACKEND_INSTANCE_CHAT_IO_2 }}  # EC2 퍼블릭 IP
+        run: |
+          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$BACKEND_INSTANCE_CHAT_IO_2 << EOF
+          # 기존 컨테이너 종료 (이미 실행 중이면)
+          docker stop back-end-chat-io || true
+          docker rm back-end-chat-io || true
+          sudo systemctl restart docker
+          docker system prune -a -f --volumes
+          docker pull kimyong120413/randchatbackendchatio:$TAG_NAME
+          docker run -d --name back-end-chat-io -p 8080:8080 --env-file .env -e INSTANCE_ID=chat-io-2 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatio:$TAG_NAME \
+          EOF
