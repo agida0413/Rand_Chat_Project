@@ -85,10 +85,10 @@ jobs:
           docker push kimyong120413/randchatbackendmember:$TAG_NAME
 
     
-      # - name: FRONT-END Image Build ----프론트엔드 서버 이미지빌드---
-      #   run: |
-      #     docker build -f ./frontend/Dockerfile-deploy -t kimyong120413/randchatfrontend:$TAG_NAME .
-      #     docker push kimyong120413/randchatfrontend:$TAG_NAME
+      - name: FRONT-END Image Build ----프론트엔드 서버 이미지빌드---
+        run: |
+          docker build -f ./frontend/Dockerfile-deploy -t kimyong120413/randchatfrontend:$TAG_NAME .
+          docker push kimyong120413/randchatfrontend:$TAG_NAME
  
 
       - name: BACKEND-CHAT-WS Image Build  ----채팅 웹소켓 서버 이미지빌드---
@@ -102,15 +102,15 @@ jobs:
           docker push kimyong120413/randchatbackendchatio:$TAG_NAME         
 
  
-      - name: NGINX IMAGE BUILD ----엔진엑스 서버 이미지빌드---
-        run: |
-          docker build \
-            --build-arg BACKEND_INSTANCE_MEMBER_1=${{ secrets.BACKEND_INSTANCE_MEMBER_1 }} \
-            --build-arg BACKEND_INSTANCE_MATCH_1=${{ secrets.BACKEND_INSTANCE_MATCH_1 }} \
-            --build-arg BACKEND_INSTANCE_MATCH_2=${{ secrets.BACKEND_INSTANCE_MATCH_2 }} \
-            --build-arg FRONT_END_INSTANCE_1=${{ secrets.FRONT_END_INSTANCE_1 }} \
-            -f ./nginx/deploy/Dockerfile -t kimyong120413/randchatnginx:latest .
-          docker push kimyong120413/randchatnginx:latest         
+      # - name: NGINX IMAGE BUILD ----엔진엑스 서버 이미지빌드---
+      #   run: |
+      #     docker build \
+      #       --build-arg BACKEND_INSTANCE_MEMBER_1=${{ secrets.BACKEND_INSTANCE_MEMBER_1 }} \
+      #       --build-arg BACKEND_INSTANCE_MATCH_1=${{ secrets.BACKEND_INSTANCE_MATCH_1 }} \
+      #       --build-arg BACKEND_INSTANCE_MATCH_2=${{ secrets.BACKEND_INSTANCE_MATCH_2 }} \
+      #       --build-arg FRONT_END_INSTANCE_1=${{ secrets.FRONT_END_INSTANCE_1 }} \
+      #       -f ./nginx/deploy/Dockerfile -t kimyong120413/randchatnginx:latest .
+      #     docker push kimyong120413/randchatnginx:latest         
 
 
       #배포 
