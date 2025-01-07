@@ -85,10 +85,10 @@ jobs:
           docker push kimyong120413/randchatbackendmember:$TAG_NAME
 
     
-      # - name: FRONT-END Image Build ----프론트엔드 서버 이미지빌드---
-      #   run: |
-      #     docker build -f ./frontend/Dockerfile-deploy -t kimyong120413/randchatfrontend:$TAG_NAME .
-      #     docker push kimyong120413/randchatfrontend:$TAG_NAME
+      - name: FRONT-END Image Build ----프론트엔드 서버 이미지빌드---
+        run: |
+          docker build -f ./frontend/Dockerfile-deploy -t kimyong120413/randchatfrontend:$TAG_NAME .
+          docker push kimyong120413/randchatfrontend:$TAG_NAME
  
 
       - name: BACKEND-CHAT-WS Image Build  ----채팅 웹소켓 서버 이미지빌드---
