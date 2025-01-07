@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    if: github.event.release.target_commitish == 'main'  # main 브랜치를 참조하는 Release만 실행
+    if: ${{ github.event.release.target_commitish == 'main' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -201,7 +201,7 @@ jobs:
           docker run -d --name back-end-match2 -p 8080:8080 --env-file .env -e INSTANCE_ID=server2 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendmatch:$TAG_NAME \
           EOF
 
-  #채팅 웹소켓 ,i/o서버 추가 
+       #채팅 웹소켓 ,i/o서버 추가 
 
       - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 1배포----
         env:
