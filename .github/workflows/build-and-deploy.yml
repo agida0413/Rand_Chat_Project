@@ -96,7 +96,7 @@ jobs:
           docker build -f ./backend/Dockerfile-chat-deploy -t kimyong120413/randchatbackendchatws:$TAG_NAME .
           docker push kimyong120413/randchatbackendchatws:$TAG_NAME
 
-       - name: BACKEND-CHAT-IO Image Build  ----채팅 I/O 서버 이미지빌드---
+      - name: BACKEND-CHAT-IO Image Build  ----채팅 I/O 서버 이미지빌드---
         run: |
           docker build -f ./backend/Dockerfile-chat-API-deploy -t kimyong120413/randchatbackendchatio:$TAG_NAME .
           docker push kimyong120413/randchatbackendchatio:$TAG_NAME         
