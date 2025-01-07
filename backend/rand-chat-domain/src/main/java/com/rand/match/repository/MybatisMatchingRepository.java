@@ -17,7 +17,10 @@ public class MybatisMatchingRepository implements MatchingRepository{
     public void chatRoomCreate(Match match) {
         matchingMapper.chatRoomCreate(match);
     }
-
+    @Override
+    public void chatRoomMemCreate(Match match){
+        matchingMapper.chatRoomMemCreate(match);
+    }
     @Override
     public Match isExistChatRoom(Match match) {
         return matchingMapper.isExistChatRoom(match);

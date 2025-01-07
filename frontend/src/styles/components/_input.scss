@@ -1,0 +1,21 @@
+@use '@/styles/base/_typography' as *;
+@use '@/styles/base/_spacing' as *;
+@use '@/styles/base/_colors' as *;
+
+@mixin primaryInput {
+  width: 100%;
+  padding: $padding-m;
+
+  border: 1px solid $color-border;
+  border-radius: $radius-l;
+  transition: border-color 0.3s;
+
+  &:focus {
+    outline: none;
+    border-color: $color-hover;
+  }
+
+  &::placeholder {
+    color: $color-placeholder;
+  }
+}

@@ -51,7 +51,7 @@ subprojects {
 		testImplementation "org.testcontainers:mysql:1.20.4"
 		testImplementation 'org.testcontainers:jdbc:1.16.0'
 		implementation 'org.springframework.boot:spring-boot-starter-aop'
-
+		implementation 'org.springframework.boot:spring-boot-starter-webflux'  // WebClient 포함
 
 
 	}

@@ -1,6 +1,8 @@
 package com.rand.config.var;
 
 public final class RedisKey {
+    //채팅 웹소켓 연결정보를 담는 키
+    public static final String CHAT_SOCKET_KEY ="chat:socket:server:";
     //매칭 sse 정보담는  키
     public static final String SSE_MATCHING_CONNECTION_KEY = "sse:match:";
     //매칭 수락 sse
@@ -37,5 +39,18 @@ public final class RedisKey {
     public static final String REFRESH_TOKEN_KEY ="refresh:";
     //멤버인포 키
     public static final String MEMBER_INFO_KEY = "memberInfo:"; // 5초 동안 대기 후 재시도
+
+
+
+    //채팅
+    //채팅 메시지 리스트 키
+    public static final String CHAT_MESSAGE_LIST_KEY = "chat:message:list:";
+    //채팅 메시지 리스트 락 키
+    public static final String CHAT_MESSAGE_LIST_LOCK_KEY="chat:message:list:lock:";
+    //진입된 채팅방 키
+    public static final String CUR_ENTER_ROOM_KEY = "member:room:enter:";
+
+    //채팅 영구떠나기 락 키
+    public static final String CHAT_LEAVE_LOCK_KEY="chat:room:leave:lock:";
 
 }

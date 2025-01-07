@@ -23,4 +23,9 @@ public class TokenController {
 
         return tokenService.reissueToken(request,response);
     }
+    @GetMapping(value = "/token/valid")
+    public ResponseEntity<ResponseDTO<Void>> validToken(){
+
+        return ResponseEntity.ok().body(new ResponseDTO<Void>(null));
+    }
 }

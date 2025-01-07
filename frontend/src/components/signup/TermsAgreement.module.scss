@@ -1,0 +1,79 @@
+@use '@/styles/components/_checkBox.scss' as *;
+@use 'sass:map';
+.termsAgreementForm {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  text-align: left;
+
+  > span {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    h2 {
+      @include typography('md', 'bold');
+    }
+  }
+
+  input[type='checkbox'] {
+    @include primaryCheckBox;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    details {
+      width: 100%;
+      border-bottom: 1px solid $color-primary-50;
+      padding: 1rem 0;
+      @include typography('xxs');
+
+      &[open] {
+        summary p::before {
+          transform: rotate(90deg);
+        }
+      }
+
+      summary {
+        @include typography('sm');
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        cursor: pointer;
+        list-style: none;
+
+        &::-webkit-details-marker {
+          display: none;
+        }
+
+        p {
+          display: flex;
+          align-items: center;
+
+          &::before {
+            content: '▶';
+            margin-right: 1rem;
+            transition: transform 0.2s ease;
+            @include typography('xxs');
+            color: $color-primary-300;
+          }
+        }
+      }
+
+      .contents {
+        margin-top: 1rem;
+        padding: 1rem;
+        max-height: 10rem;
+        max-width: inherit;
+        border: 1px solid $color-border;
+        border-radius: 4px;
+        overflow-y: auto;
+        text-align: left;
+        display: inline-flex;
+        -ms-overflow-style: none;
+      }
+    }
+  }
+}

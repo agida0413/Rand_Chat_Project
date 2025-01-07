@@ -1,0 +1,32 @@
+@use '@/styles/base/_colors' as *;
+@use 'sass:color';
+
+@mixin primaryCheckBox {
+  width: 2.5rem;
+  height: 2.5rem;
+  appearance: none;
+  border: 1px solid $color-border;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:checked {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0px;
+      left: 6px;
+      width: 10px;
+      height: 18px;
+      border: solid $color-hover;
+      border-width: 0 3px 3px 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  &:hover {
+    border-color: color.adjust($color-primary-100);
+  }
+}

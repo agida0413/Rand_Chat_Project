@@ -99,11 +99,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String sex = SecurityContextGet.getSex(authentication);
         LocalDate birth = SecurityContextGet.getBirth(authentication);
 
-        log.info("usrId={}",usrId);
-        log.info("nickname={}",nickname);
-        log.info("username={}",userName);
-        log.info("sex={}",sex);
-        log.info("birth={}",birth);
+
 
         //문자열로 변환
         String strUsrId=String.valueOf(usrId);

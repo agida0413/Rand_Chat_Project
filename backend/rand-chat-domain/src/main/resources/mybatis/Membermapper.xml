@@ -125,8 +125,6 @@
              , pwd_wrong
              , state
              , profile_img
-             , locale_lat
-             , locale_lon
              , sex
              , birth
           FROM MEMBERS
@@ -157,8 +155,6 @@
               , pwd_wrong
               , state
               , profile_img
-              , locale_lat
-              , locale_lon
               , sex
               , birth
            FROM MEMBERS
@@ -177,8 +173,6 @@
              , pwd_wrong
              , state
              , profile_img
-             , locale_lat
-             , locale_lon
              , sex
              , birth
                FROM MEMBERS
@@ -193,11 +187,16 @@
         WHERE  usr_id   = #{usrId}
     </update>
 
-    <update id="memberDel" parameterType="Members">
-        UPDATE MEMBERS SET
-        state = #{state}
-        WHERE  usr_id   = #{usrId}
-    </update>
+<!--    <update id="memberDel" parameterType="Members">-->
+<!--        UPDATE MEMBERS SET-->
+<!--        state = #{state}-->
+<!--        WHERE  usr_id   = #{usrId}-->
+<!--    </update>-->
+
+    <delete id="memberDel" parameterType="Members">
+      DELETE FROM MEMBERS
+        WHERE usr_id = #{usrId}
+    </delete>
 
     <update id="updateProfileImg" parameterType="Members">
         UPDATE MEMBERS SET
@@ -206,7 +205,8 @@
     </update>
     
     <select id="selectMemberInfo" parameterType="Members" resultType="Members">
-        SELECT <include refid="maskedUsername"/> AS username
+        SELECT usr_id                           AS usrId
+             , <include refid="maskedUsername"/> AS username
              , <include refid="maskedEmail"/> AS email
              , nick_name
              , name

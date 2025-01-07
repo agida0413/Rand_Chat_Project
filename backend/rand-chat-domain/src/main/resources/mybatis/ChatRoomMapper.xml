@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rand.chat.mapper.ChatRoomMapper">
+   <select id="isRealYourRoom" parameterType="RoomValidDTO" resultType="RoomValid">
+       /* com.rand.chat.mapper.ChatRoomMapper.isRealYourRoom 구독시점 회원의 채팅방검증 */
+              SELECT CR.room_state
+                FROM CHAT_ROOM CR
+          INNER JOIN CHAT_ROOM_MEMBERS CRM
+             ON CRM.usr_id = #{usrId}
+            AND CRM.chat_room_id = CR.chat_room_id
+          WHERE CRM.chat_room_id = #{chatRoomId}
+   </select>
+
+    <select id="selectChatRoomList" parameterType="ChatRoom" resultType="ResChatRoomListDTO">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomList 회원이 참여하고있는 채팅방 리스트 (채팅방은 수만개 되지않으니 별도의 성능개선 페이징은 필요없어보임 )*/
+        WITH LatestMessage AS (
+                SELECT chat_room_id,
+                       MAX(msg_cr_date_ms) AS latest_msg_date_ms
+                       FROM CHAT_MESSAGE
+              GROUP BY chat_room_id
+        ),
+        UnreadCount AS (
+               SELECT chat_room_id,
+                      COUNT(*) AS unread_count
+                 FROM CHAT_MESSAGE
+                WHERE usr_id != #{usrId} AND is_read = 0
+             GROUP BY chat_room_id
+        ),
+        OpsInfo AS (
+              SELECT SUB_CRM.chat_room_id,
+                     MEM.profile_img,
+                     MEM.nick_name
+                FROM CHAT_ROOM_MEMBERS SUB_CRM
+          INNER JOIN MEMBERS MEM
+                  ON SUB_CRM.usr_id = MEM.usr_id
+               WHERE SUB_CRM.usr_id != #{usrId}
+        )
+            SELECT CR.chat_room_id
+                 , OPS_INFO.profile_img                    AS opsProfileImg
+                 , OPS_INFO.nick_name                      AS opsNickName
+                 , CM.message                              AS curMsg
+                 , CM.msg_cr_date                          AS curMSgCrDate
+                 , CM.chat_type                            AS curChatType
+                 , COALESCE(UC.unread_count, 0)            AS unread_count
+                 , CR.room_state
+                 , CASE
+                       WHEN OPS_INFO.nick_name IS NULL AND CR.room_state = 'ACTIVE' THEN 1
+                       ELSE 0
+                    END AS abNormalFlag
+              FROM CHAT_ROOM CR
+        INNER JOIN CHAT_ROOM_MEMBERS CRM
+                ON CR.chat_room_id = CRM.chat_room_id
+               AND CRM.usr_id = #{usrId}
+         LEFT JOIN LatestMessage LM
+                ON CR.chat_room_id = LM.chat_room_id
+         LEFT JOIN CHAT_MESSAGE CM
+                ON CR.chat_room_id = CM.chat_room_id
+               AND CM.msg_cr_date_ms = LM.latest_msg_date_ms
+         LEFT JOIN OpsInfo OPS_INFO
+                ON CR.chat_room_id = OPS_INFO.chat_room_id
+         LEFT JOIN UnreadCount UC
+                ON CR.chat_room_id = UC.chat_room_id
+          ORDER BY
+              CASE
+                   WHEN CM.message IS NULL THEN 0  /* 새로 생성된 채팅방 이거나 상대방이 탈퇴한 채팅방은 상위에 표시 */
+                   ELSE 1
+               END ASC,
+              CASE
+                   WHEN CM.message IS NULL THEN CR.room_cr_date
+                   ELSE CM.msg_cr_date_ms
+               END DESC /* 최근 메시지가 있는 경우 최신 순서로 정렬 */
+    </select>
+
+    <select id="selectUsrIdInChatRoom" parameterType="Integer" resultType="Members">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectUsrIdInChatRoom 채팅방에 참여하고 있는 회원고유번호 */
+        SELECT usr_id
+          FROM CHAT_ROOM_MEMBERS CRM
+         WHERE chat_room_id = #{chatRoomId}
+    </select>
+
+    <select id="selectChatRoomInfoForDelete" parameterType="ChatRoomForDelete" resultType="ChatRoomForDelete">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomInfoForDelete 채팅방에 영구떠나기에 따른 정보 GET */
+            SELECT room_state                  AS roomState         /* 채팅방 상태 */
+                 , COUNT(CR.chat_room_id)      AS participantCnt    /* 참여중인 회원수 */
+              FROM CHAT_ROOM CR
+        INNER JOIN CHAT_ROOM_MEMBERS CRM
+                ON CR.chat_room_id = CRM.chat_room_id
+             WHERE CR.chat_room_id = #{chatRoomId}
+    </select>
+    
+    
+    <delete id="chatRoomPycDel" parameterType="ChatRoomForDelete">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomInfoForDelete 채팅방에 영구떠나기 CHAT_ROOM 물리삭제 */
+        DELETE FROM CHAT_ROOM
+              WHERE chat_room_id = #{chatRoomId}
+    </delete>
+
+    <update id="chatRoomLgcDel" parameterType="ChatRoomForDelete">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomInfoForDelete 채팅방에 영구떠나기 CHAT_ROOM 논리삭제 */
+        UPDATE CHAT_ROOM SET
+               room_state = 'INACTIVE'
+         WHERE chat_room_id = #{chatRoomId}
+    </update>
+
+    <delete id="chatRoomMemDel" parameterType="ChatRoomForDelete">
+        /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomInfoForDelete 채팅방에 영구떠나기 CHAT_ROOM 물리삭제 */
+        DELETE FROM CHAT_ROOM_MEMBERS
+        WHERE chat_room_id = #{chatRoomId}
+          AND usr_id       = #{usrId}
+    </delete>
+</mapper>

@@ -13,7 +13,7 @@ public class Match {
     //수락여부
     private boolean approveChk;
     
-    //채팅방생성시
+    //확인시
     private int roomMem1;
     private int roomMem2;
     //채팅방 상태
@@ -21,7 +21,8 @@ public class Match {
 
     //생성된 채팅방 번호
     private Long chatRoomId;
-
+    //채팅방 생성 시
+    private String usrId;
     public Match(MatchDTO matchDTO){
         this.distance = matchDTO.getDistance();
     }

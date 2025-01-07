@@ -1,0 +1,40 @@
+@use '@/styles/components/_radio.scss' as *;
+@use '@/styles/components/_button.scss' as *;
+@use '@/styles/components/_input.scss' as *;
+@use '@/styles/components/_date.scss' as *;
+@use 'sass:map';
+.flexForm {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  @include typography('xxs');
+
+  .genderWrapper {
+    display: flex;
+    align-items: center;
+
+    label {
+      display: flex;
+      align-items: center;
+      padding-bottom: 0.5rem;
+    }
+
+    input[type='radio'] {
+      @include primaryRadio;
+    }
+
+    span {
+      display: flex;
+    }
+  }
+
+  .birthDayWrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  input[type='date'] {
+    @include primaryDate;
+    @include typography('xxs');
+  }
+}

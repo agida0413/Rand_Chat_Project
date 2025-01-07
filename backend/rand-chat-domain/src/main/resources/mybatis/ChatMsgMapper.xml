@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rand.chat.mapper.ChatMsgMapper">
+    <insert id="chatMsgSave">
+        /* com.rand.chat.mapper.ChatMsgMapper.chatMsgSave 채팅방 메시지 저장 */
+        INSERT INTO CHAT_MESSAGE(usr_id,chat_room_id,message,msg_cr_date,msg_cr_date_ms,is_read,chat_type)
+               VALUES(
+                       #{usrId}
+                     , #{chatRoomId}
+                     , #{message}
+                     , #{msgCrDate}
+                     , #{msgCrDateMs}
+                     , #{read}
+                     , #{chatType}
+               )
+    </insert>
+
+    <update id="chatMsgIsReadUpdate" parameterType="ChatMessageUpdate">
+        /* com.rand.chat.mapper.ChatMsgMapper.chatMsgIsReadUpdate 채팅방 메시지 읽음여부 업데이트 */
+        UPDATE CHAT_MESSAGE SET
+               is_read = 1
+         WHERE usr_id = #{usrId}                                    /* 업데이트할 메시지의 발신자 */
+           AND chat_room_id = #{chatRoomId}
+           AND msg_cr_date_ms <![CDATA[ <= ]]> #{readDate}          /* 읽은 시간 이하 */
+    </update>
+
+    <select id="selectChatMsgList" parameterType="ChatMsgList" resultType="ResChatMsg">
+        /* com.rand.chat.mapper.ChatMsgMapper.selectChatMsgList 채팅방 메시지 리스트 조회 */
+        SELECT CM.chat_room_id       AS chatRoomId
+                 , CM.message            AS message
+                 , CM.msg_cr_date        AS msgCrDate
+                 , CM.msg_cr_date_ms     AS msgCrDateMs
+                 , CM.is_read            AS `read`
+                 , CM.chat_type          AS chatType
+                 , USR.nick_name         AS nickName
+              FROM MEMBERS USR
+        INNER JOIN CHAT_MESSAGE CM
+                ON CM.usr_id = USR.usr_id
+             WHERE CM.chat_room_id = #{chatRoomId}
+        ORDER BY CM.msg_cr_date_ms DESC
+        LIMIT #{rowSize} OFFSET #{offset}
+    </select>
+
+
+    <insert id="chatRoomImgSave" parameterType="ImgSave">
+        INSERT INTO CHAT_ROOM_IMG (chat_room_id,usr_id,img_url)
+        VALUES(
+                #{chatRoomId}
+              , #{usrId}
+              , #{imgUrl}
+        )
+
+    </insert>
+</mapper>

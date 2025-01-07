@@ -1,0 +1,30 @@
+@use '@/styles/base/_typography' as *;
+@use '@/styles/base/_colors' as *;
+
+@mixin primaryRadio {
+  appearance: none;
+  width: 1rem;
+  height: 2.5rem;
+  border: 1px solid $color-border;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    @include typography('xxs');
+    color: #e0e0e0;
+  }
+
+  &:checked {
+    background: $color-primary-400;
+    border-color: $color-primary-200;
+
+    &::before {
+      color: white;
+    }
+  }
+}

@@ -1,0 +1,33 @@
+@use '@/styles/base/_typography' as *;
+@use '@/styles/base/_spacing' as *;
+@use '@/styles/base/_colors' as *;
+
+@mixin primaryDate {
+  padding: 0.2rem;
+  border: 1px solid $color-border;
+  height: 4rem;
+  border-radius: $radius-xs;
+  text-align: center;
+  cursor: pointer;
+
+  &::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 0.2rem;
+  }
+
+  &::-webkit-datetime-edit-text,
+  &::-webkit-datetime-edit-month-field,
+  &::-webkit-datetime-edit-day-field,
+  &::-webkit-datetime-edit-year-field {
+    color: #757575;
+  }
+
+  &:invalid::-webkit-datetime-edit {
+    color: #757575;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary-200;
+  }
+}

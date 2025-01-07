@@ -1,0 +1,46 @@
+@use '@/styles/components/_button.scss' as *;
+@use '@/styles/components/_input.scss' as *;
+@use '@/styles/components/_checkBox.scss' as *;
+.emailAuthForm {
+  overflow-y: auto;
+  display: flex;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  flex-direction: column;
+  gap: 1rem;
+
+  input:not([type='date']) {
+    @include primaryInput;
+    @include typography('xxs');
+    height: 5rem;
+  }
+
+  .parentForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    button {
+      @include primaryButton;
+      @include typography('xxs');
+    }
+
+    .authCheck {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+
+      button {
+        width: 10rem;
+      }
+
+      input[type='text'],
+      input[type='email'] {
+        @include typography('xxs');
+        height: 5rem;
+        flex: 1;
+      }
+    }
+  }
+}

@@ -109,8 +109,8 @@ public enum ErrorCode {
     SEC_NO_MATCH_TOKEN_CATEGORY(401,"ERR-SEC-08","비 정상적인 접근입니다."), //클라이언트로 부터 받은  토큰의 카테고리(액세스,리프레시)가 맞지않음
     SEC_UN_ILLEGAL_TOKEN(401,"ERR-SEC-09","비 정상적인 접근입니다."), //비정상적인 토큰임 (지워졋어야 했던 토큰이나 등등)
     SEC_MUST_REISSUE_TOKEN(410,"ERR-SEC-10","토큰을 재발행 하세요."),//엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
-    SEC_NOT_MATCH_TOKEN_WITH_INFO(401,"ERR-SEC-11","토큰과 로그인 정보가 일치하지 않음."),//엑세스 토큰 만료 , 리프레시토큰을 통한 재발급
-
+    SEC_VERY_BAD_TOKEN(401,"ERR-SEC-12","비정상적인 토큰입니다."),//토큰 형식,문법 등 오류
+    SEC_NOT_MATCH_TOKEN_WITH_INFO(401,"ERR-SEC-13","토큰과 로그인 정보가 일치하지 않음."),
     //매칭
     MATCH_ACCEPT_EXPIRED(400,"ERR-MATCH-01","매칭 수락,거절 가능시간이 종료되었습니다."),
     //파일
@@ -122,8 +122,24 @@ public enum ErrorCode {
     FILE_NO_NAME(400,"ERR-FILE-03","기본이미지가 아닌 이미지로 변경중 파일이 비어있거나 이름이 없습니다."),
     FILE_NO_EXTENSE(400,"ERR-FILE-04","기본이미지가 아닌 이미지로 변경중 파일 확장자가 없습니다"),
     FILE_NO_ALLOW_EXTENSE(400,"ERR-FILE-05","기본이미지가 아닌 이미지로 변경중 지원되는 확장자가 아닙니다.(jpg,jpeg,png만 가능)"),
-    FILE_TO_MANY_SIZE(400,"ERR-FILE-06","기본이미지가 아닌 이미지로 변경중 파일 사이즈가 너무 큽니다.(최대 5MB)");
+    FILE_TO_MANY_SIZE(400,"ERR-FILE-06","기본이미지가 아닌 이미지로 변경중 파일 사이즈가 너무 큽니다.(최대 5MB)"),
 
+
+    //채팅 웹소켓 서버 에러
+    WS_ERR_UN_AUTH_CHAT_ROOM(400,"ERR-WS-01","허용되지 않은 채팅방을 구독 시도했습니다."),
+    WS_ERR_MESSAGE_NULL(400,"ERR-WS-02","빈 채팅메시지는 전송할 수 없습니다."),
+    WS_ERR_ENTER_ERROR(500,"ERR-WS-03","채팅방 입장중 에러가 발생하였습니다."),
+
+    //채팅 i/o api 에러
+    NO_DATA_CHAT_LIST(400,"ERR-CHAT-API-01","참여중인 채팅방이 없습니다."),
+    NO_DATA_CHAT_ROOM_MEMBER_INFO(400,"ERR-CHAT-API-02","참여중인 채팅방에 존재하는 회원정보가 없습니다."),
+    UN_AUTH_CHAT_ROOM(400,"ERR-CHAT-API-03","허용되지 않은 채팅방에 접근하였습니다."),
+    NO_DATA_CHAT_MSG(400,"ERR-CHAT-API-04","채팅방의 채팅메시지 데이터가 존재하지 않습니다."),
+    NO_DATA_CHAT_ROOM(400,"ERR-CHAT-API-05","채팅방정보가 존재하지 않습니다."),
+    FAIL_IMG_UPLOAD(400,"ERR-CHAT-API-06","파일 업로드에 실패하였습니다."),
+
+    //채팅 i/o api 정합성 오류
+    CHAT_ROOM_MUST_OVER_ZERO(400,"ERR-CHAT-API-VALI-01","채팅방 고유번호는 정수, 1이상이여야 합니다.");
     private final int status;
     private final String code;
     private final String message;

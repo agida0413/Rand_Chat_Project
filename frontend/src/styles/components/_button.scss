@@ -1,0 +1,19 @@
+@use '@/styles/base/_spacing' as *;
+@use '@/styles/base/_colors' as *;
+
+@mixin primaryButton {
+  width: 100%;
+  height: 100%;
+  padding: $padding-s;
+  border: 1px solid $color-border;
+  border-radius: $radius-l;
+  transition: border-color 0.3s;
+  background-color: $color-primary-300;
+  color: $color-background;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color-hover;
+  }
+}

@@ -13,5 +13,18 @@ export default defineConfig({
       { find: '@', replacement: '/src' },
       { find: 'node_modules', replacement: '/node_modules' }
     ]
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `
+          @use "@/styles/base/index.scss" as *;
+        `,
+        includePaths: ['src/styles/base']
+      }
+    }
+  },
+  define: {
+    global: 'window'
   }
 })
