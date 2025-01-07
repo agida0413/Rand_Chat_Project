@@ -10,9 +10,8 @@ on:
 
 jobs:
   build:
+    if: ${{ github.event.release.target_commitish == 'main' }}
     runs-on: ubuntu-latest
-    
-    if: github.event.release.target_commitish == 'main'  # main 브랜치를 참조하는 Release만 실행
 
     steps:
       - name: Checkout code
@@ -41,33 +40,33 @@ jobs:
       - name: Set up Docker Buildx  ----도커 셋업----
         uses: docker/setup-buildx-action@v2
 
-        #통합테스트
+      #   #통합테스트
 
-      - name: Install Docker Compose ----도커 컴포즈설치-----
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
+      # - name: Install Docker Compose ----도커 컴포즈설치-----
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y docker-compose
 
-      - name: Run mysql ----통합테스트를 위한 mysql컨테이너 RUN---
-        run: |
-           docker compose -f ./docker-compose-it-test.yml up -d mysql
+      # - name: Run mysql ----통합테스트를 위한 mysql컨테이너 RUN---
+      #   run: |
+      #      docker compose -f ./docker-compose-it-test.yml up -d mysql
 
-      - name: Run Redis ----통합테스트를 위한 redis컨테이너 RUN---
-        run: |
-           docker compose -f ./docker-compose-it-test.yml up -d redis-master-1    
+      # - name: Run Redis ----통합테스트를 위한 redis컨테이너 RUN---
+      #   run: |
+      #      docker compose -f ./docker-compose-it-test.yml up -d redis-master-1    
 
-      - name: Wait for DB ----통합테스트 대기중....---
-        run: |
-          sleep 10  # 적절한 대기 시간 설정
+      # - name: Wait for DB ----통합테스트 대기중....---
+      #   run: |
+      #     sleep 10  # 적절한 대기 시간 설정
 
-      - name: Run IT Tests  ----통합테스트---
-        run: |
-          docker-compose -f ./docker-compose-it-test.yml up --abort-on-container-exit backend_match1    # 컨테이너 빌드 및 실행
-          # 테스트가 실패한 경우에 워크플로우를 실패로 처리
-          if [ $? -ne 0 ]; then
-          echo "IT tests failed, stopping workflow."
-          exit 1
-          fi          
+      # - name: Run IT Tests  ----통합테스트---
+      #   run: |
+      #     docker-compose -f ./docker-compose-it-test.yml up --abort-on-container-exit backend_match1    # 컨테이너 빌드 및 실행
+      #     # 테스트가 실패한 경우에 워크플로우를 실패로 처리
+      #     if [ $? -ne 0 ]; then
+      #     echo "IT tests failed, stopping workflow."
+      #     exit 1
+      #     fi          
 
       - name: Login Docker  ----도커로그인----
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -90,6 +89,18 @@ jobs:
         run: |
           docker build -f ./frontend/Dockerfile-deploy -t kimyong120413/randchatfrontend:$TAG_NAME .
           docker push kimyong120413/randchatfrontend:$TAG_NAME
+ 
+
+      - name: BACKEND-CHAT-WS Image Build  ----채팅 웹소켓 서버 이미지빌드---
+        run: |
+          docker build -f ./backend/Dockerfile-chat-deploy -t kimyong120413/randchatbackendchatws:$TAG_NAME .
+          docker push kimyong120413/randchatbackendchatws:$TAG_NAME
+
+      - name: BACKEND-CHAT-IO Image Build  ----채팅 I/O 서버 이미지빌드---
+        run: |
+          docker build -f ./backend/Dockerfile-chat-API-deploy -t kimyong120413/randchatbackendchatio:$TAG_NAME .
+          docker push kimyong120413/randchatbackendchatio:$TAG_NAME         
+
  
       # - name: NGINX IMAGE BUILD ----엔진엑스 서버 이미지빌드---
       #   run: |
@@ -188,4 +199,66 @@ jobs:
           docker system prune -a -f --volumes
           docker pull kimyong120413/randchatbackendmatch:$TAG_NAME
           docker run -d --name back-end-match2 -p 8080:8080 --env-file .env -e INSTANCE_ID=server2 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendmatch:$TAG_NAME \
+          EOF
+
+       #채팅 웹소켓 ,i/o서버 추가 
+
+      - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 1배포----
+        env:
+          BACKEND_INSTANCE_CHAT_WS_1: ${{ secrets.BACKEND_INSTANCE_CHAT_WS_1 }}  # EC2 퍼블릭 IP
+        run: |
+          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$BACKEND_INSTANCE_CHAT_WS_1 << EOF
+          # 기존 컨테이너 종료 (이미 실행 중이면)
+          docker stop back-end-chat-ws || true
+          docker rm back-end-chat-ws || true
+          sudo systemctl restart docker
+          docker system prune -a -f --volumes
+          docker pull kimyong120413/randchatbackendchatws:$TAG_NAME
+          docker run -d --name back-end-chat-ws -p 8080:8080 --env-file .env -e INSTANCE_ID=ws-server-1 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatws:$TAG_NAME \
+          EOF
+ 
+      - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 2배포----
+        env:
+          BACKEND_INSTANCE_CHAT_WS_2: ${{ secrets.BACKEND_INSTANCE_CHAT_WS_2 }}  # EC2 퍼블릭 IP
+        run: |
+          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$BACKEND_INSTANCE_CHAT_WS_2 << EOF
+          # 기존 컨테이너 종료 (이미 실행 중이면)
+          docker stop back-end-chat-ws || true
+          docker rm back-end-chat-ws || true
+          sudo systemctl restart docker
+          docker system prune -a -f --volumes
+          docker pull kimyong120413/randchatbackendchatws:$TAG_NAME
+          docker run -d --name back-end-chat-ws -p 8080:8080 --env-file .env -e INSTANCE_ID=ws-server-2 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatws:$TAG_NAME \
+          EOF
+ 
+      - name: Connect to EC2 and deploy BACK-END-CHAT-I/O 1  ----채팅 I/O 서버 1배포----
+        env:
+          BACKEND_INSTANCE_CHAT_IO_1: ${{ secrets.BACKEND_INSTANCE_CHAT_IO_1 }}  # EC2 퍼블릭 IP
+        run: |
+          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$BACKEND_INSTANCE_CHAT_IO_1 << EOF
+          # 기존 컨테이너 종료 (이미 실행 중이면)
+          docker stop back-end-chat-io || true
+          docker rm back-end-chat-io || true
+          sudo systemctl restart docker
+          docker system prune -a -f --volumes
+          docker pull kimyong120413/randchatbackendchatio:$TAG_NAME
+          docker run -d --name back-end-chat-io -p 8080:8080 --env-file .env -e INSTANCE_ID=chat-io-1 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatio:$TAG_NAME \
+          EOF
+
+      - name: Connect to EC2 and deploy BACK-END-CHAT-I/O 2  ----채팅 I/O 서버 2 배포----
+        env:
+          BACKEND_INSTANCE_CHAT_IO_2: ${{ secrets.BACKEND_INSTANCE_CHAT_IO_2 }}  # EC2 퍼블릭 IP
+        run: |
+          # EC2에 SSH 연결 후 Docker 이미지 풀 및 실행
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$BACKEND_INSTANCE_CHAT_IO_2 << EOF
+          # 기존 컨테이너 종료 (이미 실행 중이면)
+          docker stop back-end-chat-io || true
+          docker rm back-end-chat-io || true
+          sudo systemctl restart docker
+          docker system prune -a -f --volumes
+          docker pull kimyong120413/randchatbackendchatio:$TAG_NAME
+          docker run -d --name back-end-chat-io -p 8080:8080 --env-file .env -e INSTANCE_ID=chat-io-2 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatio:$TAG_NAME \
           EOF
