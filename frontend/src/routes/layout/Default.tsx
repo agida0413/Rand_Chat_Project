@@ -5,7 +5,8 @@ import styles from './Defalut.module.scss'
 import { useLocationPolling } from '@/hooks/useLocationPolling'
 
 export default function DefaultLayout() {
-  const { location, isLoading, error } = useLocationPolling()
+  useLocationPolling()
+
   const navigation = useNavigation()
   if (navigation.state === 'loading') {
     return <Loading />

@@ -10,7 +10,8 @@ export const updateMyLocation = async ({
   localeLat,
   localeLon
 }: UpdateLocationRequest) => {
-  const url = '/member/location'
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+  const url = `${API_BASE_URL}/api/v1/member/location`
 
   const body = JSON.stringify({
     localeLat: localeLat,
@@ -26,8 +27,6 @@ export const updateMyLocation = async ({
     body,
     credentials: 'include'
   })
-
-  console.log(res)
 
   return res
 }

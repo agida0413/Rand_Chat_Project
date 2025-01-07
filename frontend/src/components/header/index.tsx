@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import styles from './Header.module.scss'
 import {
   IoHomeOutline,
@@ -10,6 +10,7 @@ import {
   IoExit
 } from 'react-icons/io5'
 import ProfileImage from '../profileImage'
+import { removeAccessToken } from '@/utils/auth'
 
 const navigations = [
   {
@@ -33,8 +34,11 @@ const navigations = [
 ]
 
 export default function Header() {
+  const navigate = useNavigate()
+
   const handleLogout = () => {
-    console.log('Logging out...')
+    removeAccessToken()
+    navigate('/login')
   }
 
   return (

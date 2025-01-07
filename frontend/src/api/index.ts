@@ -1,5 +1,5 @@
 import { ApiError, isApiError, setAccessToken } from '@/utils/auth'
-import { postReissueToken } from './login'
+import { getReissueToken } from './login'
 const API_BASE_URL = import.meta.env.VITE_API_URL
 
 export type ApiResponse<T = null> = {
@@ -37,17 +37,28 @@ const fetchWrapper = async <T>(
   options: RequestInit = {}
 ): Promise<{ data: T; headers: Headers }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}${url}`, {
+    const response = await fetch(`${url}`, {
       ...options,
       headers: {
         ...options.headers
       }
     })
-    if (response.status === 410) {
+
+    if (response.status === 410 || response.status === 401) {
       try {
-        const reissueResponse = await postReissueToken()
-        console.log(reissueResponse)
-        const newAccessToken = reissueResponse.headers.get('access')
+        const reissueResponse = await getReissueToken()
+        if (
+          reissueResponse.status === 500 ||
+          reissueResponse.status === 401 ||
+          reissueResponse.status === 410
+        ) {
+          return {
+            data: reissueResponse as T,
+            headers: reissueResponse.headers
+          }
+        }
+        const newAccessToken = reissueResponse.headers?.get('access')
+
         if (newAccessToken) {
           setAccessToken(newAccessToken)
           const retryResponse = await fetch(`${API_BASE_URL}${url}`, {

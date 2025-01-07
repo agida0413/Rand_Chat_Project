@@ -23,7 +23,8 @@ export const postCheckAuthCode = async ({
   email,
   authCode
 }: PostCheckAuthCodeRequest) => {
-  const url = '/member/email/check'
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+  const url = `${API_BASE_URL}/api/v1/member/email/check`
 
   const formData = new URLSearchParams()
   formData.append('email', email)
@@ -41,7 +42,8 @@ export const postCheckAuthCode = async ({
 }
 
 export const postSendAuthCode = async ({ email }: PostSendAuthCodeRequest) => {
-  const url = '/member/email'
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+  const url = `${API_BASE_URL}/api/v1/member/email`
 
   const formData = new URLSearchParams()
   formData.append('email', email)
@@ -66,7 +68,8 @@ export const postSignup = async ({
   birth,
   name
 }: PostSignupRequest) => {
-  const url = '/member'
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+  const url = `${API_BASE_URL}/api/v1/member`
 
   const formData = new URLSearchParams()
   formData.append('email', email)

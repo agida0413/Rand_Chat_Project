@@ -7,7 +7,6 @@ import {
 import DefaultLayout from './layout/Default'
 import Home from './pages/home'
 import Chat from './pages/chat'
-import Setting from './pages/setting'
 import NotFound from './pages/NotFound'
 import ErrorFallback from './layout/ErrorFallback'
 import { Suspense } from 'react'
@@ -15,8 +14,7 @@ import Loading from './layout/Loading'
 
 import Login from './pages/login'
 import Signup from './pages/signup'
-import { requiresAuth, requiresLogin } from './loaders'
-import Profile from './pages/updateProfile'
+import { requiresAuth } from './loaders'
 import UpdatePassword from './pages/updatePassword'
 import UpdateProfile from './pages/updateProfile'
 import SettingDefaultLayout from './layout/SettingDefault'
@@ -39,12 +37,12 @@ const publicRoutes = [
   {
     path: '/signup',
     element: <Signup />,
-    loader: requiresLogin
+    loader: requiresAuth
   },
   {
     path: '/login',
     element: <Login />,
-    loader: requiresLogin
+    loader: requiresAuth
   }
 ]
 
@@ -52,7 +50,7 @@ const protectedRoutes = [
   {
     path: '/',
     element: <DefaultLayout />,
-    // loader: requiresAuth,
+    loader: requiresAuth,
     children: [
       {
         path: '/',

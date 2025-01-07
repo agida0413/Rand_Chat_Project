@@ -18,7 +18,7 @@ export default function ChatList() {
         {chatUsers.length === 0 ? (
           <h4>채팅방이 없습니다</h4>
         ) : (
-          chatUsers.map((user, index) => (
+          chatUsers.map((_, index) => (
             <NavLink
               key={index}
               to={

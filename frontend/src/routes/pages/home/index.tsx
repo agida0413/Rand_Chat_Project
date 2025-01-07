@@ -2,18 +2,19 @@ import { useMatchConnection } from '@/hooks/useMatchMutation'
 import styles from './home.module.scss'
 import { useState } from 'react'
 import Slider from '@/components/slider'
+import { getMatch } from '@/api/match'
 
 export default function Home() {
-  const [sliderValue, setSliderValue] = useState(0)
+  const [sliderValue, setSliderValue] = useState(0.1)
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value)
   }
 
-  const { startMatchConnection, isConnecting, isConnected, error } =
-    useMatchConnection()
-  const handleMatch = () => {
+  const { startMatchConnection } = useMatchConnection()
+  const handleMatch = async () => {
     startMatchConnection()
+    await getMatch({ distance: sliderValue })
   }
 
   return (
