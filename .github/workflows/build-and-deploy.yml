@@ -203,7 +203,7 @@ jobs:
 
   #채팅 웹소켓 ,i/o서버 추가 
 
-     - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 1배포----
+      - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 1배포----
         env:
           BACKEND_INSTANCE_CHAT_WS_1: ${{ secrets.BACKEND_INSTANCE_CHAT_WS_1 }}  # EC2 퍼블릭 IP
         run: |
@@ -218,7 +218,7 @@ jobs:
           docker run -d --name back-end-chat-ws -p 8080:8080 --env-file .env -e INSTANCE_ID=ws-server-1 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatws:$TAG_NAME \
           EOF
  
-     - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 2배포----
+      - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 2배포----
         env:
           BACKEND_INSTANCE_CHAT_WS_2: ${{ secrets.BACKEND_INSTANCE_CHAT_WS_2 }}  # EC2 퍼블릭 IP
         run: |
