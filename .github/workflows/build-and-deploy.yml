@@ -10,9 +10,8 @@ on:
 
 jobs:
   build:
+    if: ${{ github.event.release.target_commitish == 'main' }}
     runs-on: ubuntu-latest
-    
-    if: github.event.release.target_commitish == 'main'  # main 브랜치를 참조하는 Release만 실행
 
     steps:
       - name: Checkout code
@@ -97,7 +96,7 @@ jobs:
           docker build -f ./backend/Dockerfile-chat-deploy -t kimyong120413/randchatbackendchatws:$TAG_NAME .
           docker push kimyong120413/randchatbackendchatws:$TAG_NAME
 
-       - name: BACKEND-CHAT-IO Image Build  ----채팅 I/O 서버 이미지빌드---
+      - name: BACKEND-CHAT-IO Image Build  ----채팅 I/O 서버 이미지빌드---
         run: |
           docker build -f ./backend/Dockerfile-chat-API-deploy -t kimyong120413/randchatbackendchatio:$TAG_NAME .
           docker push kimyong120413/randchatbackendchatio:$TAG_NAME         
@@ -202,9 +201,9 @@ jobs:
           docker run -d --name back-end-match2 -p 8080:8080 --env-file .env -e INSTANCE_ID=server2 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendmatch:$TAG_NAME \
           EOF
 
-  #채팅 웹소켓 ,i/o서버 추가 
+       #채팅 웹소켓 ,i/o서버 추가 
 
-     - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 1배포----
+      - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 1배포----
         env:
           BACKEND_INSTANCE_CHAT_WS_1: ${{ secrets.BACKEND_INSTANCE_CHAT_WS_1 }}  # EC2 퍼블릭 IP
         run: |
@@ -219,7 +218,7 @@ jobs:
           docker run -d --name back-end-chat-ws -p 8080:8080 --env-file .env -e INSTANCE_ID=ws-server-1 -e SPRING_PROFILES_ACTIVE=deploy kimyong120413/randchatbackendchatws:$TAG_NAME \
           EOF
  
-     - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 2배포----
+      - name: Connect to EC2 and deploy BACK-END-CHAT-WS1 ----채팅 WS 서버 2배포----
         env:
           BACKEND_INSTANCE_CHAT_WS_2: ${{ secrets.BACKEND_INSTANCE_CHAT_WS_2 }}  # EC2 퍼블릭 IP
         run: |
