@@ -40,6 +40,10 @@
       }
     }
 
+    .matchButton {
+      justify-items: center;
+    }
+
     button {
       @include primaryButton;
       @include typography('sm');
