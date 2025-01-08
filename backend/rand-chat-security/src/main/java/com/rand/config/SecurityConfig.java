@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 
@@ -68,7 +69,12 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));//3000번 포트 허용
+                        // 여러 도메인 추가
+                        configuration.setAllowedOrigins(Arrays.asList(
+                                "http://localhost:3000", // 개발 환경 1
+                                "http://randchat.o-r.kr", // 실제 서버
+                                "https://randchat.o-r.kr" // 실제 서버 (HTTPS)
+                        ));
                         configuration.setAllowedMethods(Collections.singletonList("*"));//모든메소드 허용
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
