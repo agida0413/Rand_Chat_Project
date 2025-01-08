@@ -1,5 +1,5 @@
 import ChatUser from '@/components/chatUser'
-import styles from './chatList.module.scss'
+import styles from './ChatList.module.scss'
 import { IoSearchOutline } from 'react-icons/io5'
 import { NavLink, useLocation } from 'node_modules/react-router-dom/dist'
 
