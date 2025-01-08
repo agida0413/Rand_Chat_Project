@@ -1,7 +1,6 @@
 @use '@/styles/components/_button.scss' as *;
-@use '@/styles/components/_input.scss' as *;
 
-.searchPasswordForm {
+.matchProfileForm {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -24,28 +23,47 @@
     max-width: 700px;
     position: relative;
     border-radius: $radius-m;
-    background-color: #fff;
+    background-color: $color-primary-100;
     margin: 0 $margin-l;
     display: flex;
     flex-direction: column;
     gap: 3rem;
     padding: $padding-l;
 
-    span {
+    .matchDetail {
       display: flex;
       flex-direction: column;
       gap: 1rem;
+
       h1 {
+        @include typography('md', 'bold');
+        align-items: center;
+      }
+
+      h2 {
         @include typography('xs', 'bold');
       }
+
       p {
         @include typography('xs', 'medium');
       }
-    }
-  }
 
-  input {
-    @include primaryInput;
+      img {
+        max-width: 50rem;
+        max-height: 100rem;
+      }
+
+      .matchText {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    .matchButton {
+      display: flex;
+      gap: 2rem;
+    }
   }
 
   button {

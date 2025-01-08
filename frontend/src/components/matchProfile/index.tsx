@@ -1,29 +1,34 @@
 import { useMatchStore } from '@/store/matchStore'
-import styles from './SearchPassword.module.scss'
+import styles from './MatchProfile.module.scss'
+import defaultImg from '@/assets/images/default-profile.webp'
 
 export default function MatchProfile() {
-  const { setIsOpenModal } = useMatchStore()
+  const { setIsOpenModal, matchingData } = useMatchStore()
 
   const handleClose = () => {
     setIsOpenModal(false)
   }
 
   return (
-    <section className={styles.searchPasswordForm}>
+    <section className={styles.matchProfileForm}>
       <div className={styles.background}></div>
       <div className={styles.contents}>
-        <span>
-          <h1>비밀번호 초기화</h1>
-          <p>
-            계정의 이메일 주소를 입력하면 비밀번호를 재설정 할 수 있는 링크를
-            보내드립니다.
-          </p>
-        </span>
-        <span>
-          <input
-            type="email"
-            placeholder="이메일을 입력하세요"
+        <span className={styles.matchDetail}>
+          <h1>프로필</h1>
+          <img
+            src={
+              matchingData.profileImg === null
+                ? defaultImg
+                : matchingData.profileImg
+            }
           />
+          <span className={styles.matchText}>
+            <h2>{matchingData.nickname}</h2>
+            <p>{matchingData.sex}</p>
+            <p>거리 : {matchingData.distance}</p>
+          </span>
+        </span>
+        <span className={styles.matchButton}>
           <button>수락</button>
           <button onClick={handleClose}>거절</button>
         </span>
