@@ -71,10 +71,9 @@ public class SecurityConfig {
 
                         // 여러 도메인 추가
                         configuration.setAllowedOrigins(Arrays.asList(
-//                                "http://localhost:3000", // 개발 환경 1
-//                                "http://randchat.o-r.kr", // 실제 서버
-//                                "https://randchat.o-r.kr" // 실제 서버 (HTTPS)
-                                "*"
+                                "http://localhost:3000", // 개발 환경 1
+                                "http://randchat.o-r.kr", // 실제 서버
+                                "https://randchat.o-r.kr" // 실제 서버 (HTTPS)
                         ));
                         configuration.setAllowedMethods(Collections.singletonList("*"));//모든메소드 허용
                         configuration.setAllowCredentials(true);
