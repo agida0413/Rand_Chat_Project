@@ -12,7 +12,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
 
         corsRegistry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000","http://randchat.o-r.kr","https://randchat.o-r.kr");//분리 작업시 3000포트 허용
-
+//                .allowedOrigins("http://localhost:3000","http://randchat.o-r.kr","https://randchat.o-r.kr");//분리 작업시 3000포트 허용
+                .allowedOrigins("*");//분리 작업시 3000포트 허용
     }
 }
