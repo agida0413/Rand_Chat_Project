@@ -13,7 +13,8 @@ export function useMatchConnection() {
     isConnected,
     setIsConnecting,
     setIsConnected,
-    setIsOpenModal
+    setIsOpenModal,
+    setMatchingData
   } = useMatchStore()
   const { getCurrentPosition } = useLocationPolling()
 
@@ -41,7 +42,28 @@ export function useMatchConnection() {
       )
 
       eventSource.addEventListener('MATCHING_CHANNEL', event => {
-        console.log('custom event', event)
+        try {
+          const messageEvent = event as MessageEvent
+          const eventData = JSON.parse(messageEvent.data)
+
+          const matchingData = {
+            status: eventData.status,
+            code: eventData.code,
+            nickname: eventData.data.nickname,
+            sex: eventData.data.sex,
+            profileImg:
+              eventData.data.profileImg !== 'null'
+                ? eventData.data.profileImg
+                : null,
+            distance: parseFloat(eventData.data.distance),
+            matchAcptToken: eventData.data.matchAcptToken,
+            timestamp: eventData.timestamp
+          }
+
+          setMatchingData(matchingData)
+        } catch (error) {
+          console.error('Error parsing MATCHING_CHANNEL event data:', error)
+        }
       })
 
       eventSource.onopen = e => {
