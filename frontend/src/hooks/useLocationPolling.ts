@@ -1,4 +1,5 @@
 import { updateMyLocation } from '@/api/location'
+import { useMatchStore } from '@/store/matchStore'
 import { useState, useEffect } from 'react'
 
 export function useLocationPolling() {
@@ -9,6 +10,7 @@ export function useLocationPolling() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
+  const { setIsLocationGranted } = useMatchStore()
   const updateLocation = async (latitude: number, longitude: number) => {
     setIsLoading(true)
     setError(null)
@@ -27,10 +29,12 @@ export function useLocationPolling() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         position => {
+          setIsLocationGranted(true)
           const { latitude, longitude } = position.coords
           updateLocation(latitude, longitude)
         },
         error => {
+          setIsLocationGranted(false)
           console.error('위치 정보 가져오기 실패:', error)
           setError(new Error('위치 정보 가져오기 실패'))
         }
@@ -50,5 +54,5 @@ export function useLocationPolling() {
     }
   }, [])
 
-  return { location, isLoading, error }
+  return { location, isLoading, error, getCurrentPosition }
 }
