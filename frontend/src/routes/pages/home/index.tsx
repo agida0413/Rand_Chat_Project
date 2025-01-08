@@ -1,6 +1,22 @@
+import { useMatchConnection } from '@/hooks/useMatchMutation'
 import styles from './home.module.scss'
+import { useState } from 'react'
+import Slider from '@/components/slider'
+import { getMatch } from '@/api/match'
 
 export default function Home() {
+  const [sliderValue, setSliderValue] = useState(0.1)
+
+  const handleSliderChange = (value: number) => {
+    setSliderValue(value)
+  }
+
+  const { startMatchConnection } = useMatchConnection()
+  const handleMatch = async () => {
+    startMatchConnection()
+    await getMatch({ distance: sliderValue })
+  }
+
   return (
     <div className={styles.homeContainer}>
       <div className={styles.checkContainer}>
@@ -22,8 +38,18 @@ export default function Home() {
             </li>
           </div>
         </div>
+        <div className={styles.sliderContainer}>
+          <p>매칭 거리</p>
+          <Slider
+            min={0.1}
+            max={100.1}
+            step={1}
+            initialValue={sliderValue}
+            onChange={handleSliderChange}
+          />
+        </div>
         <div>
-          <button>랜덤매칭</button>
+          <button onClick={handleMatch}>랜덤매칭</button>
         </div>
       </div>
     </div>

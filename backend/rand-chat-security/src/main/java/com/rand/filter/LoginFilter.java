@@ -140,7 +140,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //응답 설정
         response.setHeader("access", access);//엑세스 토큰은 헤더에
 
-       Cookie cookie= CookieUtil.createCookie("refresh",refresh,300);
+       Cookie cookie= CookieUtil.createCookie("refresh",refresh,604800);
 
         //성공시 응답
         response.addCookie(cookie);

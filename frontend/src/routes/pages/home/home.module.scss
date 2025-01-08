@@ -32,6 +32,14 @@
       }
     }
 
+    .sliderContainer {
+      justify-items: center;
+      @include typography('sm');
+      p {
+        @include typography('sm', 'bold');
+      }
+    }
+
     button {
       @include primaryButton;
       @include typography('sm');

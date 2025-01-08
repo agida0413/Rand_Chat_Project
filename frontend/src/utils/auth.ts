@@ -1,3 +1,4 @@
+import Cookies, { CookieSetOptions } from 'universal-cookie'
 import { queryClient } from '@/lib/reactQuery'
 import { getUserInfo } from '@/api/login'
 export const AUTH_TOKEN_KEY = 'accessToken'
@@ -10,6 +11,8 @@ export type ApiError = {
   timestamp: string
 }
 
+const cookies = new Cookies()
+
 export const getAccessToken = () => {
   return localStorage.getItem(AUTH_TOKEN_KEY) || ''
 }
@@ -20,6 +23,25 @@ export const setAccessToken = (token: string) => {
 
 export const removeAccessToken = () => {
   localStorage.removeItem(AUTH_TOKEN_KEY)
+}
+
+export const setCookie = (
+  name: string,
+  value: string,
+  options?: CookieSetOptions
+): void => {
+  cookies.set(name, value, { ...options })
+}
+
+export const getCookie = (name: string): string | undefined => {
+  return cookies.get(name)
+}
+
+export const removeCookie = (
+  name: string,
+  options?: CookieSetOptions
+): void => {
+  cookies.remove(name, { path: '/', ...options })
 }
 
 export const getUser = async () => {

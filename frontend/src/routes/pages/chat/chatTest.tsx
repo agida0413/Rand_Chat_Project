@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Client } from '@stomp/stompjs'
 import { getAccessToken } from '@/utils/auth'
 
-interface ChatMessage {
-  type: 'TALK'
-  sender: string
-  message: string
-}
+// interface ChatMessage {
+//   type: 'TALK'
+//   sender: string
+//   message: string
+// }
 
 export default function ChatTest() {
   const client = useRef<Client | null>(null)

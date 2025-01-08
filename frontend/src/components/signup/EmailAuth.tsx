@@ -7,9 +7,12 @@ import { useSendAuthCodeMutation } from '@/hooks/useSendAuthCodeMutation'
 
 export default function EmailAuth() {
   const { email } = useSignupStore(state => state.user)
-  const { authCode, isAuthCodeVerified, isRunning, authTime } = useSignupStore(
-    state => state.auth
-  )
+  const {
+    authCode,
+    // isAuthCodeVerified,
+    isRunning,
+    authTime
+  } = useSignupStore(state => state.auth)
   const { setUser, setAuth } = useSignupStore()
   const { handleSendAuthCode, isPendingSendAuthCode } =
     useSendAuthCodeMutation()

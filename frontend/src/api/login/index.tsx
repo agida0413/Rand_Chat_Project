@@ -18,7 +18,8 @@ export interface getUserInfoResponse {
 }
 
 export const postLogin = async ({ username, password }: PostLoginRequest) => {
-  const url = '/member/login'
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+  const url = `${API_BASE_URL}/api/v1/member/login`
 
   const formData = new URLSearchParams()
   formData.append('username', username)
@@ -29,19 +30,20 @@ export const postLogin = async ({ username, password }: PostLoginRequest) => {
       'Content-Type': 'application/x-www-form-urlencoded',
       Accept: 'application/json'
     },
-    body: formData
+    body: formData,
+    credentials: 'include'
   })
 
   return res
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL
-export const postReissueToken = async () => {
-  const url = '/reissue'
-  const res = await fetch(API_BASE_URL + url, {
+export const getReissueToken = async () => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+  const url = `${API_BASE_URL}/api/v1/reissue`
+  const res = await fetch(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Type': 'x-www-form-urlencoded',
       Accept: 'application/json',
       access: `${getAccessToken()}`
     },
@@ -52,7 +54,8 @@ export const postReissueToken = async () => {
 }
 
 export const getUserInfo = async () => {
-  const url = '/member/info'
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+  const url = `${API_BASE_URL}/api/v1/member/info`
   const res = await api.get<getUserInfoResponse>(url, {
     headers: {
       Accept: 'application/json',
