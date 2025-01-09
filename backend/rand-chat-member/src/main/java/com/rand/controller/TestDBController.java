@@ -67,7 +67,7 @@ public class TestDBController {
     @Transactional
     public String test2(){
         int preUsrId;
-        for(int i= 3; i<=10003; i++){
+        for(int i= 3; i<=1003; i++){
 
             if(i%2==0){
                 preUsrId = i-1;
@@ -87,7 +87,7 @@ public class TestDBController {
                 String chatRoomId =String.valueOf(match1.getChatRoomId()) ;
                 int chatRommIdInt = Integer.parseInt(chatRoomId);
 
-                for(int k = 0; k<200; k++){
+                for(int k = 0; k<110; k++){
                     ReqChatMsgSaveDTO reqChatMsgSaveDTO = new ReqChatMsgSaveDTO();
                     reqChatMsgSaveDTO.setChatRoomId(chatRommIdInt);
                     reqChatMsgSaveDTO.setMessage("테스트메시지"+i+k);
