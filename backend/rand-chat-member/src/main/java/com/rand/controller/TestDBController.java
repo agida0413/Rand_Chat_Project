@@ -41,7 +41,7 @@ public class TestDBController {
 
             Members members = new Members();
             members.setUsername("test"+i);
-            members.setPassword("$2a$10$B.0TVquMQ.fSifE2LbJuSOJeQVts0Ho9R/O0sN2HXkYHrw6wwXrG6");
+            members.setPassword("$10$jGojAoDqOrIkLHKxXkdP1O//x.Vcl3VC/b2eFo4kk8YTyyjB9ttTa");
             members.setEmail("test"+i+"@naver.com");
             members.setNickName("테스트닉네임"+i);
             members.setName("테스트이름"+i);
