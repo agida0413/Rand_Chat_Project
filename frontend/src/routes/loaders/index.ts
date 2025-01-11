@@ -16,8 +16,9 @@ export async function requiresAuth({ request }: { request: Request }) {
 
   if (userData.data.status === 500) {
     removeAccessToken()
-    const redirectTo = url.pathname + url.search
-    return redirect(`/login?redirectTo=${encodeURIComponent(redirectTo)}`)
+    // const redirectTo = url.pathname + url.search
+    // return redirect(`/login?redirectTo=${encodeURIComponent(redirectTo)}`)
+    return redirect(`/login`)
   }
 
   if (url.pathname === '/login' || url.pathname === '/signup') {

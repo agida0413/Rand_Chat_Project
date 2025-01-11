@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom'
 import DefaultLayout from './layout/Default'
 import Home from './pages/home'
-import Chat from './pages/chat'
 import NotFound from './pages/NotFound'
 import ErrorFallback from './layout/ErrorFallback'
 import { Suspense } from 'react'
@@ -20,6 +19,7 @@ import UpdateProfile from './pages/updateProfile'
 import SettingDefaultLayout from './layout/SettingDefault'
 import ChatTest from './pages/chat/chatTest'
 import ChatDefaultLayout from './layout/ChatDefault'
+import ChatDetail from '@/components/chatDetail'
 
 function ErrorBoundary() {
   const error: Error = useRouteError() as Error
@@ -68,7 +68,7 @@ const protectedRoutes = [
             path: ':chatId',
             element: (
               <Suspense fallback={<Loading />}>
-                <Chat />
+                <ChatDetail />
               </Suspense>
             )
           }

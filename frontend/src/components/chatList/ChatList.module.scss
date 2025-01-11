@@ -38,6 +38,9 @@
     .peopleName {
       @include typography('sm', 'bold');
     }
+    .activeLink {
+      background-color: $color-dropdown-shadow;
+    }
 
     a {
       text-decoration: none;

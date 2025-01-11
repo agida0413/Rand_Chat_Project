@@ -16,10 +16,12 @@ export default function ProfileImage({
     e.currentTarget.src = defaultImg
   }
 
+  const imageSrc = src ?? defaultImg
+
   return (
     <img
       className={styles.imageContainer}
-      src={src || defaultImg}
+      src={imageSrc}
       alt={alt}
       onError={onErrorImg}
     />

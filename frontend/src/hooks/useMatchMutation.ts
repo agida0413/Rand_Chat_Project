@@ -1,11 +1,11 @@
 import { notify } from '@/utils/toast'
-import { getAccessToken } from '@/utils/auth'
+import { getAccessToken, setMatchToken } from '@/utils/auth'
 import { EventSourcePolyfill } from 'event-source-polyfill'
 import { useMatchStore } from '@/store/matchStore'
 import { getMatch } from '@/api/match'
 import { useLocationPolling } from './useLocationPolling'
 
-export function useMatchConnection() {
+export function useMatchMutation() {
   const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
   const {
     isLocationGranted,
@@ -27,7 +27,7 @@ export function useMatchConnection() {
     getCurrentPosition()
 
     try {
-      getMatch({ distance })
+      getMatch(distance)
       setIsConnecting(true)
       notify('success', '매칭이 시작되었습니다.')
 
@@ -60,6 +60,7 @@ export function useMatchConnection() {
             timestamp: eventData.timestamp
           }
 
+          setMatchToken(eventData.data.matchAcptToken)
           setMatchingData(matchingData)
         } catch (error) {
           console.error('Error parsing MATCHING_CHANNEL event data:', error)
@@ -83,7 +84,6 @@ export function useMatchConnection() {
 
       return eventSource
     } catch (error) {
-      console.log(error, '====')
       setIsConnecting(false)
       setIsConnected(false)
       return null

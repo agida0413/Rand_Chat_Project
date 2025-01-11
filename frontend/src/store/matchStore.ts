@@ -47,7 +47,10 @@ export const useMatchStore = create<MatchState>()(
       setIsConnecting: (value: boolean) => set({ isConnecting: value }),
       setIsConnected: (value: boolean) => set({ isConnected: value }),
       setIsOpenModal: (value: boolean) => set({ isOpenModal: value }),
-      setMatchingData: (data: MatchingData) => set({ matchingData: data })
+      setMatchingData: (data: MatchingData) => {
+        const distanceInKm = (data.distance / 1000).toFixed(1)
+        set({ matchingData: { ...data, distance: parseFloat(distanceInKm) } })
+      }
     }),
     {
       name: 'matchStore'
