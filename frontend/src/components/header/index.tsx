@@ -10,7 +10,8 @@ import {
   IoExit
 } from 'react-icons/io5'
 import ProfileImage from '../profileImage'
-import { removeAccessToken } from '@/utils/auth'
+import { removeAccessToken, removeMatchToken } from '@/utils/auth'
+import { postLogout } from '@/api/login'
 
 const navigations = [
   {
@@ -37,7 +38,9 @@ export default function Header() {
   const navigate = useNavigate()
 
   const handleLogout = () => {
+    postLogout()
     removeAccessToken()
+    removeMatchToken()
     navigate('/login')
   }
 

@@ -1,4 +1,4 @@
-import { useMatchConnection } from '@/hooks/useMatchMutation'
+import { useMatchMutation } from '@/hooks/useMatchMutation'
 import styles from './home.module.scss'
 import { useState } from 'react'
 import Slider from '@/components/slider'
@@ -11,7 +11,7 @@ export default function Home() {
     setSliderValue(value)
   }
 
-  const { startMatchConnection, isConnecting } = useMatchConnection()
+  const { startMatchConnection, isConnecting } = useMatchMutation()
   const handleMatch = async () => {
     startMatchConnection(sliderValue)
   }

@@ -1,0 +1,49 @@
+.errorContainer {
+  text-align: center;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  max-width: 50rem;
+  width: 100%;
+  margin: 100px auto;
+
+  h2 {
+    @include typography('md', 'bold');
+    color: $color-error;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  p {
+    @include typography('sm', 'bold');
+    color: #555;
+    margin: 20px 0;
+  }
+
+  a {
+    @include typography('sm', 'bold');
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #e74c3c;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #c0392b;
+    }
+  }
+}

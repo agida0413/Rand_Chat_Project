@@ -23,8 +23,9 @@ export function useLoginMutation() {
       setAccessToken(accessToken)
       notify('success', '로그인이 완료되었습니다')
 
-      const redirectTo = new URLSearchParams(location.search).get('redirectTo')
-      navigate(redirectTo || '/')
+      navigate('/')
+      // const redirectTo = new URLSearchParams(location.search).get('redirectTo')
+      // navigate(redirectTo || '/')
     },
     onError: (error: Error) => {
       notify('error', error.message)
