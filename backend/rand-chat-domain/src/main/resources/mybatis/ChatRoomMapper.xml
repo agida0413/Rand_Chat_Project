@@ -15,17 +15,37 @@
     <select id="selectChatRoomList" parameterType="ChatRoom" resultType="ResChatRoomListDTO">
         /* com.rand.chat.mapper.ChatRoomMapper.selectChatRoomList 회원이 참여하고있는 채팅방 리스트 (채팅방은 수만개 되지않으니 별도의 성능개선 페이징은 필요없어보임 )*/
         WITH LatestMessage AS (
-                SELECT chat_room_id,
+                SELECT CM.chat_room_id,
                        MAX(msg_cr_date_ms) AS latest_msg_date_ms
-                       FROM CHAT_MESSAGE
-              GROUP BY chat_room_id
+                       FROM CHAT_MESSAGE CM
+                 WHERE CM.chat_room_id IN (
+                                SELECT CR2.chat_room_id
+                                  FROM CHAT_ROOM_MEMBERS CR2
+                                 WHERE CR2.chat_room_id = (
+                                            SELECT CR3.chat_room_id
+                                              FROM CHAT_ROOM_MEMBERS CR3
+                                             WHERE CR3.usr_id = #{usrId}
+                                )
+                 )
+              GROUP BY CM.chat_room_id
         ),
         UnreadCount AS (
-               SELECT chat_room_id,
+               SELECT CM.chat_room_id,
                       COUNT(*) AS unread_count
-                 FROM CHAT_MESSAGE
-                WHERE usr_id != #{usrId} AND is_read = 0
-             GROUP BY chat_room_id
+                 FROM CHAT_MESSAGE CM
+                WHERE 1=1
+                  AND CM.chat_room_id IN (
+                                 SELECT CR2.chat_room_id
+                                   FROM CHAT_ROOM_MEMBERS CR2
+                                  WHERE CR2.chat_room_id = (
+                                              SELECT CR3.chat_room_id
+                                                FROM CHAT_ROOM_MEMBERS CR3
+                                               WHERE CR3.usr_id = #{usrId}
+                                  )
+                  )
+                  AND CM.usr_id != #{usrId}
+                  AND CM.is_read = 0
+             GROUP BY CM.chat_room_id
         ),
         OpsInfo AS (
               SELECT SUB_CRM.chat_room_id,
