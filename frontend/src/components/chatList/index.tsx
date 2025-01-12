@@ -2,8 +2,9 @@ import ChatUser from '@/components/chatUser'
 import { useEffect, useState } from 'react'
 import styles from './ChatList.module.scss'
 import { IoSearchOutline } from 'react-icons/io5'
-import { NavLink, useLocation } from 'node_modules/react-router-dom/dist'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useChatRoomStore } from '@/store/chatRoomStore'
+import { useMultiChatting } from '@/hooks/useMultiChatting'
 
 export default function ChatList() {
   const [inputChatRoom, setInputChatRoom] = useState('')
@@ -13,6 +14,8 @@ export default function ChatList() {
   useEffect(() => {
     actions.fetchChatData()
   }, [])
+
+  const { connectedRooms, connectToRoom } = useMultiChatting(chatRoom)
 
   return (
     <section className={styles.chatListContainer}>
@@ -37,8 +40,14 @@ export default function ChatList() {
                 location.pathname === `/chat/${room.chatRoomId}`
                   ? '/chat'
                   : `/chat/${room.chatRoomId}`
-              }>
+              }
+              onClick={() => connectToRoom(room.chatRoomId)}>
               <ChatUser room={room} />
+              {connectedRooms.includes(room.chatRoomId) ? (
+                <span>Connected</span>
+              ) : (
+                <span>Disconnected</span>
+              )}
             </NavLink>
           ))
         )}
