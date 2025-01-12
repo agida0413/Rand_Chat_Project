@@ -37,7 +37,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
                 .setErrorHandler(stompExceptionHandler)
                 .addEndpoint("/chat/ws")
                 .addInterceptors(webSocketInterCeptor)  // 세션 핸들러 추가
-                .setAllowedOrigins("*") // 클라이언트 도메인 허용 (개발 중에는 "*" 가능)
+                .setAllowedOrigins("http://localhost:3000","http://randchat.o-r.kr","https://randchat.o-r.kr") // 클라이언트 도메인 허용 (개발 중에는 "*" 가능)
                 .setHandshakeHandler(customHandShakeHandler);
 //               .withSockJS();          // SockJS 사용
     }

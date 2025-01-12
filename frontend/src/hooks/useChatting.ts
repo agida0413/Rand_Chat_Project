@@ -9,10 +9,10 @@ export function useChatting(chatId: string | undefined) {
   const client = useRef<Client | null>(null)
   const access = getAccessToken()
   const socketAddress = `${import.meta.env.VITE_WS_API_URL}/chat/ws`
-  const sendAddress = `${import.meta.env.VITE_WS_API_URL}/pub/chat/room/${chatId}`
+  const sendAddress = `/pub/chat/room/${chatId}`
   const subscribeAddresses = [
-    `${import.meta.env.VITE_WS_API_URL}/queue/${access}/error`,
-    `${import.meta.env.VITE_WS_API_URL}/sub/chat/room/${chatId}`
+    `/queue/${access}/error`,
+    `/sub/chat/room/${chatId}`
   ]
 
   const sendHandler = (
@@ -36,7 +36,6 @@ export function useChatting(chatId: string | undefined) {
   }
 
   const connectHandler = () => {
-    if (client.current?.connected) return
     const socketUrl = `${socketAddress}?access=${access}`
 
     client.current = new Client({
