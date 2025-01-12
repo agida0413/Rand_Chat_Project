@@ -1,6 +1,5 @@
 import { ApiError, isApiError, setAccessToken } from '@/utils/auth'
 import { getReissueToken } from './login'
-const API_BASE_URL = import.meta.env.VITE_API_URL
 
 export type ApiResponse<T = null> = {
   status: number
@@ -61,7 +60,7 @@ const fetchWrapper = async <T>(
 
         if (newAccessToken) {
           setAccessToken(newAccessToken)
-          const retryResponse = await fetch(`${API_BASE_URL}${url}`, {
+          const retryResponse = await fetch(`${url}`, {
             ...options,
             headers: {
               ...options.headers,

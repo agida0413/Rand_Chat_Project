@@ -1,12 +1,17 @@
 import { useMatchStore } from '@/store/matchStore'
 import styles from './MatchProfile.module.scss'
 import defaultImg from '@/assets/images/default-profile.webp'
+import { useMatchActionMutation } from '@/hooks/useMatchActionMutation'
 
 export default function MatchProfile() {
-  const { setIsOpenModal, matchingData } = useMatchStore()
+  const { matchingData } = useMatchStore()
+  const { startMatchActionConnection } = useMatchActionMutation()
 
-  const handleClose = () => {
-    setIsOpenModal(false)
+  const handleAccept = () => {
+    startMatchActionConnection(true)
+  }
+  const handleReject = () => {
+    startMatchActionConnection(false)
   }
 
   return (
@@ -25,12 +30,12 @@ export default function MatchProfile() {
           <span className={styles.matchText}>
             <h2>{matchingData.nickname}</h2>
             <p>{matchingData.sex}</p>
-            <p>거리 : {matchingData.distance}</p>
+            <p>거리 : {matchingData.distance} km</p>
           </span>
         </span>
         <span className={styles.matchButton}>
-          <button>수락</button>
-          <button onClick={handleClose}>거절</button>
+          <button onClick={handleAccept}>수락</button>
+          <button onClick={handleReject}>거절</button>
         </span>
       </div>
     </section>

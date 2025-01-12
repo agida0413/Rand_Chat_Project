@@ -1,25 +1,61 @@
+import { ChatRoomFirstMsgInfoProps, getChatRoomFirstMsgInfo } from '@/api/chats'
 import { create } from 'zustand'
 import {
   // combine,
   devtools
   // persist
 } from 'zustand/middleware'
-import { immer } from 'zustand/middleware/immer'
 
-interface ChatState {}
-interface ChatActions {
-  resetState: () => void
+export interface ChatFirstMsgInfoProps {
+  chatRoomId: string
+  message: string
+  msgCrDateMs: string
+  msgCrDate: string
+  read: boolean
+  curChatType: 'TEXT' | 'IMG' | 'VIDEO' | 'LINK'
+  nickname: string // nickName, nickname 이름 이슈 있음음
 }
 
-const initialState = {} as ChatState
+interface ChatActions {
+  resetState: () => void
+  addMessage: (msg: ChatFirstMsgInfoProps) => void
+  fetchChatData: (chatRoomId: string) => Promise<void>
+}
 
-export const useChatStore = create<ChatState & { actions: ChatActions }>()(
-  devtools(
-    immer(set => ({
-      ...initialState,
-      actions: {
-        resetState: () => set(initialState)
+const initialState: ChatRoomFirstMsgInfoProps[] = []
+
+export const useChatStore = create<
+  { chats: ChatRoomFirstMsgInfoProps[] } & { actions: ChatActions }
+>()(
+  devtools(set => ({
+    chats: initialState,
+    actions: {
+      resetState: () =>
+        set(() => ({
+          chats: []
+        })),
+      addMessage: msg =>
+        set(state => ({
+          chats: [
+            ...state.chats,
+            {
+              ...msg,
+              nickName: msg.nickname
+            }
+          ]
+        })),
+      fetchChatData: async (chatRoomId: string) => {
+        try {
+          const data: ChatRoomFirstMsgInfoProps[] =
+            await getChatRoomFirstMsgInfo(chatRoomId)
+          const reverseData = data.reverse()
+          set(() => ({
+            chats: reverseData
+          }))
+        } catch (error) {
+          console.error('Failed to fetch initial state:', error)
+        }
       }
-    }))
-  )
+    }
+  }))
 )

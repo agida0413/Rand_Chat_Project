@@ -37,6 +37,22 @@ export const postLogin = async ({ username, password }: PostLoginRequest) => {
   return res
 }
 
+export const postLogout = async () => {
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+  const url = `${API_BASE_URL}/api/v1/member/logout`
+
+  const res = await api.post(url, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+      access: `${getAccessToken()}`
+    },
+    credentials: 'include'
+  })
+
+  return res
+}
+
 export const getReissueToken = async () => {
   const API_BASE_URL = import.meta.env.VITE_API_URL
   const url = `${API_BASE_URL}/api/v1/reissue`

@@ -1,11 +1,26 @@
 import ChatUser from '@/components/chatUser'
+import { useEffect, useState } from 'react'
 import styles from './ChatList.module.scss'
 import { IoSearchOutline } from 'react-icons/io5'
 import { NavLink, useLocation } from 'node_modules/react-router-dom/dist'
+import { ChatRoomProps, getChatRoom } from '@/api/chats'
 
 export default function ChatList() {
+  const [chatRoom, setChatRoom] = useState<ChatRoomProps[]>([])
   const location = useLocation()
-  const chatUsers = Array.from({ length: 30 }, (_, index) => index + 1)
+
+  const fetchChatRooms = async () => {
+    try {
+      const roomData = await getChatRoom()
+      setChatRoom(roomData)
+    } catch (error) {
+      console.error('채팅방 로딩 실패:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchChatRooms()
+  }, [])
 
   return (
     <section className={styles.chatListContainer}>
@@ -15,18 +30,19 @@ export default function ChatList() {
       </div>
       <div className={styles.peopleList}>
         <p className={styles.peopleName}>채팅 목록</p>
-        {chatUsers.length === 0 ? (
+        {chatRoom.length === 0 ? (
           <h4>채팅방이 없습니다</h4>
         ) : (
-          chatUsers.map((_, index) => (
+          chatRoom.map((room, index) => (
             <NavLink
+              className={({ isActive }) => (isActive ? styles.activeLink : '')}
               key={index}
               to={
-                location.pathname === `/chat/${index}`
+                location.pathname === `/chat/${room.chatRoomId}`
                   ? '/chat'
-                  : `/chat/${index}`
+                  : `/chat/${room.chatRoomId}`
               }>
-              <ChatUser />
+              <ChatUser room={room} />
             </NavLink>
           ))
         )}
