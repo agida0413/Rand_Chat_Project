@@ -21,7 +21,7 @@
                  WHERE CM.chat_room_id IN (
                                 SELECT CR2.chat_room_id
                                   FROM CHAT_ROOM_MEMBERS CR2
-                                 WHERE CR2.chat_room_id = (
+                                 WHERE CR2.chat_room_id IN (
                                             SELECT CR3.chat_room_id
                                               FROM CHAT_ROOM_MEMBERS CR3
                                              WHERE CR3.usr_id = #{usrId}
@@ -37,7 +37,7 @@
                   AND CM.chat_room_id IN (
                                  SELECT CR2.chat_room_id
                                    FROM CHAT_ROOM_MEMBERS CR2
-                                  WHERE CR2.chat_room_id = (
+                                  WHERE CR2.chat_room_id IN (
                                               SELECT CR3.chat_room_id
                                                 FROM CHAT_ROOM_MEMBERS CR3
                                                WHERE CR3.usr_id = #{usrId}
