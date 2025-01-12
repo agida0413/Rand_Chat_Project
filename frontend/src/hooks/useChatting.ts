@@ -22,22 +22,22 @@ export function useChatting(chatId: string | undefined) {
     console.log('client.current : ', client.current)
     console.log('sendAddress : ', sendAddress)
     console.log('access : ', access)
-    if (client.current?.connected) {
-      const message = {
-        chatType,
-        message: input
-      }
-
-      client.current.publish({
-        destination: sendAddress,
-        body: JSON.stringify(message),
-        headers: {
-          access: access
-        }
-      })
-    } else {
-      console.log('sendHandler Else')
+    // if (client.current?.connected) {
+    const message = {
+      chatType,
+      message: input
     }
+
+    client.current.publish({
+      destination: sendAddress,
+      body: JSON.stringify(message),
+      headers: {
+        access: access
+      }
+    })
+    // } else {
+    //   console.log('sendHandler Else')
+    // }
   }
 
   const connectHandler = () => {
@@ -91,6 +91,9 @@ export function useChatting(chatId: string | undefined) {
   }
 
   useEffect(() => {
+    console.log(111)
+    console.log(client.current?.connected)
+    console.log(222)
     return () => {
       if (client.current?.connected) {
         client.current.deactivate()
