@@ -6,6 +6,28 @@ interface ChatUserProps {
   room: ChatRoomProps
 }
 
+function formatDate(dateString: string | undefined): string {
+  if (!dateString) return ''
+
+  const date = new Date(dateString)
+  const now = new Date()
+
+  const isSameDay = date.toDateString() === now.toDateString()
+  const isSameYear = date.getFullYear() === now.getFullYear()
+
+  if (isSameDay) {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    })
+  } else if (isSameYear) {
+    return `${date.getMonth() + 1}/${date.getDate()}`
+  } else {
+    return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+  }
+}
+
 export default function ChatUser({ room }: ChatUserProps) {
   const curMsg =
     room.curChatType === 'TEXT' || room.curChatType === 'LINK'
@@ -15,6 +37,8 @@ export default function ChatUser({ room }: ChatUserProps) {
         : room.curChatType === 'IMG'
           ? '사진'
           : ''
+
+  const formattedDate = formatDate(room.curMsgCrDate)
   return (
     <div className={styles.peopleContent}>
       <div className={styles.profileImage}>
@@ -24,11 +48,10 @@ export default function ChatUser({ room }: ChatUserProps) {
         <div className={styles.left}>
           <h3>{room.opsNickName}</h3>
           <h5>{curMsg}</h5>
-          <h5>{room.curChatType}</h5>
         </div>
         <div className={styles.right}>
-          <p>{room.curMsgCrDate}</p>
-          <p>v</p>
+          <p>{formattedDate}</p>
+          <p>{room.unreadCount}</p>
         </div>
       </div>
     </div>
