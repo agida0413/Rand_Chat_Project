@@ -36,7 +36,6 @@ export function useChatting(chatId: string | undefined) {
   }
 
   const connectHandler = () => {
-    if (client.current?.connected) return
     const socketUrl = `${socketAddress}?access=${access}`
 
     client.current = new Client({
