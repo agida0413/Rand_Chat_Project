@@ -3,30 +3,26 @@ import { useEffect, useState } from 'react'
 import styles from './ChatList.module.scss'
 import { IoSearchOutline } from 'react-icons/io5'
 import { NavLink, useLocation } from 'node_modules/react-router-dom/dist'
-import { ChatRoomProps, getChatRoom } from '@/api/chats'
+import { useChatRoomStore } from '@/store/chatRoomStore'
 
 export default function ChatList() {
-  const [chatRoom, setChatRoom] = useState<ChatRoomProps[]>([])
+  const [inputChatRoom, setInputChatRoom] = useState('')
   const location = useLocation()
-
-  const fetchChatRooms = async () => {
-    try {
-      const roomData = await getChatRoom()
-      setChatRoom(roomData)
-    } catch (error) {
-      console.error('채팅방 로딩 실패:', error)
-    }
-  }
+  const { chatRoom, actions } = useChatRoomStore()
 
   useEffect(() => {
-    fetchChatRooms()
+    actions.fetchChatData()
   }, [])
 
   return (
     <section className={styles.chatListContainer}>
       <div className={styles.inputContainer}>
         <IoSearchOutline />
-        <input placeholder="검색" />
+        <input
+          value={inputChatRoom}
+          placeholder="검색"
+          onChange={e => setInputChatRoom(e.target.value)}
+        />
       </div>
       <div className={styles.peopleList}>
         <p className={styles.peopleName}>채팅 목록</p>

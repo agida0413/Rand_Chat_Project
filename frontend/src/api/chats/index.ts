@@ -84,3 +84,18 @@ export const getChatRoomFirstMsgInfo = async (chatRoomId: string) => {
   const data = await res.json()
   return data.data as ChatRoomFirstMsgInfoProps[]
 }
+
+export const deleteExitChat = async (chatRoomId: string | undefined) => {
+  const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
+  const url = `${VITE_SSE_API_URL}/chat/api/v1/room/${chatRoomId}`
+
+  const res = await api.delete<ChatUserInfoProps[]>(url, {
+    headers: {
+      Accept: 'application/json',
+      access: `${getAccessToken()}`
+    },
+    credentials: 'include'
+  })
+
+  return res
+}

@@ -45,16 +45,14 @@ export const useChatStore = create<
           ]
         })),
       fetchChatData: async (chatRoomId: string) => {
-        try {
-          const data: ChatRoomFirstMsgInfoProps[] =
-            await getChatRoomFirstMsgInfo(chatRoomId)
-          const reverseData = data.reverse()
-          set(() => ({
-            chats: reverseData
-          }))
-        } catch (error) {
-          console.error('Failed to fetch initial state:', error)
-        }
+        const data: ChatRoomFirstMsgInfoProps[] =
+          await getChatRoomFirstMsgInfo(chatRoomId)
+
+        console.log(data)
+        const reverseData = data.reverse()
+        set(() => ({
+          chats: reverseData
+        }))
       }
     }
   }))

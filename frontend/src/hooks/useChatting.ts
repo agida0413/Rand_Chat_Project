@@ -19,6 +19,9 @@ export function useChatting(chatId: string | undefined) {
     input: string,
     chatType: 'TEXT' | 'IMG' | 'VIDEO' | 'LINK'
   ) => {
+    console.log('client.current : ', client.current)
+    console.log('sendAddress : ', sendAddress)
+    console.log('access : ', access)
     if (client.current?.connected) {
       const message = {
         chatType,
@@ -32,6 +35,8 @@ export function useChatting(chatId: string | undefined) {
           access: access
         }
       })
+    } else {
+      console.log('sendHandler Else')
     }
   }
 
@@ -44,11 +49,14 @@ export function useChatting(chatId: string | undefined) {
         access: access
       },
       onConnect: () => {
+        console.log('onConnect')
+
         setConnected(true)
         subscribeAddresses.forEach(address => {
           client.current?.subscribe(
             address,
             message => {
+              console.log('message')
               const receivedMessage = JSON.parse(message.body)
               console.log(receivedMessage)
               actions.addMessage(receivedMessage)
@@ -64,6 +72,7 @@ export function useChatting(chatId: string | undefined) {
         setConnected(false)
       },
       onWebSocketClose: () => {
+        console.log('onWebSocketClose')
         setConnected(false)
       },
       onWebSocketError: error => {
