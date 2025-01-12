@@ -25,6 +25,8 @@ export const useChatRoomStore = create<
         set(() => ({
           chatRoom: roomData
         }))
+
+        return roomData
       }
     }
   }))
