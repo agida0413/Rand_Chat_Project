@@ -5,6 +5,8 @@ import { useChatUserInfo } from '@/hooks/useChatUserInfo'
 import { useEffect, useRef, useState } from 'react'
 import { useChatting } from '@/hooks/useChatting'
 import { useChatStore } from '@/store/chatStore'
+import { IoExit } from 'node_modules/react-icons/io5'
+import { deleteExitChat } from '@/api/chats'
 
 export default function ChatDetail() {
   const { chatId } = useParams()
@@ -24,6 +26,10 @@ export default function ChatDetail() {
     }
   }
 
+  const handleExitChat = () => {
+    deleteExitChat(chatId)
+  }
+
   useEffect(() => {
     if (!chatId) return
     actions.fetchChatData(chatId)
@@ -38,13 +44,16 @@ export default function ChatDetail() {
   return (
     <section className={styles.chatDetailContainer}>
       <div className={styles.contactContainer}>
-        <div className={styles.profileImage}>
-          <ProfileImage src={userInfoData.profileImg} />
+        <div className={styles.contactLeft}>
+          <div className={styles.profileImage}>
+            <ProfileImage src={userInfoData.profileImg} />
+          </div>
+          <div className={styles.profileDetail}>
+            <h3>{userInfoData.nickName}</h3>
+            <p>나와의 거리 : {userInfoData.betweenDistance}</p>
+          </div>
         </div>
-        <div className={styles.profileDetail}>
-          <h3>{userInfoData.nickName}</h3>
-          <p>나와의 거리 : {userInfoData.betweenDistance}</p>
-        </div>
+        <IoExit onClick={handleExitChat} />
       </div>
       <div
         className={styles.chatContentContainer}
