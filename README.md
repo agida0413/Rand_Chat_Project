@@ -12,9 +12,11 @@
    - **매칭된 회원과의 채팅을 할지 말지 정하는 수락/거절**
      
    - **실시간 채팅 및 채팅 데이터 영구 저장**
+
       
 
 - **프로젝트 관련 포스팅** : https://velog.io/@agida0413/series/RanChat-Project
+- 
 - **API명세서 및 이슈대장** :  https://rand-chat.gitbook.io/rand_chat-docs
 
      
