@@ -55,25 +55,34 @@
  </div>
     
 <br>
+   ✔️ DB
+
+ <div>  <span><img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"></span> &nbsp
+    <span>   <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white">  </span> &nbsp;
+
+</div>
 
 
 
    ✔️ Front-end
-<div>  <span><img src="https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D"></span> &nbsp    
-      <span><img src="https://img.shields.io/badge/Vuetify-1867C0?style=for-the-badge&logo=vuetify&logoColor=AEDDFF"></span>
+<div>  <span>
+  <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=white">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/Zustand-FFC107?style=for-the-badge&logo=Zustand&logoColor=black">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/SASS-CC6699?style=for-the-badge&logo=SASS&logoColor=white">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/React%20Query-FF4154?style=for-the-badge&logo=ReactQuery&logoColor=white">
+</span> &nbsp;
+
  </div>   
      
 <br>
 
 
-   ✔️ DB / CLOUD
-
-
-
- <div>  <span><img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"></span> &nbsp
-   <span><img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=for-the-badge&logo=Amazon%20S3&logoColor=white"></span>&nbsp
-  <span><img src="https://img.shields.io/badge/Amazon_RDS-527FFF?style=for-the-badge&logo=amazonaws&logoColor=white"></span>
-</div>
 
    
 
