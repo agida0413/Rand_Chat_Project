@@ -58,12 +58,13 @@
  </div>
 
 
- 
-    ✔️ DEV-OPS
-
 
 
  
+   ✔️ DEV-OPS
+
+ 
+
 
    
  <div>
@@ -92,7 +93,10 @@
   <img src="https://img.shields.io/badge/AWS%20S3-569A31?style=for-the-badge&logo=Amazon%20S3&logoColor=white">
 </span> &nbsp;
  </div>   
-<br>
+
+
+
+
    ✔️ DB
 
 
