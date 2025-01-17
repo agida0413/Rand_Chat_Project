@@ -255,9 +255,10 @@
  # 🖥️ ERD / Redis현황
 
 
+![ERD2](https://github.com/user-attachments/assets/459864d5-c8f8-4bab-9baf-03823b482e4e)
 
 
-![erd](https://github.com/user-attachments/assets/bba06f7f-6ae3-40c0-a06e-cb29ae1f78d8)
+
 <br>
 <br>
 ![레디스 drawio](https://github.com/user-attachments/assets/eaea89f9-4abd-4ab1-809b-560b6a116821)
