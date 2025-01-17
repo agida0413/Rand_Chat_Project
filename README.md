@@ -16,7 +16,7 @@
       
 
 - **프로젝트 관련 포스팅** : https://velog.io/@agida0413/series/RanChat-Project
-- 
+  
 - **API명세서 및 이슈대장** :  https://rand-chat.gitbook.io/rand_chat-docs
 
      
