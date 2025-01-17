@@ -56,9 +56,43 @@
   <img src="https://img.shields.io/badge/Redis%20Pub%2FSub-DC382D?style=for-the-badge&logo=Redis&logoColor=white">
 </span> &nbsp;
  </div>
-    
+
+
+ <br>
+    ✔️ DEV-OPS
+ 
+   
+ <div>
+   <span>
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/AWS%20EC2-FF9900?style=for-the-badge&logo=Amazon%20EC2&logoColor=white">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/AWS%20RDS-527FFF?style=for-the-badge&logo=Amazon%20RDS&logoColor=white">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/AWS%20ElastiCache-0052CC?style=for-the-badge&logo=Amazon%20AWS&logoColor=white">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=Nginx&logoColor=white">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/AWS%20VPC-232F3E?style=for-the-badge&logo=Amazon%20AWS&logoColor=white">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=GitHub%20Actions&logoColor=white">
+</span> &nbsp;
+<span>
+  <img src="https://img.shields.io/badge/AWS%20S3-569A31?style=for-the-badge&logo=Amazon%20S3&logoColor=white">
+</span> &nbsp;
+ </div>   
 <br>
    ✔️ DB
+
+
+   
 
  <div>  <span><img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"></span> &nbsp
     <span>   <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white">  </span> &nbsp;
@@ -68,6 +102,9 @@
 
 
    ✔️ Front-end
+
+
+   
 <div>  <span>
   <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=white">
 </span> &nbsp;
