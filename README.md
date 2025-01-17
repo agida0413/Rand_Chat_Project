@@ -211,11 +211,11 @@
 
 
 #  📊 CI/CD 전략
-![branch](https://github.com/user-attachments/assets/6412a67b-cef4-45b4-8ce8-befbf184c02e)
-<br><br>
+
 ![cd drawio](https://github.com/user-attachments/assets/6795193b-a721-4f59-ae30-61d7f39d18f9)
 
-
+<br>
+<br>
 
 
 #  📊 전체 소프트웨어 구조
@@ -252,9 +252,12 @@
  # 🖥️ ERD / Redis현황
 
 
-![ERD](https://github.com/user-attachments/assets/8191d2ab-1412-49a1-a07d-33acf142b9aa)
 
 
+![erd](https://github.com/user-attachments/assets/bba06f7f-6ae3-40c0-a06e-cb29ae1f78d8)
+<br>
+<br>
+![레디스 drawio](https://github.com/user-attachments/assets/eaea89f9-4abd-4ab1-809b-560b6a116821)
 
 
 
