@@ -202,7 +202,8 @@
 #  📊 전체 소프트웨어 구조
 
 ![아키 drawio](https://github.com/user-attachments/assets/66357b0f-28a4-4e93-937d-4b8d2cd5c7fd)
-<br>
+<br><br>
+
 
 
 #  📊 매칭서버 아키텍처
@@ -210,7 +211,8 @@
 
 
 ![매칭서버2 drawio](https://github.com/user-attachments/assets/98587347-2bf1-4d16-90bb-8114794f42fb)
-<br>
+<br><br>
+
 
 #  📊 채팅 웹소켓 서버 && 채팅 I/0서버 아키텍처
 <br><br>
