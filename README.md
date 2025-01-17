@@ -203,12 +203,16 @@
 
 전체 아키텍처 
 <br>
+![아키 drawio](https://github.com/user-attachments/assets/66357b0f-28a4-4e93-937d-4b8d2cd5c7fd)
+<br>
+매칭서버
 
-https://velog.velcdn.com/images/agida0413/post/11897925-f502-41a1-b41b-8413db55817b/image.png
 
+![매칭서버2 drawio](https://github.com/user-attachments/assets/98587347-2bf1-4d16-90bb-8114794f42fb)
+<br>
 
-
-
+채팅 웹소켓 서버 && 채팅 I/0서버 
+![채팅아키 drawio](https://github.com/user-attachments/assets/eca6ef4e-b741-4b80-86ea-9920df0a5941)
 
 <br>
 <br>
