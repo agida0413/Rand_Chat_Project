@@ -6,8 +6,11 @@
  - **기능**
 
    - **회원가입/로그인 등 인증,인가와 관련된 기능**
+     
    - **원하는 거리조건을 설정 후 거리기반 1대1 매칭 시스템**
+
    - **매칭된 회원과의 채팅을 할지 말지 정하는 수락/거절**
+     
    - **실시간 채팅 및 채팅 데이터 영구 저장**
       
 
@@ -18,7 +21,12 @@
 <br>
 <br>
 
+  # 📝 유저플로우
+  <img width="3937" alt="Rand_Chat User Flow" src="https://github.com/user-attachments/assets/fc420700-41d7-49dd-b4ee-308f0caa3314" />
 
+  
+<br>
+<br>
 
   # 📝 핵심 화면 요약 
 
@@ -202,6 +210,11 @@
 
 
 
+#  📊 CI/CD 전략
+![branch](https://github.com/user-attachments/assets/6412a67b-cef4-45b4-8ce8-befbf184c02e)
+<br><br>
+![cd drawio](https://github.com/user-attachments/assets/6795193b-a721-4f59-ae30-61d7f39d18f9)
+
 
 
 
@@ -236,7 +249,7 @@
 
 
 
- # 🖥️ ERD
+ # 🖥️ ERD / Redis현황
 
 
 ![ERD](https://github.com/user-attachments/assets/8191d2ab-1412-49a1-a07d-33acf142b9aa)
