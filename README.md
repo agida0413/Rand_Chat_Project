@@ -14,7 +14,8 @@
    - **실시간 채팅 및 채팅 데이터 영구 저장**
       
 
-   
+   - **프로젝트 관련 포스팅** : https://velog.io/@agida0413/series/RanChat-Project
+   - **API명세서 및 이슈대장** :  https://rand-chat.gitbook.io/rand_chat-docs
 
      
 
@@ -320,35 +321,3 @@
 
 
 
-
-<br>
-<br>
-
-
-
-
-# 📝 개선방안 및 추후학습
-
-
-
-- *자동추천 검색, jwt 토큰관리 관련 작업은 RDBMS에 직접접근하는 방식이 성능저하를 일으킴* 
-
-  - <u>***REDIS 학습을 통해 메모리(RAM)을 활용하여 캐싱하자***</u> 
-
-<br>
-
-
-- *배포를 할때 수동으로 하니 상당한 시간 및 관리가 어려움* 
-
-  - <u>***CI/CD 학습을 통해 자동화 전략을 이용하자***</u> 
-
-<br>
-
-- *JWT 토큰의 STATELESS의 장점를 느끼지 못하였음* 
-
-  - <u>***로드밸런싱을 학습하여 STATLESS의 장점을 느껴보자***</u>
-    
-
-
-
-API 명세서 - https://rand-chat.gitbook.io/rand_chat-docs
