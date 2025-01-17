@@ -261,11 +261,11 @@
 
 <br>
 <br>
-![레디스 drawio](https://github.com/user-attachments/assets/eaea89f9-4abd-4ab1-809b-560b6a116821)
 
 
 
 
+![레디스 drawio](https://github.com/user-attachments/assets/5a5a1f5e-fff3-46bc-8651-4e3c43c879b2)
 
 
 <br>
