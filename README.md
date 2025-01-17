@@ -52,6 +52,9 @@
     <span>
   <img src="https://img.shields.io/badge/Spring%20WebFlux-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
 </span> &nbsp;
+  <span>
+  <img src="https://img.shields.io/badge/Redis%20Pub%2FSub-DC382D?style=for-the-badge&logo=Redis&logoColor=white">
+</span> &nbsp;
  </div>
     
 <br>
