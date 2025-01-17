@@ -190,7 +190,7 @@
   
 - **비즈니스 별 인스턴스(인증서버, 웹 소켓 서버, 매칭 서버, 채팅I/O 서버 등)을  분리,분산하여 MSA적 성격을 띄고 있음.**
   
-- ** WebClient API (WebFlux)를 통해 채팅 웹소켓서버와 채팅 I/O서버간 통신 - > NonBlocking , Async I/O 를 통해 성능개선**
+- **WebClient API (WebFlux)를 통해 채팅 웹소켓서버와 채팅 I/O서버간 통신 - > NonBlocking , Async I/O 를 통해 성능개선**
   
 - **Docker / GitHub Actions 를 통해 지속적 배포 및 버전 관리**   
 
