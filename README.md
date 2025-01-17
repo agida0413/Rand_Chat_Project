@@ -201,8 +201,10 @@
 
 #  📊 소프트웨어 구조
 
-![3 drawio](https://github.com/user-attachments/assets/d1f83e04-9fa6-4cf7-a94a-b4059f4e32c1)
+전체 아키텍처 
+<br>
 
+https://velog.velcdn.com/images/agida0413/post/11897925-f502-41a1-b41b-8413db55817b/image.png
 
 
 
