@@ -9,12 +9,8 @@ import {
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
-export interface ExtendedChatMsgInfo extends ChatRoomFirstMsgInfoProps {
-  itsMeFlag?: boolean
-}
-
 export interface ExtendedChatRoomProps extends ChatRoomProps {
-  msgInfo?: ExtendedChatMsgInfo[]
+  msgInfo?: ChatRoomFirstMsgInfoProps[]
   chatUserInfo?: ChatUserInfoProps[]
 }
 
@@ -22,7 +18,7 @@ interface ChatActions {
   initChatRoom: () => Promise<ChatRoomProps[]>
   fetchChatInfo: (chatRoomId: string) => ChatUserInfoProps[]
   fetchChatData: (chatRoomId: string) => Promise<void>
-  addMessage: (msg: ExtendedChatMsgInfo, chatRoomId: string) => void
+  addMessage: (msg: ChatRoomFirstMsgInfoProps, chatRoomId: string) => void
 }
 
 const initialState: ExtendedChatRoomProps[] = []
@@ -66,15 +62,15 @@ export const useChatStore = create<
       },
 
       // 특정 방에 메시지 추가
-      addMessage: (msg: ExtendedChatMsgInfo, chatRoomId: string) =>
+      addMessage: (msg: ChatRoomFirstMsgInfoProps, chatRoomId: string) =>
         set(state => {
           const updatedChatRoom = state.chatRoom.map(room => {
             if (room.chatRoomId === chatRoomId) {
               return {
                 ...room,
                 msgInfo: room.msgInfo
-                  ? [...room.msgInfo, { ...msg, itsMeFlag: true }]
-                  : [{ ...msg, itsMeFlag: true }]
+                  ? [...room.msgInfo, { ...msg }]
+                  : [{ ...msg }]
               }
             }
             return room
@@ -97,13 +93,9 @@ export const useChatStore = create<
         set(state => {
           const updatedChatRoom = state.chatRoom.map(room => {
             if (room.chatRoomId === chatRoomId) {
-              // chatUserInfo에서 나의 사용자 정보를 가져옵니다
-              const myNickName = room.chatUserInfo?.[0]?.nickName
-
               // 메시지에 itsMeFlag를 설정합니다
               const msgInfoWithFlag = reverseData.map(msg => ({
-                ...msg,
-                itsMeFlag: msg.nickName === myNickName
+                ...msg
               }))
 
               return {

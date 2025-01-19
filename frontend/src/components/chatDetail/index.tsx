@@ -42,7 +42,10 @@ export default function ChatDetail() {
   // 채팅방 정보를 찾고 메시지를 가져옵니다
   const currentChatRoom = chatRoom.find(room => room.chatRoomId === chatId)
   const messages = currentChatRoom?.msgInfo || []
-  const userInfo = currentChatRoom?.chatUserInfo?.[0] // 첫 번째 사용자 정보
+  const myInfo =
+    currentChatRoom?.chatUserInfo?.find(user => user.itsMeFlag) || null
+  const userInfo =
+    currentChatRoom?.chatUserInfo?.find(user => !user.itsMeFlag) || null
 
   if (!currentChatRoom || !userInfo) return <div>Loading...</div>
 
@@ -65,7 +68,7 @@ export default function ChatDetail() {
         ref={chatContentRef}>
         {messages.length > 0 &&
           messages.map((chat, index) =>
-            chat.itsMeFlag ? (
+            chat.nickName === myInfo?.nickName ? (
               <div
                 key={index}
                 className={styles.out}>
