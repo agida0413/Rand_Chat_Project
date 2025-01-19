@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { Client } from '@stomp/stompjs'
 import { getAccessToken } from '@/utils/auth'
 import { useChatStore } from '@/store/chatStore'
 
-export function useMultiChatting(roomData: { chatRoomId: string }[]) {
+export function useMultiChatting() {
   const { actions } = useChatStore()
   const [connectedRooms, setConnectedRooms] = useState<string[]>([])
   const clients = useRef<Map<string, Client>>(new Map())
@@ -39,15 +39,17 @@ export function useMultiChatting(roomData: { chatRoomId: string }[]) {
       onWebSocketClose: () => {
         console.log(`WebSocket closed for room ${chatRoomId}`)
         setConnectedRooms(prev => prev.filter(id => id !== chatRoomId))
-        clients.current.delete(chatRoomId)
+        // clients.current.delete(chatRoomId)
       },
       onWebSocketError: error => {
         console.error(`WebSocket error for room ${chatRoomId}:`, error)
       }
     })
 
+    // if (!clients.current.has(chatRoomId)) {
     clients.current.set(chatRoomId, client)
     client.activate()
+    // }
   }
 
   const disconnectFromRoom = (chatRoomId: string) => {
@@ -65,8 +67,10 @@ export function useMultiChatting(roomData: { chatRoomId: string }[]) {
     message: string,
     chatType: 'TEXT' | 'IMG' | 'VIDEO' | 'LINK'
   ) => {
+    console.log(1)
     if (chatRoomId) {
       const client = clients.current.get(chatRoomId)
+      console.log(clients.current)
       if (!client?.connected) {
         console.error(`Client not connected to room ${chatRoomId}`)
         return
@@ -86,10 +90,6 @@ export function useMultiChatting(roomData: { chatRoomId: string }[]) {
       })
     }
   }
-
-  useEffect(() => {
-    roomData.forEach(room => connectToRoom(room.chatRoomId))
-  }, [roomData])
 
   return { connectedRooms, connectToRoom, disconnectFromRoom, sendHandler }
 }

@@ -3,19 +3,15 @@ import ProfileImage from '../profileImage'
 import styles from './chatDetail.module.scss'
 import { useChatUserInfo } from '@/hooks/useChatUserInfo'
 import { useEffect, useRef, useState } from 'react'
-// import { useChatting } from '@/hooks/useMultiChatting'
 import { useChatStore } from '@/store/chatStore'
 import { IoExit } from 'node_modules/react-icons/io5'
 import { deleteExitChat } from '@/api/chats'
 import { useMultiChatting } from '@/hooks/useMultiChatting'
-import { useChatRoomStore } from '@/store/chatRoomStore'
 
 export default function ChatDetail() {
   const { chatId } = useParams()
   const { userInfoData } = useChatUserInfo(chatId)
-  // const { sendHandler } = useChatting(chatId)
-  const { chatRoom } = useChatRoomStore()
-  const { sendHandler } = useMultiChatting(chatRoom)
+  const { sendHandler } = useMultiChatting()
   const { chats, actions } = useChatStore()
 
   const [input, setInput] = useState('')

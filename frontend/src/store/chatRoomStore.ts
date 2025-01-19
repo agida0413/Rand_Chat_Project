@@ -4,7 +4,7 @@ import { devtools } from 'zustand/middleware'
 
 interface ChatRoomActions {
   resetState: () => void
-  fetchChatData: () => Promise<void>
+  fetchChatData: () => Promise<ChatRoomProps[]>
 }
 
 const initialState: ChatRoomProps[] = []

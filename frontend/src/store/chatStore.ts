@@ -48,7 +48,6 @@ export const useChatStore = create<
         const data: ChatRoomFirstMsgInfoProps[] =
           await getChatRoomFirstMsgInfo(chatRoomId)
 
-        console.log(data)
         const reverseData = data.reverse()
         set(() => ({
           chats: reverseData

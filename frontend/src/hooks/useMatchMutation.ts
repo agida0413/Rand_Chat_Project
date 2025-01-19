@@ -3,7 +3,6 @@ import { getAccessToken, setMatchToken } from '@/utils/auth'
 import { EventSourcePolyfill } from 'event-source-polyfill'
 import { useMatchStore } from '@/store/matchStore'
 import { getMatch } from '@/api/match'
-import { useLocationPolling } from './useLocationPolling'
 
 export function useMatchMutation() {
   const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
@@ -16,7 +15,6 @@ export function useMatchMutation() {
     setIsOpenModal,
     setMatchingData
   } = useMatchStore()
-  const { getCurrentPosition } = useLocationPolling()
 
   const startMatchConnection = async (distance: number) => {
     if (!isLocationGranted) {
@@ -24,7 +22,6 @@ export function useMatchMutation() {
       return
     }
     const accessToken = getAccessToken()
-    getCurrentPosition()
 
     try {
       getMatch(distance)
