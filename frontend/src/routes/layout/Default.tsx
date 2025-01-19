@@ -5,13 +5,13 @@ import styles from './Defalut.module.scss'
 import { useMatchStore } from '@/store/matchStore'
 import MatchProfile from '@/components/matchProfile'
 import { useEffect } from 'react'
-import { useChatRoomStore } from '@/store/chatRoomStore'
+import { useChatStore } from '@/store/chatStore'
 import { useMultiChatting } from '@/hooks/useMultiChatting'
 import { useLocationPolling } from '@/hooks/useLocationPolling'
 
 export default function DefaultLayout() {
   const { isOpenModal } = useMatchStore()
-  const { actions } = useChatRoomStore()
+  const { actions } = useChatStore()
   const { connectToRoom } = useMultiChatting()
   const { getCurrentPosition } = useLocationPolling()
 
@@ -20,16 +20,12 @@ export default function DefaultLayout() {
     return <Loading />
   }
 
-  const intervalId = setInterval(getCurrentPosition, 300000)
-
-  const initializeChatRooms = async () => {
-    const data = await actions.fetchChatData()
-    data.forEach(room => connectToRoom(room.chatRoomId))
-  }
-
   useEffect(() => {
+    const intervalId = setInterval(getCurrentPosition, 300000)
     getCurrentPosition()
-    initializeChatRooms()
+    actions.initChatRoom().then(data => {
+      data.forEach(room => connectToRoom(room.chatRoomId))
+    })
     return () => {
       clearInterval(intervalId)
     }

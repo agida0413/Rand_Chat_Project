@@ -1,57 +1,120 @@
-import { ChatRoomFirstMsgInfoProps, getChatRoomFirstMsgInfo } from '@/api/chats'
-import { create } from 'zustand'
 import {
-  // combine,
-  devtools
-  // persist
-} from 'zustand/middleware'
+  ChatRoomFirstMsgInfoProps,
+  ChatRoomProps,
+  ChatUserInfoProps,
+  getChatRoom,
+  getChatRoomFirstMsgInfo,
+  getChatUserInfo
+} from '@/api/chats'
+import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
 
-export interface ChatFirstMsgInfoProps {
-  chatRoomId: string
-  message: string
-  msgCrDateMs: string
-  msgCrDate: string
-  read: boolean
-  curChatType: 'TEXT' | 'IMG' | 'VIDEO' | 'LINK'
-  nickname: string // nickName, nickname 이름 이슈 있음음
+export interface ExtendedChatMsgInfo extends ChatRoomFirstMsgInfoProps {
+  itsMeFlag?: boolean
+}
+
+export interface ExtendedChatRoomProps extends ChatRoomProps {
+  msgInfo?: ExtendedChatMsgInfo[]
+  chatUserInfo?: ChatUserInfoProps[]
 }
 
 interface ChatActions {
-  resetState: () => void
-  addMessage: (msg: ChatFirstMsgInfoProps) => void
+  initChatRoom: () => Promise<ChatRoomProps[]>
+  fetchChatInfo: (chatRoomId: string) => ChatUserInfoProps[]
   fetchChatData: (chatRoomId: string) => Promise<void>
+  addMessage: (msg: ExtendedChatMsgInfo, chatRoomId: string) => void
 }
 
-const initialState: ChatRoomFirstMsgInfoProps[] = []
+const initialState: ExtendedChatRoomProps[] = []
 
 export const useChatStore = create<
-  { chats: ChatRoomFirstMsgInfoProps[] } & { actions: ChatActions }
+  { chatRoom: ExtendedChatRoomProps[] } & { actions: ChatActions }
 >()(
   devtools(set => ({
-    chats: initialState,
+    chatRoom: initialState,
     actions: {
-      resetState: () =>
+      initChatRoom: async () => {
+        const roomData = await getChatRoom()
+
         set(() => ({
-          chats: []
-        })),
-      addMessage: msg =>
-        set(state => ({
-          chats: [
-            ...state.chats,
-            {
-              ...msg,
-              nickName: msg.nickname
+          chatRoom: roomData
+        }))
+
+        return roomData
+      },
+
+      fetchChatInfo: async (chatRoomId: string) => {
+        const currentChatRoom = useChatStore
+          .getState()
+          .chatRoom.find(room => room.chatRoomId === chatRoomId)
+        if (currentChatRoom?.chatUserInfo) return
+
+        const userInfo: ChatUserInfoProps[] = await getChatUserInfo(chatRoomId)
+
+        set(state => {
+          const updatedChatRoom = state.chatRoom.map(room => {
+            if (room.chatRoomId === chatRoomId) {
+              return {
+                ...room,
+                chatUserInfo: userInfo
+              }
             }
-          ]
-        })),
+            return room
+          })
+          return { chatRoom: updatedChatRoom }
+        })
+      },
+
+      // 특정 방에 메시지 추가
+      addMessage: (msg: ExtendedChatMsgInfo, chatRoomId: string) =>
+        set(state => {
+          const updatedChatRoom = state.chatRoom.map(room => {
+            if (room.chatRoomId === chatRoomId) {
+              return {
+                ...room,
+                msgInfo: room.msgInfo
+                  ? [...room.msgInfo, { ...msg, itsMeFlag: true }]
+                  : [{ ...msg, itsMeFlag: true }]
+              }
+            }
+            return room
+          })
+          return { chatRoom: updatedChatRoom }
+        }),
+
+      // 특정 방의 메시지 데이터를 가져옴
       fetchChatData: async (chatRoomId: string) => {
+        const currentChatRoom = useChatStore
+          .getState()
+          .chatRoom.find(room => room.chatRoomId === chatRoomId)
+        if (currentChatRoom?.msgInfo) return
+
         const data: ChatRoomFirstMsgInfoProps[] =
           await getChatRoomFirstMsgInfo(chatRoomId)
 
         const reverseData = data.reverse()
-        set(() => ({
-          chats: reverseData
-        }))
+
+        set(state => {
+          const updatedChatRoom = state.chatRoom.map(room => {
+            if (room.chatRoomId === chatRoomId) {
+              // chatUserInfo에서 나의 사용자 정보를 가져옵니다
+              const myNickName = room.chatUserInfo?.[0]?.nickName
+
+              // 메시지에 itsMeFlag를 설정합니다
+              const msgInfoWithFlag = reverseData.map(msg => ({
+                ...msg,
+                itsMeFlag: msg.nickName === myNickName
+              }))
+
+              return {
+                ...room,
+                msgInfo: msgInfoWithFlag
+              }
+            }
+            return room
+          })
+          return { chatRoom: updatedChatRoom }
+        })
       }
     }
   }))

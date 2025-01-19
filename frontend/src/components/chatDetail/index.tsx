@@ -1,21 +1,18 @@
 import { useParams } from 'react-router-dom'
 import ProfileImage from '../profileImage'
 import styles from './chatDetail.module.scss'
-import { useChatUserInfo } from '@/hooks/useChatUserInfo'
 import { useEffect, useRef, useState } from 'react'
 import { useChatStore } from '@/store/chatStore'
-import { IoExit } from 'node_modules/react-icons/io5'
+import { IoExit } from 'react-icons/io5'
 import { deleteExitChat } from '@/api/chats'
 import { useMultiChatting } from '@/hooks/useMultiChatting'
 
 export default function ChatDetail() {
   const { chatId } = useParams()
-  const { userInfoData } = useChatUserInfo(chatId)
   const { sendHandler } = useMultiChatting()
-  const { chats, actions } = useChatStore()
+  const { chatRoom, actions } = useChatStore()
 
   const [input, setInput] = useState('')
-
   const chatContentRef = useRef<HTMLDivElement>(null)
 
   const handleSendMsg = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -32,25 +29,33 @@ export default function ChatDetail() {
 
   useEffect(() => {
     if (!chatId) return
-    actions.fetchChatData(chatId)
+    actions.fetchChatData(chatId) // 메시지 데이터를 가져옵니다
+    actions.fetchChatInfo(chatId) // 사용자 정보 가져오기
   }, [chatId])
 
   useEffect(() => {
     if (chatContentRef.current) {
       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight
     }
-  }, [chats])
+  }, [chatId])
+
+  // 채팅방 정보를 찾고 메시지를 가져옵니다
+  const currentChatRoom = chatRoom.find(room => room.chatRoomId === chatId)
+  const messages = currentChatRoom?.msgInfo || []
+  const userInfo = currentChatRoom?.chatUserInfo?.[0] // 첫 번째 사용자 정보
+
+  if (!currentChatRoom || !userInfo) return <div>Loading...</div>
 
   return (
     <section className={styles.chatDetailContainer}>
       <div className={styles.contactContainer}>
         <div className={styles.contactLeft}>
           <div className={styles.profileImage}>
-            <ProfileImage src={userInfoData.profileImg} />
+            <ProfileImage src={userInfo.profileImg} />
           </div>
           <div className={styles.profileDetail}>
-            <h3>{userInfoData.nickName}</h3>
-            <p>나와의 거리 : {userInfoData.betweenDistance}</p>
+            <h3>{userInfo.nickName}</h3>
+            <p>나와의 거리 : {userInfo.betweenDistance}</p>
           </div>
         </div>
         <IoExit onClick={handleExitChat} />
@@ -58,18 +63,18 @@ export default function ChatDetail() {
       <div
         className={styles.chatContentContainer}
         ref={chatContentRef}>
-        {chats.length > 0 &&
-          chats.map((chat, index) =>
-            chat.nickName === userInfoData.nickName ? (
+        {messages.length > 0 &&
+          messages.map((chat, index) =>
+            chat.itsMeFlag ? (
               <div
                 key={index}
-                className={styles.in}>
+                className={styles.out}>
                 {chat.message}
               </div>
             ) : (
               <div
                 key={index}
-                className={styles.out}>
+                className={styles.in}>
                 {chat.message}
               </div>
             )

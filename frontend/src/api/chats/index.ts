@@ -85,6 +85,30 @@ export const getChatRoomFirstMsgInfo = async (chatRoomId: string) => {
   return data.data as ChatRoomFirstMsgInfoProps[]
 }
 
+export const getChatRoomMsgInfo = async (chatRoomId: string, page: number) => {
+  const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
+  const url = `${VITE_SSE_API_URL}/chat/api/v1/msg/${chatRoomId}/${page}`
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      access: `${getAccessToken()}`
+    },
+    credentials: 'include'
+  })
+
+  if (!res.ok) {
+    if (res.status === 400) {
+      return []
+    }
+    throw new Error('서버에서 데이터를 가져오는데 실패했습니다.')
+  }
+
+  const data = await res.json()
+  return data.data as ChatRoomFirstMsgInfoProps[]
+}
+
 export const deleteExitChat = async (chatRoomId: string | undefined) => {
   const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
   const url = `${VITE_SSE_API_URL}/chat/api/v1/room/${chatRoomId}`

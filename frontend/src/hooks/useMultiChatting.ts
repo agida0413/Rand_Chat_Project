@@ -1,17 +1,25 @@
-import { useState, useRef } from 'react'
-import { Client } from '@stomp/stompjs'
-import { getAccessToken } from '@/utils/auth'
+import { useChatClientStore } from '@/store/chatClientStore'
 import { useChatStore } from '@/store/chatStore'
+import { getAccessToken } from '@/utils/auth'
+import { Client } from '@stomp/stompjs'
 
 export function useMultiChatting() {
+  const {
+    clients,
+    connectedRooms,
+    addClient,
+    removeClient,
+    addRoom,
+    removeRoom
+  } = useChatClientStore()
+
   const { actions } = useChatStore()
-  const [connectedRooms, setConnectedRooms] = useState<string[]>([])
-  const clients = useRef<Map<string, Client>>(new Map())
+
   const access = getAccessToken()
   const socketAddress = `${import.meta.env.VITE_WS_API_URL}/chat/ws`
 
   const connectToRoom = (chatRoomId: string) => {
-    if (clients.current.has(chatRoomId)) {
+    if (clients.has(chatRoomId)) {
       console.log(`Already connected to room ${chatRoomId}`)
       return
     }
@@ -22,13 +30,14 @@ export function useMultiChatting() {
       connectHeaders: { access },
       onConnect: () => {
         console.log(`Connected to room ${chatRoomId}`)
-        setConnectedRooms(prev => [...prev, chatRoomId])
+        addClient(chatRoomId, client)
+        addRoom(chatRoomId)
 
         client.subscribe(
           `/sub/chat/room/${chatRoomId}`,
           message => {
             const receivedMessage = JSON.parse(message.body)
-            actions.addMessage(receivedMessage)
+            actions.addMessage(receivedMessage, chatRoomId)
           },
           { access }
         )
@@ -38,27 +47,25 @@ export function useMultiChatting() {
       },
       onWebSocketClose: () => {
         console.log(`WebSocket closed for room ${chatRoomId}`)
-        setConnectedRooms(prev => prev.filter(id => id !== chatRoomId))
-        // clients.current.delete(chatRoomId)
+        disconnectFromRoom(chatRoomId)
       },
       onWebSocketError: error => {
         console.error(`WebSocket error for room ${chatRoomId}:`, error)
       }
     })
 
-    // if (!clients.current.has(chatRoomId)) {
-    clients.current.set(chatRoomId, client)
     client.activate()
-    // }
   }
 
   const disconnectFromRoom = (chatRoomId: string) => {
-    const client = clients.current.get(chatRoomId)
+    const client = clients.get(chatRoomId)
     if (client) {
       client.deactivate()
-      clients.current.delete(chatRoomId)
-      setConnectedRooms(prev => prev.filter(id => id !== chatRoomId))
+      removeClient(chatRoomId)
+      removeRoom(chatRoomId)
       console.log(`Disconnected from room ${chatRoomId}`)
+    } else {
+      console.warn(`No client found for room ${chatRoomId}`)
     }
   }
 
@@ -67,28 +74,30 @@ export function useMultiChatting() {
     message: string,
     chatType: 'TEXT' | 'IMG' | 'VIDEO' | 'LINK'
   ) => {
-    console.log(1)
-    if (chatRoomId) {
-      const client = clients.current.get(chatRoomId)
-      console.log(clients.current)
-      if (!client?.connected) {
-        console.error(`Client not connected to room ${chatRoomId}`)
-        return
-      }
-
-      const messagePayload = {
-        chatType,
-        message
-      }
-
-      const sendAddress = `/pub/chat/room/${chatRoomId}`
-
-      client.publish({
-        destination: sendAddress,
-        body: JSON.stringify(messagePayload),
-        headers: { access }
-      })
+    if (!chatRoomId) {
+      console.error('ChatRoom ID is undefined')
+      return
     }
+
+    const client = clients.get(chatRoomId)
+    if (!client?.connected) {
+      console.error(`Client not connected to room ${chatRoomId}`)
+      return
+    }
+
+    const messagePayload = {
+      chatType,
+      message
+    }
+
+    const sendAddress = `/pub/chat/room/${chatRoomId}`
+
+    client.publish({
+      destination: sendAddress,
+      body: JSON.stringify(messagePayload),
+      headers: { access }
+    })
+    console.log(`Message sent to room ${chatRoomId}`)
   }
 
   return { connectedRooms, connectToRoom, disconnectFromRoom, sendHandler }
