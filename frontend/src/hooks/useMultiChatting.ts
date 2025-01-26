@@ -37,14 +37,16 @@ export function useMultiChatting() {
           `/sub/chat/room/${chatRoomId}`,
           message => {
             const receivedMessage = JSON.parse(message.body)
+            console.log('receivedMessage :', receivedMessage)
 
             const fixedMessage = {
               ...receivedMessage,
-              nickName: receivedMessage.nickname
+              nickName: receivedMessage.nickname,
+              curChatType: receivedMessage.chatType,
+              chatRoomId: receivedMessage.roomId
             }
             delete fixedMessage.nickname
-
-            actions.addMessage(fixedMessage, chatRoomId)
+            actions.addMessage(fixedMessage)
           },
           { access }
         )

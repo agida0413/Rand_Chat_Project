@@ -29,17 +29,16 @@ export default function ChatDetail() {
 
   useEffect(() => {
     if (!chatId) return
-    actions.fetchChatData(chatId) // 메시지 데이터를 가져옵니다
-    actions.fetchChatInfo(chatId) // 사용자 정보 가져오기
+    actions.fetchChatData(chatId)
+    actions.fetchChatInfo(chatId)
   }, [chatId])
 
   useEffect(() => {
     if (chatContentRef.current) {
       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight
     }
-  }, [chatId])
+  }, [chatId, chatRoom])
 
-  // 채팅방 정보를 찾고 메시지를 가져옵니다
   const currentChatRoom = chatRoom.find(room => room.chatRoomId === chatId)
   const messages = currentChatRoom?.msgInfo || []
   const myInfo =
