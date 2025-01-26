@@ -57,25 +57,48 @@
     padding: $padding-m 0;
     width: 100%;
 
-    .in,
-    .out {
-      max-width: 100%;
-      width: fit-content;
-      padding: $padding-s $padding-l;
-      border-radius: $radius-l;
-      max-width: 80rem;
-      word-wrap: break-word;
+    .outContainer {
+      display: flex;
+      justify-content: right;
+      gap: 1rem;
+
+      .outInfo {
+        @include typography('xxs');
+        align-content: center;
+        justify-items: right;
+      }
+
+      .out {
+        max-width: 100%;
+        width: fit-content;
+        padding: $padding-s $padding-l;
+        border-radius: $radius-l;
+        max-width: 80rem;
+        word-wrap: break-word;
+        background-color: $color-primary-400;
+        color: white;
+      }
     }
 
-    .in {
-      text-align: left;
-      background-color: #e7e7e7;
-    }
+    .inContainer {
+      display: flex;
+      justify-content: left;
+      gap: 1rem;
 
-    .out {
-      align-self: self-end;
-      background-color: $color-primary-400;
-      color: white;
+      .inInfo {
+        @include typography('xxs');
+        align-content: center;
+      }
+
+      .in {
+        max-width: 100%;
+        width: fit-content;
+        padding: $padding-s $padding-l;
+        border-radius: $radius-l;
+        max-width: 80rem;
+        word-wrap: break-word;
+        background-color: #e7e7e7;
+      }
     }
   }
   .chatInputContainer {

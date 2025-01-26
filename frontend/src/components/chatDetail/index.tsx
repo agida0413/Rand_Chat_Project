@@ -72,15 +72,31 @@ export default function ChatDetail() {
           messages.map((chat, index) =>
             chat.nickName === myInfo?.nickName ? (
               <div
-                key={index}
-                className={styles.out}>
-                {chat.message}
+                className={styles.outContainer}
+                key={index}>
+                <div className={styles.outInfo}>
+                  <p className={styles.outRead}>
+                    {chat.read ? <>&nbsp;</> : '1'}
+                  </p>
+                  <p className={styles.outDate}>
+                    {/* 시간 추후 수정 */}
+                    {chat.msgCrDate.split(' ')[1]}
+                  </p>
+                </div>
+                <div className={styles.out}>{chat.message}</div>
               </div>
             ) : (
               <div
-                key={index}
-                className={styles.in}>
-                {chat.message}
+                className={styles.inContainer}
+                key={index}>
+                <div className={styles.in}>{chat.message}</div>
+                <div className={styles.inInfo}>
+                  <p className={styles.inRead}>&nbsp;</p>
+                  <p className={styles.inDate}>
+                    {/* 시간 추후 수정 */}
+                    {chat.msgCrDate.split(' ')[1]}
+                  </p>
+                </div>
               </div>
             )
           )}
