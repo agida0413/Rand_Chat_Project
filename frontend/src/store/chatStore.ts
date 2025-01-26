@@ -44,7 +44,6 @@ export const useChatStore = create<
           .getState()
           .chatRoom.find(room => room.chatRoomId === chatRoomId)
         if (currentChatRoom?.chatUserInfo) return
-
         const userInfo: ChatUserInfoProps[] = await getChatUserInfo(chatRoomId)
 
         set(state => {
@@ -53,6 +52,36 @@ export const useChatStore = create<
               return {
                 ...room,
                 chatUserInfo: userInfo
+              }
+            }
+            return room
+          })
+          return { chatRoom: updatedChatRoom }
+        })
+      },
+
+      // 특정 방의 메시지 데이터를 가져옴
+      fetchChatData: async (chatRoomId: string) => {
+        const currentChatRoom = useChatStore
+          .getState()
+          .chatRoom.find(room => room.chatRoomId === chatRoomId)
+        if (currentChatRoom?.msgInfo) return
+
+        const data: ChatRoomFirstMsgInfoProps[] =
+          await getChatRoomFirstMsgInfo(chatRoomId)
+
+        const reverseData = data.reverse()
+
+        set(state => {
+          const updatedChatRoom = state.chatRoom.map(room => {
+            if (room.chatRoomId === chatRoomId) {
+              const msgInfoWithFlag = reverseData.map(msg => ({
+                ...msg
+              }))
+
+              return {
+                ...room,
+                msgInfo: msgInfoWithFlag
               }
             }
             return room
@@ -88,38 +117,7 @@ export const useChatStore = create<
           ]
 
           return { chatRoom: updatedChatRoomList }
-        }),
-
-      // 특정 방의 메시지 데이터를 가져옴
-      fetchChatData: async (chatRoomId: string) => {
-        const currentChatRoom = useChatStore
-          .getState()
-          .chatRoom.find(room => room.chatRoomId === chatRoomId)
-        if (currentChatRoom?.msgInfo) return
-
-        const data: ChatRoomFirstMsgInfoProps[] =
-          await getChatRoomFirstMsgInfo(chatRoomId)
-
-        const reverseData = data.reverse()
-
-        set(state => {
-          const updatedChatRoom = state.chatRoom.map(room => {
-            if (room.chatRoomId === chatRoomId) {
-              // 메시지에 itsMeFlag를 설정합니다
-              const msgInfoWithFlag = reverseData.map(msg => ({
-                ...msg
-              }))
-
-              return {
-                ...room,
-                msgInfo: msgInfoWithFlag
-              }
-            }
-            return room
-          })
-          return { chatRoom: updatedChatRoom }
         })
-      }
     }
   }))
 )

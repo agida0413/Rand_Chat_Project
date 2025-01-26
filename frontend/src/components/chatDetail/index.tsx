@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ProfileImage from '../profileImage'
 import styles from './chatDetail.module.scss'
 import { useEffect, useRef, useState } from 'react'
@@ -10,8 +10,9 @@ import { useMultiChatting } from '@/hooks/useMultiChatting'
 export default function ChatDetail() {
   const { chatId } = useParams()
   const { sendHandler } = useMultiChatting()
+  const navigate = useNavigate()
   const { chatRoom, actions } = useChatStore()
-
+  const { fetchChatData, fetchChatInfo } = actions
   const [input, setInput] = useState('')
   const chatContentRef = useRef<HTMLDivElement>(null)
 
@@ -23,21 +24,10 @@ export default function ChatDetail() {
     }
   }
 
-  const handleExitChat = () => {
-    deleteExitChat(chatId)
+  const handleExitChat = async () => {
+    await deleteExitChat(chatId)
+    navigate('/chat')
   }
-
-  useEffect(() => {
-    if (!chatId) return
-    actions.fetchChatData(chatId)
-    actions.fetchChatInfo(chatId)
-  }, [chatId])
-
-  useEffect(() => {
-    if (chatContentRef.current) {
-      chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight
-    }
-  }, [chatId, chatRoom])
 
   const currentChatRoom = chatRoom.find(room => room.chatRoomId === chatId)
   const messages = currentChatRoom?.msgInfo || []
@@ -45,8 +35,21 @@ export default function ChatDetail() {
     currentChatRoom?.chatUserInfo?.find(user => user.itsMeFlag) || null
   const userInfo =
     currentChatRoom?.chatUserInfo?.find(user => !user.itsMeFlag) || null
+  useEffect(() => {
+    if (chatContentRef.current) {
+      chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight
+    }
+  }, [chatId, chatRoom])
 
-  if (!currentChatRoom || !userInfo) return <div>Loading...</div>
+  useEffect(() => {
+    if (!chatId) return
+    fetchChatInfo(chatId)
+    fetchChatData(chatId)
+  }, [currentChatRoom, userInfo, navigate])
+
+  if (!currentChatRoom || !userInfo) {
+    return null
+  }
 
   return (
     <section className={styles.chatDetailContainer}>
