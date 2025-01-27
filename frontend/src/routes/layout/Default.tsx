@@ -1,4 +1,9 @@
-import { Outlet, ScrollRestoration, useNavigation } from 'react-router-dom'
+import {
+  Outlet,
+  ScrollRestoration,
+  useNavigate,
+  useNavigation
+} from 'react-router-dom'
 import Header from '@/components/header'
 import Loading from './Loading'
 import styles from './Defalut.module.scss'
@@ -12,6 +17,7 @@ export default function DefaultLayout() {
   const { getCurrentPosition } = useLocationPolling()
 
   const navigation = useNavigation()
+  const navigate = useNavigate()
   if (navigation.state === 'loading') {
     return <Loading />
   }
@@ -23,6 +29,10 @@ export default function DefaultLayout() {
       clearInterval(intervalId)
     }
   }, [])
+
+  useEffect(() => {
+    if (performance.navigation.type === 1) navigate('/')
+  }, [navigate])
 
   return (
     <main className={styles.mainContainer}>
