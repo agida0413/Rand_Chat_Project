@@ -37,16 +37,19 @@ export function useMultiChatting() {
           `/sub/chat/room/${chatRoomId}`,
           message => {
             const receivedMessage = JSON.parse(message.body)
-            console.log('receivedMessage :', receivedMessage)
-
-            const fixedMessage = {
-              ...receivedMessage,
-              nickName: receivedMessage.nickname,
-              curChatType: receivedMessage.chatType,
-              chatRoomId: receivedMessage.roomId
+            console.log('receivedMessage: ', receivedMessage)
+            if (receivedMessage.type === 'READ-EVENT') {
+              // actions.readMessage(receivedMessage)
+            } else {
+              const fixedMessage = {
+                ...receivedMessage,
+                nickName: receivedMessage.nickname,
+                curChatType: receivedMessage.chatType,
+                chatRoomId: receivedMessage.roomId
+              }
+              delete fixedMessage.nickname
+              actions.addMessage(fixedMessage)
             }
-            delete fixedMessage.nickname
-            actions.addMessage(fixedMessage)
           },
           { access }
         )
@@ -100,13 +103,13 @@ export function useMultiChatting() {
     }
 
     const sendAddress = `/pub/chat/room/${chatRoomId}`
+    console.log('messagePayload : ', messagePayload)
 
     client.publish({
       destination: sendAddress,
       body: JSON.stringify(messagePayload),
       headers: { access }
     })
-    console.log(`Message sent to room ${chatRoomId}`)
   }
 
   return { connectedRooms, connectToRoom, disconnectFromRoom, sendHandler }

@@ -1,7 +1,9 @@
 import {
   ChatRoomFirstMsgInfoProps,
   ChatRoomProps,
+  ChatRoomReadProps,
   ChatUserInfoProps,
+  getChatEnter,
   getChatRoom,
   getChatRoomFirstMsgInfo,
   getChatUserInfo
@@ -19,6 +21,7 @@ interface ChatActions {
   fetchChatInfo: (chatRoomId: string) => ChatUserInfoProps[]
   fetchChatData: (chatRoomId: string) => Promise<void>
   addMessage: (msg: ChatRoomFirstMsgInfoProps) => void
+  readMessage: (chatRooomId: string) => void
 }
 
 const initialState: ExtendedChatRoomProps[] = []
@@ -39,6 +42,7 @@ export const useChatStore = create<
         return roomData
       },
 
+      // 특정 방의 정보
       fetchChatInfo: async (chatRoomId: string) => {
         const currentChatRoom = useChatStore
           .getState()
@@ -60,12 +64,13 @@ export const useChatStore = create<
         })
       },
 
-      // 특정 방의 메시지 데이터를 가져옴
+      // 특정 방의 메시지 데이터
       fetchChatData: async (chatRoomId: string) => {
         const currentChatRoom = useChatStore
           .getState()
           .chatRoom.find(room => room.chatRoomId === chatRoomId)
-        if (currentChatRoom?.msgInfo) return
+        console.log(currentChatRoom?.msgInfo)
+        // if (currentChatRoom?.msgInfo) return
 
         const data: ChatRoomFirstMsgInfoProps[] =
           await getChatRoomFirstMsgInfo(chatRoomId)
@@ -96,13 +101,9 @@ export const useChatStore = create<
           const index = state.chatRoom.findIndex(
             room => String(room.chatRoomId) === String(msg.chatRoomId)
           )
-          if (index === -1) {
-            console.log('index 찾기 실패')
-            return state
-          }
+          if (index === -1) return state
 
           const updatedMsgInfo = [...(state.chatRoom[index].msgInfo || []), msg]
-
           const updatedChatRoom = {
             ...state.chatRoom[index],
             curMsg: msg.message,
@@ -115,6 +116,35 @@ export const useChatStore = create<
             updatedChatRoom,
             ...state.chatRoom.filter((_, i) => i !== index)
           ]
+
+          return { chatRoom: updatedChatRoomList }
+        }),
+
+      // 특정 방 메시지 읽기
+      readMessage: (receivedMessage: ChatRoomReadProps) =>
+        set(state => {
+          const index = state.chatRoom.findIndex(
+            room =>
+              String(room.chatRoomId) === String(receivedMessage.chatRoomId)
+          )
+          if (index === -1) return state
+
+          const updatedChatRoom = {
+            ...state.chatRoom[index]
+          }
+
+          console.log(state.chatRoom[index].opsNickName, receivedMessage.reader)
+          if (state.chatRoom[index].opsNickName === receivedMessage.reader) {
+            console.log('read')
+            // updatedChatRoom.unreadCount = 0
+          } else {
+            console.log('unread')
+            // updatedChatRoom.unreadCount = state.chatRoom[index].unreadCount + 1
+          }
+
+          const updatedChatRoomList = state.chatRoom.map((room, i) =>
+            i === index ? updatedChatRoom : room
+          )
 
           return { chatRoom: updatedChatRoomList }
         })

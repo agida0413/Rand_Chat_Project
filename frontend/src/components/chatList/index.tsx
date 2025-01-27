@@ -11,10 +11,14 @@ export default function ChatList() {
   const location = useLocation()
   const { chatRoom, actions } = useChatStore()
   const { connectToRoom } = useMultiChatting()
+  const { fetchChatInfo } = actions
 
   useEffect(() => {
     actions.initChatRoom().then(data => {
-      data.forEach(room => connectToRoom(room.chatRoomId))
+      data.forEach(room => {
+        connectToRoom(room.chatRoomId)
+        fetchChatInfo(room.chatRoomId)
+      })
     })
   }, [])
 

@@ -4,7 +4,7 @@ import styles from './chatDetail.module.scss'
 import { useEffect, useRef, useState } from 'react'
 import { useChatStore } from '@/store/chatStore'
 import { IoExit } from 'react-icons/io5'
-import { deleteExitChat } from '@/api/chats'
+import { deleteExitChat, getChatEnter } from '@/api/chats'
 import { useMultiChatting } from '@/hooks/useMultiChatting'
 
 export default function ChatDetail() {
@@ -12,7 +12,7 @@ export default function ChatDetail() {
   const { sendHandler } = useMultiChatting()
   const navigate = useNavigate()
   const { chatRoom, actions } = useChatStore()
-  const { fetchChatData, fetchChatInfo } = actions
+  const { fetchChatData } = actions
   const [input, setInput] = useState('')
   const chatContentRef = useRef<HTMLDivElement>(null)
 
@@ -35,6 +35,7 @@ export default function ChatDetail() {
     currentChatRoom?.chatUserInfo?.find(user => user.itsMeFlag) || null
   const userInfo =
     currentChatRoom?.chatUserInfo?.find(user => !user.itsMeFlag) || null
+
   useEffect(() => {
     if (chatContentRef.current) {
       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight
@@ -43,9 +44,9 @@ export default function ChatDetail() {
 
   useEffect(() => {
     if (!chatId) return
-    fetchChatInfo(chatId)
+    getChatEnter(chatId)
     fetchChatData(chatId)
-  }, [currentChatRoom, userInfo, navigate])
+  }, [chatId])
 
   if (!currentChatRoom || !userInfo) {
     return null

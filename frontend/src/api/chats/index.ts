@@ -123,3 +123,24 @@ export const deleteExitChat = async (chatRoomId: string | undefined) => {
 
   return res
 }
+
+export interface ChatRoomReadProps {
+  reader: string
+  readFlag: string
+  chatRoomId: string
+  type: 'READ-EVENT'
+}
+
+export const getChatEnter = async (chatRoomId: string) => {
+  console.log('call Enter')
+  const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
+  const url = `${VITE_SSE_API_URL}/chat/ws/api/enter/${chatRoomId}`
+
+  await api.get<ChatUserInfoProps[]>(url, {
+    headers: {
+      Accept: 'application/json',
+      access: `${getAccessToken()}`
+    },
+    credentials: 'include'
+  })
+}
