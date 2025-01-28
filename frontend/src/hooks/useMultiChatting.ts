@@ -1,3 +1,4 @@
+import { postChatRoomImage } from '@/api/chats'
 import { useChatClientStore } from '@/store/chatClientStore'
 import { useChatStore } from '@/store/chatStore'
 import { getAccessToken } from '@/utils/auth'
@@ -81,6 +82,16 @@ export function useMultiChatting() {
     }
   }
 
+  const sendImage = async (chatRoomId: string, file: File) => {
+    if (!chatRoomId || !file) {
+      console.error('ChatRoom ID or file is missing')
+      return
+    }
+
+    const data = await postChatRoomImage(chatRoomId, file)
+    sendHandler(chatRoomId, data.imgUrl, 'IMG')
+  }
+
   const sendHandler = (
     chatRoomId: string | undefined,
     message: string,
@@ -112,5 +123,11 @@ export function useMultiChatting() {
     })
   }
 
-  return { connectedRooms, connectToRoom, disconnectFromRoom, sendHandler }
+  return {
+    connectedRooms,
+    connectToRoom,
+    disconnectFromRoom,
+    sendHandler,
+    sendImage
+  }
 }

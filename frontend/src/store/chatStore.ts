@@ -107,7 +107,7 @@ export const useChatStore = create<
           const updatedChatRoom = {
             ...state.chatRoom[index],
             curMsg: msg.message,
-            curChatType: msg.curChatType,
+            curChatType: msg.chatType,
             curMsgCrDate: msg.msgCrDate,
             msgInfo: updatedMsgInfo
           }

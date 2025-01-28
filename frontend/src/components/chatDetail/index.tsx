@@ -3,24 +3,36 @@ import ProfileImage from '../profileImage'
 import styles from './chatDetail.module.scss'
 import { useEffect, useRef, useState } from 'react'
 import { useChatStore } from '@/store/chatStore'
-import { IoExit } from 'react-icons/io5'
+import { IoExit, IoImageSharp } from 'react-icons/io5'
 import { deleteExitChat, getChatEnter } from '@/api/chats'
 import { useMultiChatting } from '@/hooks/useMultiChatting'
 
 export default function ChatDetail() {
   const { chatId } = useParams()
-  const { sendHandler } = useMultiChatting()
+  const { sendHandler, sendImage } = useMultiChatting()
   const navigate = useNavigate()
   const { chatRoom, actions } = useChatStore()
   const { fetchChatData } = actions
   const [input, setInput] = useState('')
   const chatContentRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSendMsg = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       sendHandler(chatId, input, 'TEXT')
       setInput('')
+    }
+  }
+
+  const handleSendImage = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && chatId) {
+      sendImage(chatId, file)
     }
   }
 
@@ -84,13 +96,26 @@ export default function ChatDetail() {
                     {chat.msgCrDate.split(' ')[1]}
                   </p>
                 </div>
-                <div className={styles.out}>{chat.message}</div>
+
+                {chat.chatType === 'IMG' ? (
+                  <div className={styles.outImageContainer}>
+                    <img src={chat.message} />
+                  </div>
+                ) : (
+                  <div className={styles.out}>{chat.message}</div>
+                )}
               </div>
             ) : (
               <div
                 className={styles.inContainer}
                 key={index}>
-                <div className={styles.in}>{chat.message}</div>
+                {chat.chatType === 'IMG' ? (
+                  <div className={styles.inImageContainer}>
+                    <img src={chat.message} />
+                  </div>
+                ) : (
+                  <div className={styles.in}>{chat.message}</div>
+                )}
                 <div className={styles.inInfo}>
                   <p className={styles.inRead}>&nbsp;</p>
                   <p className={styles.inDate}>
@@ -104,7 +129,15 @@ export default function ChatDetail() {
       </div>
       <div className={styles.chatInputContainer}>
         <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+        <IoImageSharp onClick={handleSendImage} />
+        <input
           type="text"
+          className={styles.chatInput}
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyUp={handleSendMsg}

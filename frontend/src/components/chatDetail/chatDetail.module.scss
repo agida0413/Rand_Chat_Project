@@ -80,6 +80,20 @@
       }
     }
 
+    .outImageContainer,
+    .inImageContainer {
+      width: 50%;
+      max-width: 50%;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: $radius-l;
+      }
+    }
+
     .inContainer {
       display: flex;
       justify-content: left;
@@ -103,7 +117,10 @@
   }
   .chatInputContainer {
     margin-top: auto;
-    input {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    .chatInput {
       @include primaryInput;
       @include typography('xs');
     }
