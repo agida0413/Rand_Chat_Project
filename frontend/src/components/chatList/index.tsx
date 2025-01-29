@@ -5,7 +5,6 @@ import { IoSearchOutline } from 'react-icons/io5'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useChatStore } from '@/store/chatStore'
 import { useMultiChatting } from '@/hooks/useMultiChatting'
-
 export default function ChatList() {
   const [inputChatRoom, setInputChatRoom] = useState('')
   const location = useLocation()
@@ -22,6 +21,10 @@ export default function ChatList() {
     })
   }, [])
 
+  const filteredChatRooms = chatRoom.filter(room =>
+    room.opsNickName.toLowerCase().includes(inputChatRoom.toLowerCase())
+  )
+
   return (
     <section className={styles.chatListContainer}>
       <div className={styles.inputContainer}>
@@ -34,10 +37,10 @@ export default function ChatList() {
       </div>
       <div className={styles.peopleList}>
         <p className={styles.peopleName}>채팅 목록</p>
-        {chatRoom.length === 0 ? (
+        {filteredChatRooms.length === 0 ? (
           <h4>채팅방이 없습니다</h4>
         ) : (
-          chatRoom.map((room, index) => (
+          filteredChatRooms.map((room, index) => (
             <NavLink
               className={({ isActive }) => (isActive ? styles.activeLink : '')}
               key={index}
