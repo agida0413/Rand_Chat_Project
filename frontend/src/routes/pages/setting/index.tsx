@@ -35,13 +35,11 @@ export default function Setting({
           className={styles.settingItem}
           onClick={onDeactivateModal}>
           <p>계정 비활성화</p>
-          <IoArrowForwardOutline />
         </div>
         <div
           className={styles.settingItem}
           onClick={onDeleteModal}>
           <p>회원 탈퇴</p>
-          <IoArrowForwardOutline />
         </div>
       </span>
     </div>

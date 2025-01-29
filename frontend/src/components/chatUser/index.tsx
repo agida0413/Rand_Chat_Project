@@ -51,7 +51,7 @@ export default function ChatUser({ room }: ChatUserProps) {
         </div>
         <div className={styles.right}>
           <p>{formattedDate}</p>
-          <p>{room.unreadCount}</p>
+          <p>{room.unreadCount === 0 ? '' : room.unreadCount}</p>
         </div>
       </div>
     </div>

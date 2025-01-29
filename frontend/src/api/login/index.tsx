@@ -82,3 +82,25 @@ export const getUserInfo = async () => {
 
   return res
 }
+
+export const putMemberPwd = async (password: string, newPassword: string) => {
+  const formData = new URLSearchParams()
+  formData.append('password', password)
+  formData.append('newPassword', newPassword)
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+  const url = `${API_BASE_URL}/api/v1/member/pwd`
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+      access: `${getAccessToken()}`
+    },
+    body: formData,
+    credentials: 'include'
+  })
+
+  const data = await res.json()
+  return data
+}
