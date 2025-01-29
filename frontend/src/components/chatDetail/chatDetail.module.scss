@@ -120,6 +120,10 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+
+    svg {
+      color: $color-primary-500;
+    }
     .chatInput {
       @include primaryInput;
       @include typography('xs');

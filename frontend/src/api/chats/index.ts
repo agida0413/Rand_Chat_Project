@@ -11,6 +11,8 @@ export interface ChatRoomProps {
   unreadCount: number
   roomState: 'ACTIVE' | 'INACTIVE'
   abNormalFlag: boolean
+  page: number
+  pageChk: boolean
 }
 
 export const getChatRoom = async () => {

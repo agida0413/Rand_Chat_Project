@@ -6,6 +6,7 @@ import {
   getChatEnter,
   getChatRoom,
   getChatRoomFirstMsgInfo,
+  getChatRoomMsgInfo,
   getChatUserInfo
 } from '@/api/chats'
 import { create } from 'zustand'
@@ -20,6 +21,7 @@ interface ChatActions {
   initChatRoom: () => Promise<ChatRoomProps[]>
   fetchChatInfo: (chatRoomId: string) => ChatUserInfoProps[]
   fetchChatData: (chatRoomId: string) => Promise<void>
+  fetchChatMoreData: (chatRoomId: string) => void
   addMessage: (msg: ChatRoomFirstMsgInfoProps) => void
   readMessage: (chatRooomId: string) => void
 }
@@ -66,10 +68,10 @@ export const useChatStore = create<
 
       // 특정 방의 메시지 데이터
       fetchChatData: async (chatRoomId: string) => {
+        console.log('chatRoomId : ', chatRoomId)
         const currentChatRoom = useChatStore
           .getState()
           .chatRoom.find(room => room.chatRoomId === chatRoomId)
-        console.log(currentChatRoom?.msgInfo)
         // if (currentChatRoom?.msgInfo) return
 
         const data: ChatRoomFirstMsgInfoProps[] =
@@ -86,7 +88,46 @@ export const useChatStore = create<
 
               return {
                 ...room,
-                msgInfo: msgInfoWithFlag
+                msgInfo: msgInfoWithFlag,
+                pageChk: true
+              }
+            }
+            return room
+          })
+          return { chatRoom: updatedChatRoom }
+        })
+      },
+
+      // 특정 방의 추가 메시지 데이터
+      fetchChatMoreData: async (chatRoomId: string) => {
+        const currentChatRoom = useChatStore
+          .getState()
+          .chatRoom.find(room => room.chatRoomId === chatRoomId)
+
+        if (!currentChatRoom) return
+
+        const currentPage = currentChatRoom.page || 2
+        const data = await getChatRoomMsgInfo(chatRoomId, currentPage)
+        set(state => {
+          if (data.length === 0) {
+            const updatedChatRoom = state.chatRoom.map(room => {
+              if (room.chatRoomId === chatRoomId) {
+                return {
+                  ...room,
+                  pageChk: false
+                }
+              }
+              return room
+            })
+            return { chatRoom: updatedChatRoom }
+          }
+          const updatedChatRoom = state.chatRoom.map(room => {
+            if (room.chatRoomId === chatRoomId) {
+              return {
+                ...room,
+                msgInfo: [...data, ...(room.msgInfo || [])],
+                page: currentPage + 1,
+                pageChk: true
               }
             }
             return room

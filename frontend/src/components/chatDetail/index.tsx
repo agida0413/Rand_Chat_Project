@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import ProfileImage from '../profileImage'
 import styles from './chatDetail.module.scss'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useChatStore } from '@/store/chatStore'
 import { IoExit, IoImageSharp } from 'react-icons/io5'
 import { deleteExitChat, getChatEnter } from '@/api/chats'
@@ -12,10 +12,12 @@ export default function ChatDetail() {
   const { sendHandler, sendImage } = useMultiChatting()
   const navigate = useNavigate()
   const { chatRoom, actions } = useChatStore()
-  const { fetchChatData } = actions
+  const { fetchChatData, fetchChatMoreData } = actions
   const [input, setInput] = useState('')
   const chatContentRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const topObserverRef = useRef<HTMLDivElement>(null)
+  const [isFetching, setIsFetching] = useState(true)
 
   const handleSendMsg = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -48,17 +50,50 @@ export default function ChatDetail() {
   const userInfo =
     currentChatRoom?.chatUserInfo?.find(user => !user.itsMeFlag) || null
 
-  useEffect(() => {
-    if (chatContentRef.current) {
-      chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight
-    }
-  }, [chatId, chatRoom])
-
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!chatId) return
     getChatEnter(chatId)
-    fetchChatData(chatId)
+    fetchChatData(chatId).then(() => {
+      setIsFetching(false)
+      if (chatContentRef.current) {
+        chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight
+      }
+    })
   }, [chatId])
+
+  useEffect(() => {
+    if (!chatId || !topObserverRef.current || !chatContentRef.current) return
+
+    const chatContainer = chatContentRef.current
+    const previousScrollHeight = chatContainer.scrollHeight
+
+    const observer = new IntersectionObserver(
+      async entries => {
+        if (
+          entries[0].isIntersecting &&
+          !isFetching &&
+          currentChatRoom?.pageChk
+        ) {
+          setIsFetching(true)
+          await fetchChatMoreData(chatId)
+
+          requestAnimationFrame(() => {
+            if (chatContainer) {
+              chatContainer.scrollTop =
+                chatContainer.scrollHeight - previousScrollHeight
+            }
+          })
+
+          setIsFetching(false)
+        }
+      },
+      { root: chatContainer, threshold: 0.1 }
+    )
+
+    observer.observe(topObserverRef.current)
+
+    return () => observer.disconnect()
+  }, [chatId, isFetching])
 
   if (!currentChatRoom || !userInfo) {
     return null
@@ -81,6 +116,9 @@ export default function ChatDetail() {
       <div
         className={styles.chatContentContainer}
         ref={chatContentRef}>
+        <div
+          ref={topObserverRef}
+          className={styles.observer}></div>
         {messages.length > 0 &&
           messages.map((chat, index) =>
             chat.nickName === myInfo?.nickName ? (
