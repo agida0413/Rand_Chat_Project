@@ -12,6 +12,7 @@ import {
 import ProfileImage from '../profileImage'
 import { removeAccessToken, removeMatchToken } from '@/utils/auth'
 import { postLogout } from '@/api/login'
+import { useUserStore } from '@/store/userStore'
 
 const navigations = [
   {
@@ -36,6 +37,8 @@ const navigations = [
 
 export default function Header() {
   const navigate = useNavigate()
+  const userStore = useUserStore()
+  const { user } = userStore
 
   const handleLogout = () => {
     postLogout()
@@ -48,7 +51,7 @@ export default function Header() {
     <header className={styles.headerContainer}>
       <div className={styles.profileContainer}>
         <span>
-          <ProfileImage src="" />
+          <ProfileImage src={user.profile_img} />
         </span>
       </div>
 

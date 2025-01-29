@@ -11,8 +11,13 @@ import { useMatchStore } from '@/store/matchStore'
 import MatchProfile from '@/components/matchProfile'
 import { useEffect } from 'react'
 import { useLocationPolling } from '@/hooks/useLocationPolling'
+import { useUserStore } from '@/store/userStore'
 
 export default function DefaultLayout() {
+  const userStore = useUserStore()
+  const { actions } = userStore
+  const { setUser } = actions
+
   const { isOpenModal } = useMatchStore()
   const { getCurrentPosition } = useLocationPolling()
 
@@ -23,6 +28,7 @@ export default function DefaultLayout() {
   }
 
   useEffect(() => {
+    setUser()
     const intervalId = setInterval(getCurrentPosition, 300000)
     getCurrentPosition()
     return () => {
