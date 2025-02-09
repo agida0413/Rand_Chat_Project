@@ -3,7 +3,7 @@ import ProfileImage from '../profileImage'
 import styles from './chatDetail.module.scss'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useChatStore } from '@/store/chatStore'
-import { IoExit, IoImageSharp } from 'react-icons/io5'
+import { IoExit, IoImageSharp, IoArrowBackSharp } from 'react-icons/io5'
 import { deleteExitChat, getChatEnter } from '@/api/chats'
 import { useMultiChatting } from '@/hooks/useMultiChatting'
 
@@ -18,6 +18,7 @@ export default function ChatDetail() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const topObserverRef = useRef<HTMLDivElement>(null)
   const [isFetching, setIsFetching] = useState(true)
+  const isMobile = window.innerWidth <= 1023
 
   const handleSendMsg = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -103,6 +104,7 @@ export default function ChatDetail() {
     <section className={styles.chatDetailContainer}>
       <div className={styles.contactContainer}>
         <div className={styles.contactLeft}>
+          {isMobile && <IoArrowBackSharp onClick={() => navigate('/chat')} />}
           <div className={styles.profileImage}>
             <ProfileImage src={userInfo.profileImg} />
           </div>

@@ -3,10 +3,12 @@ import styles from './updatePassword.module.scss'
 import { putMemberPwd } from '@/api/login'
 import { notify } from '@/utils/toast'
 import { useNavigate } from 'react-router-dom'
+import { IoArrowBackSharp } from 'node_modules/react-icons/io5'
 
 export default function UpdatePassword() {
   const navigate = useNavigate()
 
+  const isMobile = window.innerWidth <= 1023
   const [password, setPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [chkPassword, setChkPassword] = useState('')
@@ -60,6 +62,7 @@ export default function UpdatePassword() {
   return (
     <div className={styles.settingPassword}>
       <div className={styles.PasswordContainer}>
+        {isMobile && <IoArrowBackSharp onClick={() => navigate('/setting')} />}
         <h1>비밀번호 변경</h1>
         <div className={styles.PasswordForm}>
           <div>

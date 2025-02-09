@@ -60,3 +60,24 @@
     }
   }
 }
+
+@media screen and (max-width: 1023px) {
+  .headerContainer {
+    flex-direction: row;
+    max-width: none;
+    height: 6rem;
+    border-radius: $radius-l;
+
+    padding-top: 0rem;
+    padding-bottom: 0rem;
+
+    a {
+      height: 6rem;
+
+      &.active {
+        border-radius: $radius-l;
+        border-right: 0px;
+      }
+    }
+  }
+}
