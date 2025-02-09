@@ -26,3 +26,10 @@
     }
   }
 }
+
+@media screen and (max-width: 1024px) {
+  .signupContainer {
+    width: 75%;
+    min-width: 33rem;
+  }
+}

@@ -1,9 +1,4 @@
-import {
-  Outlet,
-  ScrollRestoration,
-  useNavigate,
-  useNavigation
-} from 'react-router-dom'
+import { Outlet, useNavigate, useNavigation } from 'react-router-dom'
 import Header from '@/components/header'
 import Loading from './Loading'
 import styles from './Defalut.module.scss'
@@ -14,6 +9,7 @@ import { useLocationPolling } from '@/hooks/useLocationPolling'
 import { useUserStore } from '@/store/userStore'
 
 export default function DefaultLayout() {
+  const isMobile = window.innerWidth <= 1023
   const userStore = useUserStore()
   const { actions } = userStore
   const { setUser } = actions
@@ -43,9 +39,18 @@ export default function DefaultLayout() {
   return (
     <main className={styles.mainContainer}>
       {isOpenModal ? <MatchProfile /> : ''}
-      <Header />
-      <Outlet />
-      <ScrollRestoration />
+      {!isMobile && (
+        <>
+          <Header />
+          <Outlet />
+        </>
+      )}
+      {isMobile && (
+        <div className={styles.mainDivContainer}>
+          <Outlet />
+          <Header />
+        </div>
+      )}
     </main>
   )
 }

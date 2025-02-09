@@ -10,6 +10,9 @@ export default function SettingDefaultLayout() {
   const [openDeactivateModal, setOpenDeactivateModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
+  const isMobile = window.innerWidth <= 1023
+  const isSettingPage = location.pathname === '/setting'
+
   const navigation = useNavigation()
   if (navigation.state === 'loading') {
     return <Loading />
@@ -23,10 +26,15 @@ export default function SettingDefaultLayout() {
       {openDeleteModal && (
         <DeleteModal handleClose={() => setOpenDeleteModal(false)} />
       )}
-      <Setting
-        onDeactivateModal={() => setOpenDeactivateModal(true)}
-        onDeleteModal={() => setOpenDeleteModal(true)}
-      />
+
+      {(!isMobile || isSettingPage) && (
+        <Setting
+          onDeactivateModal={() => setOpenDeactivateModal(true)}
+          onDeleteModal={() => setOpenDeleteModal(true)}
+        />
+      )}
+      {/* {(isMobile && !isSettingPage) || !isMobile ? <Outlet /> : null} */}
+
       <Outlet />
     </span>
   )

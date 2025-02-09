@@ -5,7 +5,7 @@ $font-bold: 'Pretendard-Bold', sans-serif;
 $font-medium: 'Pretendard-Medium', sans-serif;
 $font-Light: 'Pretendard-Light', sans-serif;
 
-// Font Sizes
+// Font Sizes (기본)
 $font-sizes: (
   'xxl': 6rem,
   'xl': 4.8rem,
@@ -14,6 +14,17 @@ $font-sizes: (
   'sm': 2.2rem,
   'xs': 2rem,
   'xxs': 1.6rem
+);
+
+// Font Sizes (1024px 이하에서 1단계 낮추기)
+$font-sizes-mobile: (
+  'xxl': 4.8rem,
+  'xl': 3.6rem,
+  'lg': 2.8rem,
+  'md': 2.2rem,
+  'sm': 2rem,
+  'xs': 1.6rem,
+  'xxs': 1.4rem
 );
 
 $line-heights: (
@@ -48,4 +59,8 @@ $letter-spacing-normal: -0.01rem;
     $letter-spacing-tight,
     $letter-spacing-normal
   );
+
+  @media screen and (max-width: 1024px) {
+    font-size: map.get($font-sizes-mobile, $size);
+  }
 }

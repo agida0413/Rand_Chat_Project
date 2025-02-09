@@ -2,7 +2,7 @@ import { putMemberProfile } from '@/api/user'
 import styles from './updateProfile.module.scss'
 import defaultImg from '@/assets/images/default-profile.webp'
 import { SyntheticEvent, useRef, useState } from 'react'
-import { IoCamera } from 'react-icons/io5'
+import { IoArrowBackSharp, IoCamera } from 'react-icons/io5'
 import { useUserStore } from '@/store/userStore'
 import { useNavigate } from 'react-router-dom'
 import { notify } from '@/utils/toast'
@@ -13,6 +13,7 @@ export default function UpdateProfile() {
   const { updateProfileImg } = actions
   const fileInputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
+  const isMobile = window.innerWidth <= 1023
 
   const onErrorImg = (e: SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.onerror = null
@@ -45,6 +46,7 @@ export default function UpdateProfile() {
 
   return (
     <div className={styles.settingDetail}>
+      {isMobile && <IoArrowBackSharp onClick={() => navigate('/setting')} />}
       <h1>프로필 수정</h1>
       <div className={styles.imageWrapper}>
         <div className={styles.imageContainer}>
