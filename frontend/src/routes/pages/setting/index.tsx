@@ -3,6 +3,7 @@ import styles from './setting.module.scss'
 import { IoArrowForwardOutline } from 'react-icons/io5'
 import { postLogout } from '@/api/login'
 import { removeAccessToken, removeMatchToken } from '@/utils/auth'
+import { useMatchStore } from '@/store/matchStore'
 
 interface SettingProps {
   onDeactivateModal: () => void
@@ -15,8 +16,10 @@ export default function Setting({
 }: SettingProps) {
   const location = useLocation()
   const navigate = useNavigate()
+  const { resetMatchState } = useMatchStore()
 
   const handleLogout = () => {
+    resetMatchState()
     postLogout()
     removeAccessToken()
     removeMatchToken()

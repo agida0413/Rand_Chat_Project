@@ -23,25 +23,30 @@ interface MatchState {
   setIsConnected: (value: boolean) => void
   setIsOpenModal: (value: boolean) => void
   setMatchingData: (data: MatchingData) => void
+  resetMatchState: () => void
+}
+
+const initialState: Omit<MatchState, 'setIsLocationGranted' | 'setIsConnecting' | 'setIsConnected' | 'setIsOpenModal' | 'setMatchingData' | 'resetMatchState'> = {
+  isLocationGranted: true,
+  isConnecting: false,
+  isConnected: false,
+  isOpenModal: false,
+  matchingData: {
+    status: '',
+    code: '',
+    nickname: '',
+    sex: '',
+    profileImg: null,
+    distance: 0,
+    matchAcptToken: '',
+    timestamp: ''
+  }
 }
 
 export const useMatchStore = create<MatchState>()(
   persist(
     set => ({
-      isLocationGranted: true,
-      isConnecting: false,
-      isConnected: false,
-      isOpenModal: false,
-      matchingData: {
-        status: '',
-        code: '',
-        nickname: '',
-        sex: '',
-        profileImg: null,
-        distance: 0,
-        matchAcptToken: '',
-        timestamp: ''
-      },
+      ...initialState,
       setIsLocationGranted: (value: boolean) =>
         set({ isLocationGranted: value }),
       setIsConnecting: (value: boolean) => set({ isConnecting: value }),
@@ -50,7 +55,8 @@ export const useMatchStore = create<MatchState>()(
       setMatchingData: (data: MatchingData) => {
         const distanceInKm = (data.distance / 1000).toFixed(1)
         set({ matchingData: { ...data, distance: parseFloat(distanceInKm) } })
-      }
+      },
+      resetMatchState: () => set(initialState)
     }),
     {
       name: 'matchStore'
