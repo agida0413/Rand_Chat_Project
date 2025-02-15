@@ -3,7 +3,7 @@ import {
   ChatRoomProps,
   ChatRoomReadProps,
   ChatUserInfoProps,
-  getChatEnter,
+  // getChatEnter,
   getChatRoom,
   getChatRoomFirstMsgInfo,
   getChatRoomMsgInfo,
@@ -69,9 +69,9 @@ export const useChatStore = create<
       // 특정 방의 메시지 데이터
       fetchChatData: async (chatRoomId: string) => {
         console.log('chatRoomId : ', chatRoomId)
-        const currentChatRoom = useChatStore
-          .getState()
-          .chatRoom.find(room => room.chatRoomId === chatRoomId)
+        // const currentChatRoom = useChatStore
+        //   .getState()
+        //   .chatRoom.find(room => room.chatRoomId === chatRoomId)
         // if (currentChatRoom?.msgInfo) return
 
         const data: ChatRoomFirstMsgInfoProps[] =
