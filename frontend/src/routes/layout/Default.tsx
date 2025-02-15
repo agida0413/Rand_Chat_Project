@@ -7,6 +7,7 @@ import MatchProfile from '@/components/matchProfile'
 import { useEffect } from 'react'
 import { useLocationPolling } from '@/hooks/useLocationPolling'
 import { useUserStore } from '@/store/userStore'
+import { getUserInfo } from '@/api/login'
 
 export default function DefaultLayout() {
   const isMobile = window.innerWidth <= 1023
@@ -24,13 +25,29 @@ export default function DefaultLayout() {
   }
 
   useEffect(() => {
-    setUser()
+    const fetchData = async () => {
+      try {
+        const userData = await getUserInfo()
+        if(userData.data.status === 401 || userData.data.status === 500){
+          navigate('/login')
+        }
+        
+        setUser(userData)
+      } catch (error) {
+        console.error('Error fetching user info:', error)
+      }
+    }
+  
+    fetchData()
+  
     const intervalId = setInterval(getCurrentPosition, 300000)
     getCurrentPosition()
+  
     return () => {
       clearInterval(intervalId)
     }
   }, [])
+  
 
   useEffect(() => {
     if (performance.navigation.type === 1) navigate('/')

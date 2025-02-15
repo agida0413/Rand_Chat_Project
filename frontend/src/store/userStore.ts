@@ -1,4 +1,5 @@
-import { getUserInfo } from '@/api/login'
+import { ApiResponse } from '@/api'
+import { getUserInfoResponse } from '@/api/login'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
@@ -25,7 +26,10 @@ const init = {
 }
 
 interface UserActions {
-  setUser: () => void
+  setUser: (userData: {
+    data: ApiResponse<getUserInfoResponse>;
+    headers: Headers;
+}) => void
   updateProfileImg: (newProfileImg: string) => void
 }
 
@@ -35,8 +39,7 @@ export const useUserStore = create<
   devtools(set => ({
     user: init,
     actions: {
-      setUser: async () => {
-        const userData = await getUserInfo()
+      setUser: async (userData) => {
 
         set(() => ({
           user: userData.data.data
