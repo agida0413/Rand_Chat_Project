@@ -13,6 +13,7 @@ import ProfileImage from '../profileImage'
 import { removeAccessToken, removeMatchToken } from '@/utils/auth'
 import { postLogout } from '@/api/login'
 import { useUserStore } from '@/store/userStore'
+import { useMatchStore } from '@/store/matchStore'
 
 const navigations = [
   {
@@ -40,8 +41,10 @@ export default function Header() {
   const userStore = useUserStore()
   const { user } = userStore
   const isMobile = window.innerWidth <= 1023
+  const { resetMatchState } = useMatchStore()
 
   const handleLogout = () => {
+    resetMatchState()
     postLogout()
     removeAccessToken()
     removeMatchToken()
