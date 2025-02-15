@@ -56,7 +56,7 @@ export default function Header() {
       {!isMobile && (
         <div className={styles.profileContainer}>
           <span>
-            <ProfileImage src={user.profile_img} />
+            <ProfileImage src={user.profile_img ?? ''} />
           </span>
         </div>
       )}
