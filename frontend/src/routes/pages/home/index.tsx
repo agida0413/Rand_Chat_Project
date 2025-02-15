@@ -2,6 +2,7 @@ import { useMatchMutation } from '@/hooks/useMatchMutation'
 import styles from './home.module.scss'
 import { useState } from 'react'
 import Slider from '@/components/slider'
+import Loader from '@/components/loader'
 
 export default function Home() {
   const [sliderValue, setSliderValue] = useState(0.1)
@@ -50,6 +51,11 @@ export default function Home() {
             onChange={handleSliderChange}
           />
         </div>
+        
+        <span className={styles.loaderContainer}>
+          {isConnecting && <Loader />}
+        </span>
+        
         <div>
           <button
             className={styles.matchButton}
