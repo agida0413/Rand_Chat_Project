@@ -34,7 +34,10 @@ public class MatchingController {
             , @RequestHeader(value = "matchToken",required = false) String matchToken){
         return  matchAcceptService.matchAccept(matchAcceptDTO,matchToken);
     }
-
+    @PutMapping
+    public ResponseEntity<ResponseDTO<Void>> matChCancle(){
+        return  matchService.matchCancle();
+    }
 
 
 //    @GetMapping("/test")
