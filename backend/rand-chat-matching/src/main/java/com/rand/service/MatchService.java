@@ -9,6 +9,6 @@ public interface MatchService {
 
     public ResponseEntity<ResponseDTO<Void>> matchLogic(MatchDTO matchDTO);
     public void removeQueue1Min();
-
+    public ResponseEntity<ResponseDTO<Void>> matchCancle();
 
 }

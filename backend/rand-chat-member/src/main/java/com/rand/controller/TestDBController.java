@@ -36,7 +36,7 @@ public class TestDBController {
     @Transactional
     public String test(){
         int preUsrId;
-        for(int i= 3; i<=10003; i++){
+        for(int i= 1; i<=10003; i++){
 
 
             Members members = new Members();
@@ -67,7 +67,7 @@ public class TestDBController {
     @Transactional
     public String test2(){
         int preUsrId;
-        for(int i= 3; i<=501; i++){
+        for(int i= 8721; i<=9221; i++){
 
             if(i%2==0){
                 preUsrId = i-1;
@@ -122,7 +122,7 @@ public class TestDBController {
     @Transactional
     public String test3(){
         int preUsrId;
-        for(int i= 502; i<=1001; i++){
+        for(int i= 9221; i<=9702; i++){
 
             if(i%2==0){
                 preUsrId = i-1;
@@ -177,7 +177,7 @@ public class TestDBController {
     @Transactional
     public String test4(){
         int preUsrId;
-        for(int i= 1002; i<=1501; i++){
+        for(int i= 9702; i<=10003; i++){
 
             if(i%2==0){
                 preUsrId = i-1;
@@ -232,7 +232,7 @@ public class TestDBController {
     @Transactional
     public String test5(){
         int preUsrId;
-        for(int i= 1501; i<=4001; i++){
+        for(int i= 10003; i<=13000; i++){
 
             if(i%2==0){
                 preUsrId = i-1;
