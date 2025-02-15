@@ -132,11 +132,6 @@ export const postChatRoomImage = async (chatRoomId: string, file: File) => {
   }
 
   const { data } = await response.json()
-
-  // return {
-  //   imgUrl:
-  //     'https://randchat.s3.ap-northeast-2.amazonaws.com/412d7c2e-5momo.png'
-  // }
   return data
 }
 
@@ -175,3 +170,19 @@ export const getChatEnter = async (chatRoomId: string) => {
     credentials: 'include'
   })
 }
+
+export const deleteChatEnter = async () => {
+  console.log('delte Enter')
+  const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
+  // const url = `${VITE_SSE_API_URL}/chat/ws/api/enter/`
+  const url = `${VITE_SSE_API_URL}/chat/api/v1/room`
+
+  await api.delete<ChatUserInfoProps[]>(url, {
+    headers: {
+      Accept: 'application/json',
+      access: `${getAccessToken()}`
+    },
+    credentials: 'include'
+  })
+}
+

@@ -3,6 +3,8 @@ import {
   ChatRoomProps,
   ChatRoomReadProps,
   ChatUserInfoProps,
+  deleteChatEnter,
+  getChatEnter,
   // getChatEnter,
   getChatRoom,
   getChatRoomFirstMsgInfo,
@@ -15,6 +17,7 @@ import { devtools } from 'zustand/middleware'
 export interface ExtendedChatRoomProps extends ChatRoomProps {
   msgInfo?: ChatRoomFirstMsgInfoProps[]
   chatUserInfo?: ChatUserInfoProps[]
+  nowChatId: string | null
 }
 
 interface ChatActions {
@@ -24,24 +27,28 @@ interface ChatActions {
   fetchChatMoreData: (chatRoomId: string) => void
   addMessage: (msg: ChatRoomFirstMsgInfoProps) => void
   readMessage: (chatRooomId: string) => void
+  setNowChatId: (id: string |null) => void
 }
 
 const initialState: ExtendedChatRoomProps[] = []
 
 export const useChatStore = create<
-  { chatRoom: ExtendedChatRoomProps[] } & { actions: ChatActions }
+  { chatRoom: ExtendedChatRoomProps[]; nowChatId: string | null } & { actions: ChatActions }
 >()(
   devtools(set => ({
     chatRoom: initialState,
+    nowChatId: null,
     actions: {
       initChatRoom: async () => {
         const roomData = await getChatRoom()
-
-        set(() => ({
-          chatRoom: roomData
+        const extendedRoomData: ExtendedChatRoomProps[] = roomData.map(room => ({
+          ...room,
+          nowChatId: null
         }))
-
-        return roomData
+        set(() => ({
+          chatRoom: extendedRoomData
+        }))
+        return extendedRoomData
       },
 
       // 특정 방의 정보
@@ -152,11 +159,17 @@ export const useChatStore = create<
             curMsgCrDate: msg.msgCrDate,
             msgInfo: updatedMsgInfo
           }
+          
+          const myNickName = updatedChatRoom.chatUserInfo?.find(user => user.itsMeFlag)?.nickName
 
+          if(myNickName !== updatedChatRoom.opsNickName){
+            updatedChatRoom.unreadCount = updatedChatRoom.unreadCount + 1
+          }
           const updatedChatRoomList = [
             updatedChatRoom,
             ...state.chatRoom.filter((_, i) => i !== index)
           ]
+
 
           return { chatRoom: updatedChatRoomList }
         }),
@@ -177,18 +190,34 @@ export const useChatStore = create<
           console.log(state.chatRoom[index].opsNickName, receivedMessage.reader)
           if (state.chatRoom[index].opsNickName === receivedMessage.reader) {
             console.log('read')
-            // updatedChatRoom.unreadCount = 0
-          } else {
-            console.log('unread')
-            // updatedChatRoom.unreadCount = state.chatRoom[index].unreadCount + 1
-          }
+            updatedChatRoom.unreadCount = 0
+            updatedChatRoom.msgInfo = updatedChatRoom?.msgInfo?.map(msg => ({
+              ...msg,
+              read: true
+            }));
+          } 
+          // else {
+          //   console.log('unread')
+          //   updatedChatRoom.unreadCount = state.chatRoom[index].unreadCount + 1
+          // }
 
           const updatedChatRoomList = state.chatRoom.map((room, i) =>
             i === index ? updatedChatRoom : room
           )
 
           return { chatRoom: updatedChatRoomList }
-        })
+        }),
+
+        setNowChatId: (id: string | null) => 
+          set(() => {
+            if(id === null){
+              deleteChatEnter()
+            }else{
+              getChatEnter(id)
+            }
+            return { nowChatId: id }
+          })
     }
   }))
 )
+

@@ -4,7 +4,7 @@ import styles from './chatDetail.module.scss'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useChatStore } from '@/store/chatStore'
 import { IoExit, IoImageSharp, IoArrowBackSharp } from 'react-icons/io5'
-import { deleteExitChat, getChatEnter } from '@/api/chats'
+import { deleteExitChat } from '@/api/chats'
 import { useMultiChatting } from '@/hooks/useMultiChatting'
 
 export default function ChatDetail() {
@@ -12,7 +12,7 @@ export default function ChatDetail() {
   const { sendHandler, sendImage } = useMultiChatting()
   const navigate = useNavigate()
   const { chatRoom, actions } = useChatStore()
-  const { fetchChatData, fetchChatMoreData } = actions
+  const { fetchChatData, fetchChatMoreData, setNowChatId } = actions
   const [input, setInput] = useState('')
   const chatContentRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -51,9 +51,13 @@ export default function ChatDetail() {
   const userInfo =
     currentChatRoom?.chatUserInfo?.find(user => !user.itsMeFlag) || null
 
+  useEffect(() => {
+    if (chatId) setNowChatId(chatId?? null)
+    return () => setNowChatId(null)
+  }, [chatId, setNowChatId])
+  
   useLayoutEffect(() => {
     if (!chatId) return
-    getChatEnter(chatId)
     fetchChatData(chatId).then(() => {
       setIsFetching(false)
       if (chatContentRef.current) {

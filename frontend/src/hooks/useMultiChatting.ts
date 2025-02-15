@@ -40,7 +40,7 @@ export function useMultiChatting() {
             const receivedMessage = JSON.parse(message.body)
             console.log('receivedMessage: ', receivedMessage)
             if (receivedMessage.type === 'READ-EVENT') {
-              // actions.readMessage(receivedMessage)
+              actions.readMessage(receivedMessage)
             } else {
               const fixedMessage = {
                 ...receivedMessage,
