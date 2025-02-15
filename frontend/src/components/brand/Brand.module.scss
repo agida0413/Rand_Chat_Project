@@ -13,10 +13,16 @@
     margin: 0 auto;
 
     h1 {
-      @include typography('xxl', 'bold');
+      @include typography('xl', 'bold');
     }
     p {
-      @include typography('md', 'medium');
+      @include typography('sm', 'medium');
     }
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .brandSection {
+    display: none;
   }
 }

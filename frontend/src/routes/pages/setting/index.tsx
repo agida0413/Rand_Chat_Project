@@ -1,6 +1,8 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import styles from './setting.module.scss'
 import { IoArrowForwardOutline } from 'react-icons/io5'
+import { postLogout } from '@/api/login'
+import { removeAccessToken, removeMatchToken } from '@/utils/auth'
 
 interface SettingProps {
   onDeactivateModal: () => void
@@ -12,7 +14,14 @@ export default function Setting({
   onDeleteModal
 }: SettingProps) {
   const location = useLocation()
+  const navigate = useNavigate()
 
+  const handleLogout = () => {
+    postLogout()
+    removeAccessToken()
+    removeMatchToken()
+    navigate('/login')
+  }
   const settings = [
     { name: '프로필 수정', path: '/setting/update-profile' },
     { name: '비밀번호 변경', path: '/setting/update-password' }
@@ -35,13 +44,16 @@ export default function Setting({
           className={styles.settingItem}
           onClick={onDeactivateModal}>
           <p>계정 비활성화</p>
-          <IoArrowForwardOutline />
         </div>
         <div
           className={styles.settingItem}
           onClick={onDeleteModal}>
           <p>회원 탈퇴</p>
-          <IoArrowForwardOutline />
+        </div>
+        <div
+          className={styles.settingItem}
+          onClick={handleLogout}>
+          <p>로그아웃</p>
         </div>
       </span>
     </div>

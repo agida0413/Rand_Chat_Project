@@ -57,32 +57,89 @@
     padding: $padding-m 0;
     width: 100%;
 
-    .in,
-    .out {
-      max-width: 100%;
-      width: fit-content;
-      padding: $padding-s $padding-l;
-      border-radius: $radius-l;
-      max-width: 80rem;
-      word-wrap: break-word;
+    .outContainer {
+      display: flex;
+      justify-content: right;
+      gap: 1rem;
+
+      .outInfo {
+        @include typography('xxs');
+        align-content: center;
+        justify-items: right;
+      }
+
+      .out {
+        max-width: 100%;
+        width: fit-content;
+        padding: $padding-s $padding-l;
+        border-radius: $radius-l;
+        max-width: 80rem;
+        word-wrap: break-word;
+        background-color: $color-primary-400;
+        color: white;
+      }
     }
 
-    .in {
-      text-align: left;
-      background-color: #e7e7e7;
+    .outImageContainer,
+    .inImageContainer {
+      width: 50%;
+      max-width: 50%;
+      flex-shrink: 0;
+
+      img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: $radius-l;
+      }
     }
 
-    .out {
-      align-self: self-end;
-      background-color: $color-primary-400;
-      color: white;
+    .inContainer {
+      display: flex;
+      justify-content: left;
+      gap: 1rem;
+
+      .inInfo {
+        @include typography('xxs');
+        align-content: center;
+      }
+
+      .in {
+        max-width: 100%;
+        width: fit-content;
+        padding: $padding-s $padding-l;
+        border-radius: $radius-l;
+        max-width: 80rem;
+        word-wrap: break-word;
+        background-color: #e7e7e7;
+      }
     }
   }
   .chatInputContainer {
     margin-top: auto;
-    input {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    svg {
+      color: $color-primary-500;
+    }
+    .chatInput {
       @include primaryInput;
       @include typography('xs');
+    }
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .chatDetailContainer {
+    width: 100%;
+    height: 100%;
+  }
+
+  .contactLeft {
+    svg {
+      align-self: center;
     }
   }
 }

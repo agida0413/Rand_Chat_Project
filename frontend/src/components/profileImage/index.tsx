@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { SyntheticEvent } from 'react'
 import defaultImg from '@/assets/images/default-profile.webp'
 import styles from './profileImage.module.scss'
@@ -11,12 +12,16 @@ export default function ProfileImage({
   src,
   alt = 'profile'
 }: ProfileImageProps) {
+  const [imageSrc, setImageSrc] = useState(src || defaultImg)
+
+  useEffect(() => {
+    setImageSrc(src && src !== '' ? src : defaultImg)
+  }, [src])
+
   const onErrorImg = (e: SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.onerror = null
-    e.currentTarget.src = defaultImg
+    setImageSrc(defaultImg)
   }
-
-  const imageSrc = src ?? defaultImg
 
   return (
     <img

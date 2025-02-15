@@ -3,3 +3,9 @@
   grid-template-columns: 5fr 5fr;
   height: $max-height-frame;
 }
+
+@media screen and (max-width: 1023px) {
+  .loginContainer {
+    grid-template-columns: none;
+  }
+}

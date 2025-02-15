@@ -12,6 +12,7 @@ import {
 import ProfileImage from '../profileImage'
 import { removeAccessToken, removeMatchToken } from '@/utils/auth'
 import { postLogout } from '@/api/login'
+import { useUserStore } from '@/store/userStore'
 
 const navigations = [
   {
@@ -36,6 +37,9 @@ const navigations = [
 
 export default function Header() {
   const navigate = useNavigate()
+  const userStore = useUserStore()
+  const { user } = userStore
+  const isMobile = window.innerWidth <= 1023
 
   const handleLogout = () => {
     postLogout()
@@ -46,11 +50,13 @@ export default function Header() {
 
   return (
     <header className={styles.headerContainer}>
-      <div className={styles.profileContainer}>
-        <span>
-          <ProfileImage src="" />
-        </span>
-      </div>
+      {!isMobile && (
+        <div className={styles.profileContainer}>
+          <span>
+            <ProfileImage src={user.profile_img} />
+          </span>
+        </div>
+      )}
 
       {navigations.map(nav => (
         <NavLink
@@ -61,11 +67,13 @@ export default function Header() {
         </NavLink>
       ))}
 
-      <button
-        onClick={handleLogout}
-        className={styles.logoutButton}>
-        <IoExit />
-      </button>
+      {!isMobile && (
+        <button
+          onClick={handleLogout}
+          className={styles.logoutButton}>
+          <IoExit />
+        </button>
+      )}
     </header>
   )
 }

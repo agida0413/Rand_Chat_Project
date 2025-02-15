@@ -1,6 +1,6 @@
 import { updateMyLocation } from '@/api/location'
 import { useMatchStore } from '@/store/matchStore'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export function useLocationPolling() {
   const [location, setLocation] = useState<{
@@ -43,16 +43,6 @@ export function useLocationPolling() {
       setError(new Error('Geolocation이 지원되지 않는 브라우저입니다.'))
     }
   }
-
-  useEffect(() => {
-    getCurrentPosition()
-
-    const intervalId = setInterval(getCurrentPosition, 300000)
-
-    return () => {
-      clearInterval(intervalId)
-    }
-  }, [])
 
   return { location, isLoading, error, getCurrentPosition }
 }
