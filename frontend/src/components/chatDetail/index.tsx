@@ -12,7 +12,7 @@ export default function ChatDetail() {
   const { sendHandler, sendImage } = useMultiChatting()
   const navigate = useNavigate()
   const { chatRoom, actions } = useChatStore()
-  const { fetchChatData, fetchChatMoreData, setNowChatId } = actions
+  const { fetchChatData, fetchChatMoreData, setNowChatId, deleteChatRoom } = actions
   const [input, setInput] = useState('')
   const chatContentRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -40,7 +40,9 @@ export default function ChatDetail() {
   }
 
   const handleExitChat = async () => {
+    if(!chatId) return
     await deleteExitChat(chatId)
+    deleteChatRoom(chatId)
     navigate('/chat')
   }
 

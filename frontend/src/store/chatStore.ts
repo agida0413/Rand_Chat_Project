@@ -22,6 +22,7 @@ export interface ExtendedChatRoomProps extends ChatRoomProps {
 
 interface ChatActions {
   initChatRoom: () => Promise<ChatRoomProps[]>
+  deleteChatRoom: (chatRoomId: string) => void
   fetchChatInfo: (chatRoomId: string) => ChatUserInfoProps[]
   fetchChatData: (chatRoomId: string) => Promise<void>
   fetchChatMoreData: (chatRoomId: string) => void
@@ -50,6 +51,14 @@ export const useChatStore = create<
         }))
         return extendedRoomData
       },
+
+      deleteChatRoom: (chatRoomId: string) =>
+        set(state => {
+          const updatedChatRoom = state.chatRoom.filter(
+            room => room.chatRoomId !== chatRoomId
+          )
+          return { chatRoom: updatedChatRoom }
+        }),
 
       // 특정 방의 정보
       fetchChatInfo: async (chatRoomId: string) => {
