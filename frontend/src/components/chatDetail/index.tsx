@@ -172,6 +172,7 @@ export default function ChatDetail() {
           type="file"
           ref={fileInputRef}
           style={{ display: 'none' }}
+          accept="image/*"
           onChange={handleFileChange}
         />
         <IoImageSharp onClick={handleSendImage} />
