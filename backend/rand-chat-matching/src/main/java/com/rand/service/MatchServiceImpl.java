@@ -19,6 +19,7 @@ import com.rand.member.model.cons.MembersSex;
 import com.rand.redis.InMemRepository;
 
 import com.rand.redis.pubsub.Publisher;
+import com.rand.redis.pubsub.SseNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
@@ -42,6 +43,7 @@ public class MatchServiceImpl implements MatchService {
     private final Publisher publisher;
     private final JWTUtil jwtUtil;
     private final MatchingRepository matchingRepository;
+    private final SseNotificationService sseNotificationService;
 
     @Override
     public ResponseEntity<ResponseDTO<Void>> matchLogic(MatchDTO matchDTO) {
@@ -130,6 +132,29 @@ public class MatchServiceImpl implements MatchService {
 
 
     }
+    @Override
+    public ResponseEntity<ResponseDTO<Void>> matchCancle(){
+        String usrId = String.valueOf(SecurityContextGet.getUsrId());
+        boolean acquired = inMemRepository.lockCheck(RedisKey.MATCH_LOCK_KEY,RedisKey.MATCH_LOCK_TIMEOUT);
+
+        if (acquired) {
+            try {
+                //매칭큐삭제
+                inMemRepository.sortedSetRemove(RedisKey.WAITING_QUE_KEY, usrId);
+                //SSE 삭제
+                sseNotificationService.removeConnection(usrId,PubSubChannel.MATCHING_CHANNEL.toString(),RedisKey.SSE_MATCHING_CONNECTION_KEY);
+
+            } finally {
+                inMemRepository.delete(RedisKey.MATCH_LOCK_KEY);
+            }
+
+        } else {
+            throw new InternerServerException("ERR-CMN-03");
+        }
+
+        return ResponseEntity.ok(null);
+    }
+
     @Async
     private void processMatchingQueue() {
         long currentTime = System.currentTimeMillis();
@@ -239,6 +264,7 @@ public class MatchServiceImpl implements MatchService {
 
     }
 
+
     @Transactional
     @ReadOnly
     private boolean isExistChatRoom(String firstUserId,String secondUserId){
@@ -254,6 +280,7 @@ public class MatchServiceImpl implements MatchService {
 
         return false;
     }
+
 
 
 }
