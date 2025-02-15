@@ -11,7 +11,7 @@
     max-width: fit-content;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
     padding: $padding-l;
     height: 100%;
     justify-content: space-around;
@@ -30,6 +30,11 @@
         color: $color-placeholder;
         padding: $padding-xs;
       }
+    }
+
+    .loaderContainer{
+      align-self: center;
+      height: 1rem;
     }
 
     .sliderContainer {
