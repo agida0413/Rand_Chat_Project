@@ -2,7 +2,7 @@ import { notify } from '@/utils/toast'
 import { getAccessToken, setMatchToken } from '@/utils/auth'
 import { EventSourcePolyfill } from 'event-source-polyfill'
 import { useMatchStore } from '@/store/matchStore'
-import { getMatch } from '@/api/match'
+import { getMatch, putMatch } from '@/api/match'
 
 export function useMatchMutation() {
   const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
@@ -87,8 +87,16 @@ export function useMatchMutation() {
     }
   }
 
+  const stopMatchConnection = () => {
+    notify('success', '매칭을 취소하였습니다.')
+    setIsConnecting(false)
+    setIsConnected(false)
+    putMatch()
+  }
+
   return {
     startMatchConnection,
+    stopMatchConnection,
     isConnecting,
     isConnected
   }

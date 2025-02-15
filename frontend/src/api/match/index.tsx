@@ -15,6 +15,20 @@ export const getMatch = async (distance: number) => {
   return res
 }
 
+export const putMatch = async () => {
+  const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
+  const url = `${VITE_SSE_API_URL}/match`
+  const res = await api.put(url, {
+    headers: {
+      Accept: 'application/json',
+      access: `${getAccessToken()}`
+    },
+    credentials: 'include'
+  })
+
+  return res
+}
+
 export const postMatchAccept = async (approveChk: boolean) => {
   const VITE_SSE_API_URL = import.meta.env.VITE_SSE_API_URL
   const url = `${VITE_SSE_API_URL}/match`
