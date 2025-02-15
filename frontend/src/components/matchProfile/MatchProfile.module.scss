@@ -70,3 +70,11 @@
     @include primaryButton;
   }
 }
+
+
+@media (max-width: 768px) {
+  .contents {
+    width: 80%;
+    max-width: 100%;
+  }
+}
