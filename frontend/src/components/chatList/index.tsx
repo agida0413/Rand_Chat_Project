@@ -22,8 +22,8 @@ export default function ChatList() {
   }, [])
 
   const filteredChatRooms = chatRoom.filter(room =>
-    room.opsNickName.toLowerCase().includes(inputChatRoom.toLowerCase())
-  )
+    room.opsNickName && room.opsNickName.toLowerCase().includes(inputChatRoom.toLowerCase())
+  );
 
   return (
     <section className={styles.chatListContainer}>
