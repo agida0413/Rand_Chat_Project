@@ -2,7 +2,6 @@ import { useMatchMutation } from '@/hooks/useMatchMutation'
 import styles from './home.module.scss'
 import { useState } from 'react'
 import Slider from '@/components/slider'
-import Loader from '@/components/loader'
 
 export default function Home() {
   const [sliderValue, setSliderValue] = useState(0.1)
@@ -11,9 +10,13 @@ export default function Home() {
     setSliderValue(value)
   }
 
-  const { startMatchConnection, isConnecting } = useMatchMutation()
+  const { startMatchConnection, isConnecting, stopMatchConnection } = useMatchMutation()
   const handleMatch = async () => {
-    startMatchConnection(sliderValue)
+    if(!isConnecting){
+      startMatchConnection(sliderValue)
+    }else{
+      stopMatchConnection()
+    }
   }
 
   return (
@@ -50,9 +53,8 @@ export default function Home() {
         <div>
           <button
             className={styles.matchButton}
-            onClick={handleMatch}
-            disabled={isConnecting}>
-            {isConnecting ? <Loader /> : '랜덤매칭'}
+            onClick={handleMatch}>
+            {isConnecting ? '매칭취소' : '랜덤매칭'}
           </button>
         </div>
       </div>
