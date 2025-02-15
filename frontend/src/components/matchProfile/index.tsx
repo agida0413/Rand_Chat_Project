@@ -4,14 +4,16 @@ import defaultImg from '@/assets/images/default-profile.webp'
 import { useMatchActionMutation } from '@/hooks/useMatchActionMutation'
 
 export default function MatchProfile() {
-  const { matchingData } = useMatchStore()
+  const { matchingData, setIsOpenModal } = useMatchStore()
   const { startMatchActionConnection } = useMatchActionMutation()
 
   const handleAccept = () => {
     startMatchActionConnection(true)
+    setIsOpenModal(false)
   }
   const handleReject = () => {
     startMatchActionConnection(false)
+    setIsOpenModal(false)
   }
 
   return (
