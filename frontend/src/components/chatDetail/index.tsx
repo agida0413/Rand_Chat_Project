@@ -51,6 +51,18 @@ export default function ChatDetail() {
   const userInfo =
     currentChatRoom?.chatUserInfo?.find(user => !user.itsMeFlag) || null
 
+  const [previousMessagesCount, setPreviousMessagesCount] = useState(messages.length)
+
+  useEffect(() => {
+    if (messages.length === previousMessagesCount + 1) {
+      if (chatContentRef.current) {
+        chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight
+      }
+    }
+  
+    setPreviousMessagesCount(messages.length)
+  }, [messages])
+
   useEffect(() => {
     if (chatId) setNowChatId(chatId?? null)
     return () => setNowChatId(null)
