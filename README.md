@@ -33,14 +33,18 @@
 
   # 📝 핵심 화면 요약 
 
-  - 인증/인가
+  ## 인증/인가
 
 ![회원가입 (1)](https://github.com/user-attachments/assets/0c9dfb9c-64de-44b2-88aa-43484762ea38)
 
- - 매칭
+ ## 매칭
+   
+![KakaoTalk_Photo_2025-02-16-11-26-29 (1)](https://github.com/user-attachments/assets/450aa45d-7d10-464b-9393-619486469a91)
 
-      
+ ## 채팅
+![KakaoTalk_Photo_2025-02-16-11-29-04 (1)](https://github.com/user-attachments/assets/ed9e00f9-a543-41ec-9783-3483df83bce7)
 
+  
 <br>
 <br>
 
